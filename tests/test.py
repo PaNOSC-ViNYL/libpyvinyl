@@ -11,6 +11,11 @@ is_travisCI = ("TRAVIS_BUILD_DIR" in list(os.environ.keys())) and (os.environ["T
 def suite():
     suites = [
              unittest.makeSuite(BaseCalculatorTest,               'test'),
+             unittest.makeSuite(DetectorTest.py,                  'test'),
+             unittest.makeSuite(RadiationSampleInteractorTest.py, 'test'),
+             unittest.makeSuite(BeamlinePropagatorTest.py,        'test'),
+             unittest.makeSuite(SignalGeneratorTest.py,           'test'),
+
              ]
 
     return unittest.TestSuite(suites)
