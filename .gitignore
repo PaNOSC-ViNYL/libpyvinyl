@@ -1,0 +1,9 @@
+*.pyc
+*.pyo
+.*.*.swp
+doc
+.idea
+*.bak
+*.code-workspace
+.ropeproject
+tags
