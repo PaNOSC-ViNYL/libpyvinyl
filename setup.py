@@ -1,9 +1,9 @@
 from setuptools import setup
 
 setup(
-    name='SimEx',
-    packages=['SimEx',
+    name='pyvinyl',
+    packages=['pyvinyl',
              ],
-    license='GPL-v3',
-    #long_description=open('README.md').read(),
+    license='LGPL-v3',
+    version='0.0.1'
 )
