@@ -25,12 +25,12 @@ abstract classes.
 #                                                                                  #
 ####################################################################################
 
-from abc import ABCMeta, abstractmethod
+from pyvinyl.BaseCalculator import BaseCalculator, BaseParameters
 
-class BeamlinePropagatorParameters(object, metaclass=ABCMeta):
+class BeamlinePropagatorParameters(BaseParameters):
     pass
 
-class BeamlinePropagator(object, metaclass=ABCMeta):
+class BeamlinePropagator(BaseCalculator):
     pass
 
 # This project has received funding from the European Union's Horizon 2020 research and innovation programme under grant agreement No. 823852.

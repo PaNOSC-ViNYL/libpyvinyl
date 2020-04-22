@@ -1,6 +1,7 @@
 import unittest
 
 from pyvinyl.SignalGenerator import SignalGenerator, SignalGeneratorParameters
+from pyvinyl.BaseCalculator import BaseCalculator, BaseParameters
 
 
 class SignalGeneratorTest(unittest.TestCase):
@@ -36,6 +37,12 @@ class SignalGeneratorTest(unittest.TestCase):
 
         # Construct the object.
         calculator = SignalGenerator()
+
+        # Test provenance.
+        self.assertIsInstance(calculator, SignalGenerator)
+        self.assertIsInstance(calculator, BaseCalculator)
+
+
 
 if __name__ == '__main__':
     unittest.main()

@@ -25,12 +25,12 @@ abstract classes.
 #                                                                                  #
 ####################################################################################
 
-from abc import ABCMeta, abstractmethod
+from pyvinyl.BaseCalculator import BaseCalculator, BaseParameters
 
-class DetectorParameters(object, metaclass=ABCMeta):
+class DetectorParameters(BaseParameters):
     pass
 
-class Detector(object, metaclass=ABCMeta):
+class Detector(BaseCalculator):
     pass
 
 # This project has received funding from the European Union's Horizon 2020 research and innovation programme under grant agreement No. 823852.

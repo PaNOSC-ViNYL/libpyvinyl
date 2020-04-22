@@ -1,6 +1,7 @@
 import unittest
 
 from pyvinyl.RadiationSampleInteractor import RadiationSampleInteractor, RadiationSampleInteractorParameters
+from pyvinyl.BaseCalculator import BaseCalculator, BaseParameters
 
 
 class RadiationSampleInteractorTest(unittest.TestCase):
@@ -36,6 +37,11 @@ class RadiationSampleInteractorTest(unittest.TestCase):
 
         # Construct the object.
         calculator = RadiationSampleInteractor()
+
+        # Test provenance.
+        self.assertIsInstance(calculator, RadiationSampleInteractor)
+        self.assertIsInstance(calculator, BaseCalculator)
+
 
 if __name__ == '__main__':
     unittest.main()

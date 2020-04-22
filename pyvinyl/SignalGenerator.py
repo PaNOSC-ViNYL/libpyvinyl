@@ -25,12 +25,12 @@ abstract classes.
 #                                                                                  #
 ####################################################################################
 
-from abc import ABCMeta, abstractmethod
+from pyvinyl.BaseCalculator import BaseCalculator, BaseParameters
 
-class SignalGeneratorParameters(object, metaclass=ABCMeta):
+class SignalGeneratorParameters(BaseParameters):
     pass
 
-class SignalGenerator(object, metaclass=ABCMeta):
+class SignalGenerator(BaseCalculator):
     pass
 
 # This project has received funding from the European Union's Horizon 2020 research and innovation programme under grant agreement No. 823852.

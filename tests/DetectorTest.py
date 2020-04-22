@@ -1,6 +1,7 @@
 import unittest
 
 from pyvinyl.Detector import Detector, DetectorParameters
+from pyvinyl.BaseCalculator import BaseCalculator, BaseParameters
 
 
 class DetectorTest(unittest.TestCase):
@@ -36,6 +37,11 @@ class DetectorTest(unittest.TestCase):
 
         # Construct the object.
         calculator = Detector()
+
+        # Test provenance.
+        self.assertIsInstance(calculator, Detector)
+        self.assertIsInstance(calculator, BaseCalculator)
+
 
 if __name__ == '__main__':
     unittest.main()

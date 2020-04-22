@@ -29,10 +29,9 @@ import unittest
 import os, sys
 
 from BaseCalculatorTest            import BaseCalculatorTest
-from BaseCalculatorTest            import BaseCalculatorTest          
 from DetectorTest                  import DetectorTest                
 from RadiationSampleInteractorTest import RadiationSampleInteractorTest
-from BeamlinePropagatorTest        import BeamlinePropagatorTest      
+from BeamlinePropagatorTest        import BeamlinePropagatorTest, BeamlinePropagatorParametersTest
 from SignalGeneratorTest           import SignalGeneratorTest       
 
 
@@ -46,6 +45,7 @@ def suite():
              unittest.makeSuite(DetectorTest,                  'test'),
              unittest.makeSuite(RadiationSampleInteractorTest, 'test'),
              unittest.makeSuite(BeamlinePropagatorTest,        'test'),
+             unittest.makeSuite(BeamlinePropagatorParametersTest,        'test'),
              unittest.makeSuite(SignalGeneratorTest,           'test'),
              ]
 
