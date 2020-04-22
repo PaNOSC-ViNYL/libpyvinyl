@@ -1,5 +1,5 @@
 """
-:module BaseCalculator: Module hosting the BaseCalculator and RadiationSampleInteractorParameters
+:module RadiationSampleInteractor: Module hosting the RadiationSampleInteractor and RadiationSampleInteractorParameters
 abstract classes.
 """
 
@@ -30,7 +30,7 @@ from abc import ABCMeta, abstractmethod
 class RadiationSampleInteractorParameters(object, metaclass=ABCMeta):
     pass
 
-class BaseCalculator(object, metaclass=ABCMeta):
+class RadiationSampleInteractor(object, metaclass=ABCMeta):
     pass
 
 # This project has received funding from the European Union's Horizon 2020 research and innovation programme under grant agreement No. 823852.

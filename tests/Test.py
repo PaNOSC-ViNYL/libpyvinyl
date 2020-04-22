@@ -1,6 +1,6 @@
+#! /usr/bin/env python3
 """
-:module SignalGenerator: Module hosting the SignalGenerator and SignalGeneratorParameters
-abstract classes.
+:module Test: Top level test module hosting all unittest suites.
 """
 
 
@@ -25,12 +25,40 @@ abstract classes.
 #                                                                                  #
 ####################################################################################
 
-from abc import ABCMeta, abstractmethod
+import unittest
+import os, sys
 
-class SignalGeneratorParameters(object, metaclass=ABCMeta):
-    pass
+from BaseCalculatorTest            import BaseCalculatorTest
+from BaseCalculatorTest            import BaseCalculatorTest          
+from DetectorTest                  import DetectorTest                
+from RadiationSampleInteractorTest import RadiationSampleInteractorTest
+from BeamlinePropagatorTest        import BeamlinePropagatorTest      
+from SignalGeneratorTest           import SignalGeneratorTest       
 
-class SignalGenerator(object, metaclass=ABCMeta):
-    pass
 
-# This project has received funding from the European Union's Horizon 2020 research and innovation programme under grant agreement No. 823852.
+# Are we running on CI server?
+is_travisCI = ("TRAVIS_BUILD_DIR" in list(os.environ.keys())) and (os.environ["TRAVIS_BUILD_DIR"] != "")
+
+
+def suite():
+    suites = [
+             unittest.makeSuite(BaseCalculatorTest,            'test'),
+             unittest.makeSuite(DetectorTest,                  'test'),
+             unittest.makeSuite(RadiationSampleInteractorTest, 'test'),
+             unittest.makeSuite(BeamlinePropagatorTest,        'test'),
+             unittest.makeSuite(SignalGeneratorTest,           'test'),
+             ]
+
+    return unittest.TestSuite(suites)
+
+
+# Run the suite and return a success status code. This enables running an automated git-bisect.
+if __name__=="__main__":
+
+    result = unittest.TextTestRunner(verbosity=2).run(suite())
+
+    if result.wasSuccessful():
+        print('---> OK <---')
+        sys.exit(0)
+
+    sys.exit(1)
