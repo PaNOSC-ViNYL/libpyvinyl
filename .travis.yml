@@ -1,0 +1,31 @@
+language: python
+python:
+  - "3.5"
+  - "3.6"
+  - "3.7"
+  - "3.8"
+  - "nightly"
+
+sudo: required
+dist: xenial
+
+matrix:
+    allow_failures:
+        - python: "3.5"
+        - python: "3.6"
+        - python: "nightly"
+
+
+cache:
+  apt: false
+  directories:
+    - $HOME/.cache/pip
+    - $HOME/lib
+
+install:
+  - cd $TRAVIS_BUILD_DIR
+  - pip install -r requirements
+  - pip install .
+
+script:
+  - python tests/Test.py
