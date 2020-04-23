@@ -1,8 +1,7 @@
 """
-:module BaseCalculator: Module hosting the BaseCalculator and BaseParameters
+:module AbstractBaseClass: Module hosting the AbstractBaseClass and BaseParameters
 abstract classes.
 """
-
 
 ####################################################################################
 #                                                                                  #
@@ -24,53 +23,13 @@ abstract classes.
 # with this program.  If not, see <https://www.gnu.org/licenses/                   #
 #                                                                                  #
 ####################################################################################
+from abc import ABCMeta, abstractmethod
 
-from pyvinyl.AbstractBaseClass import AbstractBaseClass
-
-class BaseParameters(AbstractBaseClass):
+class AbstractBaseClass(object, metaclass=ABCMeta):
     """
-    :class BaseParameters: Base class to encapsulate all parametrizations of
-    Calculators.
+    :class AbstractBaseClass: Base class of pyvinyl
     """
 
-    def __init__(self, **kwargs):
-        """
-        :param kwargs: (key, value) pairs of parameters.
-        """
+    def __init__(self):
+        pass
 
-
-class BaseCalculator(AbstractBaseClass):
-    """
-    :class BaseCalculator: Base class of all calculators.
-    """
-
-    def __init__(self, parameters: BaseParameters, **kwargs):
-        """
-        :param parameters: The parameters for this calculator.
-        :type  parameters: BaseParameters
-
-        :param kwargs: (key, value) pairs of further arguments to the
-        calculator, e.g input_path, output_path.
-        """
-        
-        self.parameters = parameters
-
-        if "output_path" in kwargs.keys():
-            self.output_path = kwargs['output_path']
-        
-    @property
-    def parameters(self):
-        """ The parameters of this calculator. """
-
-        return self.__parameters
-    @parameters.setter
-    def parameters(self, val):
-
-        if not isinstance(val, BaseParameters):
-            raise TypeError("""Passed argument 'parameters' has wrong type.
-            Expected BaseParameters, found {}.""".format(type(val)))
-
-        self.__parameters = val
-           
-
-#This project has received funding from the European Union's Horizon 2020 research and innovation programme under grant agreement No. 823852.

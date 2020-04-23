@@ -1,6 +1,7 @@
 import unittest
 
 from pyvinyl.BaseCalculator import BaseCalculator, BaseParameters
+from pyvinyl.AbstractBaseClass import AbstractBaseClass
 
 
 class BaseCalculatorTest(unittest.TestCase):
@@ -31,11 +32,22 @@ class BaseCalculatorTest(unittest.TestCase):
         for d in self.__dirs_to_remove:
             if os.path.isdir(d): shutil.rmtree(d)
 
-    def testDefaultConstruction(self):
+    def test_default_construction(self):
         """ Testing the default construction of the class. """
 
-        # Construct the object.
-        calculator = BaseCalculator()
+        # Test positional arguments
+        self.assertRaises(TypeError, BaseCalculator)
+
+        parameters = BaseParameters()
+        self.assertIsInstance(parameters, BaseParameters)
+        self.assertIsInstance(parameters, AbstractBaseClass)
+
+        calculator = BaseCalculator(parameters)
+
+        self.assertIsInstance(calculator, BaseCalculator)
+        self.assertIsInstance(calculator, AbstractBaseClass)
+
+        self.assertRaises(TypeError, BaseCalculator, 1)
 
 if __name__ == '__main__':
     unittest.main()
