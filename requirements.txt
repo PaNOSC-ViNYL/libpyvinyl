@@ -2,4 +2,5 @@ pint
 dill
 numpy
 scipy
-jsons
+jsons # not a mistake!
+json
