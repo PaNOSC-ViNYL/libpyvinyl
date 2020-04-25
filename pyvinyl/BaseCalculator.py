@@ -31,24 +31,39 @@ import copy
 from tempfile import mkstemp
 import os
 import dill
+from numbers import Number
+from numpy import ndarray
+import json, jsons
+from jsons import JsonSerializable
 
-class BaseParameters(AbstractBaseClass):
+import logging
+logging.basicConfig(format='%(asctime)s %(levelname)s:%(message)s', level=logging.WARNING)
+# from pyvinyl import PhysicalQuantity, Unit
+
+# ACCEPTED_VALUE_TYPES=[
+#         BaseParameters,
+#         str,
+#         Number,
+#         ndarray,
+#         ]
+#         # PhysicalQuantity,
+
+
+        
+class BaseParameters(JsonSerializable, AbstractBaseClass):
     """
     :class BaseParameters: Base class to encapsulate all parametrizations of
     Calculators.
     """
 
     @abstractmethod
-    def __init__(self, filename=None, **kwargs):
+    def __init__(self, **kwargs):
         """
-        :param filename: If given, parameters will be loaded from file. File
-        must be in json format. See `serialize()` method for more details.
-
         :param kwargs: (key, value) pairs of parameters.
         """
 
+        # Update parameters with additionaly given arguments.
         for key, val in kwargs.items():
-
             self.__dict__[key] = val
 
     def __call__(self, **kwargs):
@@ -68,8 +83,24 @@ class BaseParameters(AbstractBaseClass):
             new.__dict__[key] = val
 
         return new
+    
+    @classmethod
+    def from_json(self, fname:str, **kwargs):
+        """ Initialize an instance from a json file. """
+        with open(fname, 'r') as fp:
+            instance = self.load(json.load(fp))
+        
+        return instance
 
+    def to_json(self, fname : str):
+        """ Save this parameters class to a human readable json file.
+        :param fname: Write to this file.
+        :type  fname: str
+        """
 
+        with open(fname, 'w') as fp:
+            json.dump(self.dump(), fp)
+        
 
 class BaseCalculator(AbstractBaseClass):
     """
@@ -179,12 +210,16 @@ class BaseCalculator(AbstractBaseClass):
 class SpecializedParameters(BaseParameters):
 
     def __init__(self, 
-                 photon_energy=None,
-                 pulse_energy=None,
+                 photon_energy,
+                 pulse_energy,
+                 **kwargs
                  ):
-
-        super().__init__(photon_energy=photon_energy,
-                pulse_energy=pulse_energy)
+        
+        super().__init__(
+                photon_energy=photon_energy,
+                pulse_energy=pulse_energy,
+                **kwargs,
+                )
     
 class SpecializedCalculator(BaseCalculator):
     def __init__(self, parameters=None, dumpfile=None, **kwargs):
