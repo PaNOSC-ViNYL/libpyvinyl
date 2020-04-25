@@ -30,6 +30,7 @@ class AbstractBaseClass(object, metaclass=ABCMeta):
     :class AbstractBaseClass: Base class of pyvinyl
     """
 
+    @abstractmethod
     def __init__(self):
         pass
 
