@@ -100,7 +100,7 @@ class BaseParameters(JsonSerializable, AbstractBaseClass):
 
         with open(fname, 'w') as fp:
             json.dump(self.dump(), fp)
-        
+    
 
 class BaseCalculator(AbstractBaseClass):
     """
@@ -132,7 +132,10 @@ class BaseCalculator(AbstractBaseClass):
 
         if "output_path" in kwargs.keys():
             self.output_path = kwargs['output_path']
-    
+        
+        # Set datae
+        self.__data = None
+
     def __call__(self, parameters=None, **kwargs):
         """ The copy constructor
         :param parameters: The parameters for the new calculator.
@@ -178,7 +181,7 @@ class BaseCalculator(AbstractBaseClass):
     def parameters(self, val):
 
         if not isinstance(val, (type(None), BaseParameters)):
-            raise TypeError("""Passed argument 'parameters' has wrong type.  Expected BaseParameters, found {}.""".format(type(val)))
+            raise TypeError("""Passed argument 'parameters' has wrong type. Expected BaseParameters, found {}.""".format(type(val)))
 
         self.__parameters = val
 
@@ -201,9 +204,57 @@ class BaseCalculator(AbstractBaseClass):
                 dill.dump(self, file_handle)
         except:
             raise
-                # raise IOError("Cannot dump to file "+fname)
 
         return fname
+
+    @abstractmethod
+    def saveH5(self, fname:str, openpmd:bool=True):
+        """ Save the simulation data to hdf5 file.
+
+        :param fname: The filename (path) of the file to write the data to.
+        :type  fname: str
+
+        :param openpmd: Flag that controls whether the data is to be written in
+        according to the openpmd metadata standard. Default is True.
+
+        """
+
+    @property
+    def data(self):
+        return self.__data
+    @data.setter
+    def data(self, val):
+        raise AttributeError("Attribute 'data' is read-only.")
+    
+    @abstractmethod
+    def backengine(self):
+        pass
+
+    @classmethod
+    def run_from_cli(cls):
+        """
+        Method to start calculator computations from command line.
+
+        :return: exit with status code
+
+        """
+        if len(sys.argv) == 2:
+            fname = sys.argv[1]
+            calculator=cls(fname)
+            status = calculator._run()
+            sys.exit(status)
+
+    def _run(self):
+        """
+        Method to do computations. By default starts backengine.
+        :return: status code.
+        """
+        result=self.backengine()
+
+        if result is None:
+            result=0
+
+        return result
 
 # Mocks for testing. Have to be here to work around bug in dill that does not
 # like classes to be defined outside of __main__.
@@ -226,6 +277,12 @@ class SpecializedCalculator(BaseCalculator):
     def __init__(self, parameters=None, dumpfile=None, **kwargs):
         
         super().__init__(parameters, dumpfile, **kwargs)
+
+    def backengine(self):
+        pass
+
+    def saveH5(self, fname, openpmd=True):
+        pass
 
 
 #This project has received funding from the European Union's Horizon 2020 research and innovation programme under grant agreement No. 823852.

@@ -98,6 +98,17 @@ class BaseCalculatorTest(unittest.TestCase):
         self.assertEqual(calculator.parameters.photon_energy,
                 self.__default_parameters.photon_energy)
 
+    def test_attributes(self):
+        """ Test that all required attributes are present. """
+
+        calculator = self.__default_calculator
+
+        self.assertTrue(hasattr(calculator, 'parameters'))
+        self.assertTrue(hasattr(calculator, 'backengine'))
+        self.assertTrue(hasattr(calculator, '_run'))
+        self.assertTrue(hasattr(calculator, 'saveH5'))
+        self.assertTrue(hasattr(calculator, 'data'))
+        self.assertTrue(hasattr(SpecializedCalculator, 'run_from_cli'))
 
 class BaseParametersTest(unittest.TestCase):
     """
@@ -159,6 +170,7 @@ class BaseParametersTest(unittest.TestCase):
         self.assertIsInstance(new_parameters, BaseParameters)
         self.assertIsInstance(new_parameters, AbstractBaseClass)
         self.assertEqual(new_parameters.photon_energy, 10.00)
+        self.assertEqual(new_parameters.pulse_energy, parameters.pulse_energy)
    
     def test_serialize_scalar(self):
         """ Test serialization of parameters. """
