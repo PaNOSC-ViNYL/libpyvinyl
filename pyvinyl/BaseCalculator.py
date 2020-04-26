@@ -209,11 +209,12 @@ class BaseCalculator(AbstractBaseClass):
 # like classes to be defined outside of __main__.
 class SpecializedParameters(BaseParameters):
 
-    def __init__(self, 
-                 photon_energy,
-                 pulse_energy,
-                 **kwargs
-                 ):
+    def __init__(
+            self, 
+            photon_energy:float,
+            pulse_energy:float,
+            **kwargs
+            ):
         
         super().__init__(
                 photon_energy=photon_energy,

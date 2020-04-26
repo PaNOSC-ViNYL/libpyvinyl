@@ -227,6 +227,53 @@ class BaseParametersTest(unittest.TestCase):
         self.assertEqual(numpy.linalg.norm(new_parameters.pulse_energy),
                 numpy.linalg.norm(numpy.linspace(10.0,20.0,11)))
 
+    def test_serialize_object(self):
+        """ Test serialization of parameters in the case of nested object
+        parameters. """
+
+        # Define nested parameters.
+        class OuterParameters(BaseParameters):
+            def __init__(self, 
+                    inner_parameters:SpecializedParameters,
+                    **kwargs,
+                    ):
+
+                super().__init__(
+                        inner_parameters=inner_parameters,
+                        **kwargs,
+                        )
+
+        
+        inner = self.__default_parameters
+        outer = OuterParameters(inner)
+
+        outer_dump = outer.dump()
+
+
+        self.assertIsInstance(outer_dump, dict)
+
+        expected_dict = {'inner_parameters': {'photon_energy': 109.98, 'pulse_energy': 32.39}}
+        self.assertEqual(
+                outer_dump['inner_parameters']['photon_energy'],
+                self.__default_parameters.photon_energy
+                )
+        self.assertEqual(
+                outer_dump['inner_parameters']['pulse_energy'],
+                self.__default_parameters.pulse_energy
+                )
+
+
+        # Test serialization to file.
+        fname='tmp_nested.json'
+        outer.to_json(fname)
+        self.assertIn(fname,
+               os.listdir( os.path.abspath(os.path.dirname(__file__))))
+
+        # Test loading.
+        new_parameters = OuterParameters.from_json(fname)
+        self.assertIsInstance(new_parameters, OuterParameters)
+        self.assertIsInstance(new_parameters.inner_parameters, SpecializedParameters        )
+        
 
 if __name__ == '__main__':
     unittest.main()
