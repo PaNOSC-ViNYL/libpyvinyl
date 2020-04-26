@@ -1,6 +1,7 @@
 import unittest
 import os
 import json
+import numpy
 from jsons import JsonSerializable
 
 from pyvinyl.BaseCalculator import BaseCalculator, BaseParameters
@@ -185,6 +186,47 @@ class BaseParametersTest(unittest.TestCase):
         new_parameters.pulse_energy = 763.43
         self.assertEqual(new_parameters.photon_energy, 109.98)
         self.assertEqual(new_parameters.pulse_energy, 763.43)
+
+    def test_serialize_numpy(self):
+        """ Test serialization of parameters. """
+        # Test writing.
+        photon_energy=numpy.linspace(10.0,100.0,100)
+        photon_energy_norm = numpy.linalg.norm(photon_energy)
+
+        pulse_energy=3.e-6
+        parameters = SpecializedParameters(
+                photon_energy=photon_energy,
+                pulse_energy=pulse_energy,
+                )
+
+        # Test dumping to json dict.
+        dump = parameters.dump()
+
+        self.assertIsInstance(dump, dict)
+        self.assertEqual(numpy.linalg.norm(dump['photon_energy']),
+                photon_energy_norm)
+        self.assertEqual(dump['pulse_energy'], pulse_energy)
+        
+        # Test serialization to file.
+        fname='tmp_numpy.json'
+        parameters.to_json(fname)
+        self.assertIn(fname,
+               os.listdir( os.path.abspath(os.path.dirname(__file__))))
+
+        # Test loading.
+        new_parameters = SpecializedParameters.from_json(fname)
+        self.assertIsInstance(new_parameters, SpecializedParameters)
+        self.assertEqual(numpy.linalg.norm(new_parameters.photon_energy),
+                photon_energy_norm)
+        self.assertEqual(dump['pulse_energy'], pulse_energy)
+
+        # Update.
+        new_parameters.pulse_energy = numpy.linspace(10.0,20.0,11)
+        self.assertEqual(numpy.linalg.norm(new_parameters.photon_energy),
+                photon_energy_norm)
+        self.assertEqual(numpy.linalg.norm(new_parameters.pulse_energy),
+                numpy.linalg.norm(numpy.linspace(10.0,20.0,11)))
+
 
 if __name__ == '__main__':
     unittest.main()
