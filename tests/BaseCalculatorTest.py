@@ -199,25 +199,37 @@ class BaseParametersTest(unittest.TestCase):
         self.assertEqual(new_parameters.photon_energy, 109.98)
         self.assertEqual(new_parameters.pulse_energy, 763.43)
 
-    def test_serialize_numpy(self):
+    def test_serialize_list(self):
         """ Test serialization of parameters. """
-        # Test writing.
-        photon_energy=numpy.linspace(10.0,100.0,100)
-        photon_energy_norm = numpy.linalg.norm(photon_energy)
+        # Define  parameters with numpy array as an argument.
+        class ListParameters(BaseParameters):
+            def __init__(self, 
+                    array_par:list,
+                    scalar_par:float,
+                    **kwargs,
+                    ):
 
-        pulse_energy=3.e-6
-        parameters = SpecializedParameters(
-                photon_energy=photon_energy,
-                pulse_energy=pulse_energy,
+                super().__init__(
+                        array_par=array_par,
+                        scalar_par=scalar_par,
+                        **kwargs,
+                        )
+
+        # Test writing.
+        par=[i*0.2354 for i in range(10)]
+        sc = numpy.random.random()
+
+        parameters = ListParameters(
+                array_par=par,
+                scalar_par=sc,
                 )
 
         # Test dumping to json dict.
         dump = parameters.dump()
 
         self.assertIsInstance(dump, dict)
-        self.assertEqual(numpy.linalg.norm(dump['photon_energy']),
-                photon_energy_norm)
-        self.assertEqual(dump['pulse_energy'], pulse_energy)
+        self.assertSequenceEqual(dump['array_par'], par)
+        self.assertEqual(dump['scalar_par'], sc)
         
         # Test serialization to file.
         fname='tmp_numpy.json'
@@ -226,18 +238,11 @@ class BaseParametersTest(unittest.TestCase):
                os.listdir( os.path.abspath(os.path.dirname(__file__))))
 
         # Test loading.
-        new_parameters = SpecializedParameters.from_json(fname)
-        self.assertIsInstance(new_parameters, SpecializedParameters)
-        self.assertEqual(numpy.linalg.norm(new_parameters.photon_energy),
-                photon_energy_norm)
-        self.assertEqual(dump['pulse_energy'], pulse_energy)
-
-        # Update.
-        new_parameters.pulse_energy = numpy.linspace(10.0,20.0,11)
-        self.assertEqual(numpy.linalg.norm(new_parameters.photon_energy),
-                photon_energy_norm)
-        self.assertEqual(numpy.linalg.norm(new_parameters.pulse_energy),
-                numpy.linalg.norm(numpy.linspace(10.0,20.0,11)))
+        new_parameters = ListParameters.from_json(fname)
+        self.assertIsInstance(new_parameters, ListParameters)
+        self.assertIsInstance(new_parameters.array_par, list)
+        self.assertSequenceEqual(new_parameters.array_par, par)
+        self.assertEqual(new_parameters.scalar_par, sc)
 
     def test_serialize_object(self):
         """ Test serialization of parameters in the case of nested object

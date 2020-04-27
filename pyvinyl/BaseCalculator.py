@@ -100,7 +100,6 @@ class BaseParameters(JsonSerializable, AbstractBaseClass):
 
         with open(fname, 'w') as fp:
             json.dump(self.dump(), fp)
-    
 
 class BaseCalculator(AbstractBaseClass):
     """
