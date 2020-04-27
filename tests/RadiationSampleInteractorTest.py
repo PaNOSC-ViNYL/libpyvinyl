@@ -32,6 +32,7 @@ class RadiationSampleInteractorTest(unittest.TestCase):
         for d in self.__dirs_to_remove:
             if os.path.isdir(d): shutil.rmtree(d)
 
+    @unittest.expectedFailure
     def testDefaultConstruction(self):
         """ Testing the default construction of the class. """
 

@@ -1,8 +1,7 @@
 """
-:module BeamlinePropagator: Module hosting the BeamlinePropagator and BeamlinePropagatorParameters
+:module AbstractBaseClass: Module hosting the AbstractBaseClass and BaseParameters
 abstract classes.
 """
-
 
 ####################################################################################
 #                                                                                  #
@@ -24,24 +23,14 @@ abstract classes.
 # with this program.  If not, see <https://www.gnu.org/licenses/                   #
 #                                                                                  #
 ####################################################################################
+from abc import ABCMeta, abstractmethod
 
-from pyvinyl.BaseCalculator import BaseCalculator, BaseParameters
+class AbstractBaseClass(object, metaclass=ABCMeta):
+    """
+    :class AbstractBaseClass: Base class of pyvinyl
+    """
 
-class BeamlinePropagatorParameters(BaseParameters):
-    def __init__(self, **kwargs):
-        
-        super().__init__(**kwargs)
-
-
-class BeamlinePropagator(BaseCalculator):
-    def __init__(self, parameters=None, dumpfile=None, **kwargs):
-        
-        super().__init__(parameters, dumpfile, **kwargs)
-
-    def backengine(self):
+    @abstractmethod
+    def __init__(self):
         pass
 
-    def saveH5(self, fname, openpmd=True):
-        pass
-
-# This project has received funding from the European Union's Horizon 2020 research and innovation programme under grant agreement No. 823852.

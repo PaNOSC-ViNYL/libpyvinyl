@@ -28,9 +28,20 @@ abstract classes.
 from pyvinyl.BaseCalculator import BaseCalculator, BaseParameters
 
 class SignalGeneratorParameters(BaseParameters):
-    pass
+    def __init__(self, **kwargs):
+        
+        super().__init__(**kwargs)
+
 
 class SignalGenerator(BaseCalculator):
-    pass
+    def __init__(self, parameters=None, dumpfile=None, **kwargs):
+        
+        super().__init__(parameters, dumpfile, **kwargs)
+
+    def backengine(self):
+        pass
+
+    def saveH5(self, fname, openpmd=True):
+        pass
 
 # This project has received funding from the European Union's Horizon 2020 research and innovation programme under grant agreement No. 823852.
