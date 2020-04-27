@@ -260,16 +260,15 @@ class BaseParametersTest(unittest.TestCase):
                         **kwargs,
                         )
 
-        
         inner = self.__default_parameters
         outer = OuterParameters(inner)
 
         outer_dump = outer.dump()
 
-
         self.assertIsInstance(outer_dump, dict)
 
         expected_dict = {'inner_parameters': {'photon_energy': 109.98, 'pulse_energy': 32.39}}
+
         self.assertEqual(
                 outer_dump['inner_parameters']['photon_energy'],
                 self.__default_parameters.photon_energy
@@ -278,7 +277,6 @@ class BaseParametersTest(unittest.TestCase):
                 outer_dump['inner_parameters']['pulse_energy'],
                 self.__default_parameters.pulse_energy
                 )
-
 
         # Test serialization to file.
         fname='tmp_nested.json'
@@ -289,8 +287,7 @@ class BaseParametersTest(unittest.TestCase):
         # Test loading.
         new_parameters = OuterParameters.from_json(fname)
         self.assertIsInstance(new_parameters, OuterParameters)
-        self.assertIsInstance(new_parameters.inner_parameters, SpecializedParameters        )
-        
+        self.assertIsInstance(new_parameters.inner_parameters, SpecializedParameters )
 
 if __name__ == '__main__':
     unittest.main()
