@@ -38,18 +38,8 @@ from jsons import JsonSerializable
 
 import logging
 logging.basicConfig(format='%(asctime)s %(levelname)s:%(message)s', level=logging.WARNING)
-# from pyvinyl import PhysicalQuantity, Unit
+       
 
-# ACCEPTED_VALUE_TYPES=[
-#         BaseParameters,
-#         str,
-#         Number,
-#         ndarray,
-#         ]
-#         # PhysicalQuantity,
-
-
-        
 class BaseParameters(JsonSerializable, AbstractBaseClass):
     """
     :class BaseParameters: Base class to encapsulate all parametrizations of
@@ -63,8 +53,7 @@ class BaseParameters(JsonSerializable, AbstractBaseClass):
         """
 
         # Update parameters with additionaly given arguments.
-        for key, val in kwargs.items():
-            self.__dict__[key] = val
+        self.__dict__.update(kwargs)
 
     def __call__(self, **kwargs):
         """ The copy constructor
@@ -79,8 +68,7 @@ class BaseParameters(JsonSerializable, AbstractBaseClass):
         if kwargs is None:
             return new
 
-        for key, val in kwargs.items():
-            new.__dict__[key] = val
+        new.__dict__.update(kwargs)
 
         return new
     
@@ -129,8 +117,8 @@ class BaseCalculator(AbstractBaseClass):
         if parameters is not None:
             self.parameters = parameters
 
-        if "output_path" in kwargs.keys():
-            self.output_path = kwargs['output_path']
+        if "output_path" in kwargs:
+            self.output_path = kwargs["output_path"]
         
         # Set datae
         self.__data = None
@@ -148,8 +136,7 @@ class BaseCalculator(AbstractBaseClass):
 
         new = copy.deepcopy(self)
 
-        for key, val in kwargs.items():
-            new.__dict__[key] = val
+        new.__dict__.update(kwargs)
 
         if parameters is not None:
             new.parameters = parameters
