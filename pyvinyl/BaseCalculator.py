@@ -1,6 +1,6 @@
 """
-:module BaseCalculator: Module hosting the BaseCalculator and BaseParameters
-abstract classes.
+:module BaseCalculator: Module hosting the BaseCalculator and Parameters classes.
+
 """
 
 
@@ -25,31 +25,35 @@ abstract classes.
 #                                                                                  #
 ####################################################################################
 
-from pyvinyl.AbstractBaseClass import AbstractBaseClass
 from abc import abstractmethod
-import copy
-from tempfile import mkstemp
-import os
-import dill
+from jsons import JsonSerializable
 from numbers import Number
 from numpy import ndarray
+from pyvinyl.AbstractBaseClass import AbstractBaseClass
+from tempfile import mkstemp
+import copy
+import dill
+import h5py
 import json, jsons
-from jsons import JsonSerializable
-
 import logging
+import numpy
+import os
+
 logging.basicConfig(format='%(asctime)s %(levelname)s:%(message)s', level=logging.WARNING)
        
 
-class BaseParameters(JsonSerializable, AbstractBaseClass):
-    """
-    :class BaseParameters: Base class to encapsulate all parametrizations of
-    Calculators.
+class Parameters(JsonSerializable, AbstractBaseClass):
     """
 
-    @abstractmethod
+    :class Parameters: Base class to encapsulate all parametrizations of Calculators.
+
+    """
+
     def __init__(self, **kwargs):
         """
+
         :param kwargs: (key, value) pairs of parameters.
+
         """
 
         # Update parameters with additionaly given arguments.
@@ -57,10 +61,12 @@ class BaseParameters(JsonSerializable, AbstractBaseClass):
 
     def __call__(self, **kwargs):
         """ The copy constructor
+
         :param kwargs: key-value pairs of parameters to change in the new
         instance.
 
         :return: A new parameters instance with optionally changed parameters.
+
         """
 
         new = copy.deepcopy(self)
@@ -73,17 +79,26 @@ class BaseParameters(JsonSerializable, AbstractBaseClass):
         return new
     
     @classmethod
-    def from_json(self, fname:str, **kwargs):
-        """ Initialize an instance from a json file. """
+    def from_json(self, fname:str):
+        """ 
+        Initialize an instance from a json file. 
+        
+        :param fname: The filename (path) of the json file.
+        :type  fname: str
+
+        """
         with open(fname, 'r') as fp:
             instance = self.load(json.load(fp))
         
         return instance
 
-    def to_json(self, fname : str):
-        """ Save this parameters class to a human readable json file.
+    def to_json(self, fname:str):
+        """ 
+        Save this parameters class to a human readable json file.
+
         :param fname: Write to this file.
         :type  fname: str
+
         """
 
         with open(fname, 'w') as fp:
@@ -91,23 +106,64 @@ class BaseParameters(JsonSerializable, AbstractBaseClass):
 
 class BaseCalculator(AbstractBaseClass):
     """
+
     :class BaseCalculator: Base class of all calculators.
+    
+    This class is provides the pyvinyl API. It defines all methods 
+    through which a user interacts with the simulation backengines.
+
+    This class is to be used as a base class for all calculators that implement
+    a special simulation module, such as a photon diffraction calculator. Such a
+    specialized Calculator than has the same interface to the simulation
+    backengine as all other ViNyL Calculators.
+
     """
 
     @abstractmethod
     def __init__(self, parameters=None, dumpfile=None, **kwargs):
         """
-        :param parameters: The parameters for this calculator.
-        :type  parameters: BaseParameters
         
-        :param dumpfile: If given, load a previously dumped (aka pickled)
-        calculator. If both 'parameters' and 'dumpfile' are given, the dumpfile
-        is loaded first and parameters are overwritten. 
+        :param parameters: The parameters for this calculator.
+        :type  parameters: Parameters
+        
+        :param dumpfile: If given, load a previously dumped (aka pickled) calculator.
 
-        :param kwargs: (key, value) pairs of further arguments to the
-        calculator, e.g input_path, output_path.
+        :param kwargs: (key, value) pairs of further arguments to the calculator, e.g input_path, output_path.
+
+        If both 'parameters' and 'dumpfile' are given, the dumpfile is loaded
+        first. Passing a parameters object may be used to update some
+        parameters.
+
+        Example:
+        ```
+        # Define a specialized calculator.
+        class MyCalculator(BaseCalculator):
+            
+            def __init__(self, parameters=None, dumpfile=None, **kwargs):
+                super()__init__(parameters, dumpfile, **kwargs)
+
+            def backengine(self):
+                os.system("my_simulation_backengine_call")
+
+            def saveH5(self):
+                # Format output into openpmd hdf5 format.
+
+        class MyParameters(Parameters):
+            pass
+
+        my_calculator = MyCalculator(my_parameters)
+
+        my_calculator.backengine()
+
+        my_calculator.saveH5("my_sim_output.h5")
+        my_calculater.dump("my_calculator.dill")
+        ```
+
         """
         
+        # Set datae
+        self.__data = None
+
         if parameters is None and dumpfile is None:
             raise AttributeError("At least one of 'parameters' or 'dumpfile' must be given.")
 
@@ -120,18 +176,17 @@ class BaseCalculator(AbstractBaseClass):
         if "output_path" in kwargs:
             self.output_path = kwargs["output_path"]
         
-        # Set datae
-        self.__data = None
 
     def __call__(self, parameters=None, **kwargs):
         """ The copy constructor
-        :param parameters: The parameters for the new calculator.
-        :type  parameters: BaseParameters
 
-        :param kwargs: key-value pairs of parameters to change in the new
-        instance.
+        :param parameters: The parameters for the new calculator.
+        :type  parameters: Parameters
+
+        :param kwargs: key-value pairs of parameters to change in the new instance.
 
         :return: A new parameters instance with optionally changed parameters.
+
         """
 
         new = copy.deepcopy(self)
@@ -145,7 +200,10 @@ class BaseCalculator(AbstractBaseClass):
     
     def __load_from_dump(self, dumpfile):
         """ """
-        """ Load a dill dump and initialize self's internals."""
+        """ 
+        Load a dill dump and initialize self's internals.
+        
+        """
 
         with open(dumpfile, 'rb') as fhandle:
             try:
@@ -166,8 +224,8 @@ class BaseCalculator(AbstractBaseClass):
     @parameters.setter
     def parameters(self, val):
 
-        if not isinstance(val, (type(None), BaseParameters)):
-            raise TypeError("""Passed argument 'parameters' has wrong type. Expected BaseParameters, found {}.""".format(type(val)))
+        if not isinstance(val, (type(None), Parameters)):
+            raise TypeError("""Passed argument 'parameters' has wrong type. Expected Parameters, found {}.""".format(type(val)))
 
         self.__parameters = val
 
@@ -175,7 +233,7 @@ class BaseCalculator(AbstractBaseClass):
         """
         Dump class instance to file.
 
-        :param fname: Path to file to dump.
+        :param fname: Filename (path) of the file to write.
 
         """
 
@@ -200,8 +258,7 @@ class BaseCalculator(AbstractBaseClass):
         :param fname: The filename (path) of the file to write the data to.
         :type  fname: str
 
-        :param openpmd: Flag that controls whether the data is to be written in
-        according to the openpmd metadata standard. Default is True.
+        :param openpmd: Flag that controls whether the data is to be written in according to the openpmd metadata standard. Default is True.
 
         """
 
@@ -233,7 +290,9 @@ class BaseCalculator(AbstractBaseClass):
     def _run(self):
         """
         Method to do computations. By default starts backengine.
+
         :return: status code.
+
         """
         result=self.backengine()
 
@@ -244,7 +303,7 @@ class BaseCalculator(AbstractBaseClass):
 
 # Mocks for testing. Have to be here to work around bug in dill that does not
 # like classes to be defined outside of __main__.
-class SpecializedParameters(BaseParameters):
+class SpecializedParameters(Parameters):
 
     def __init__(
             self, 
@@ -265,10 +324,16 @@ class SpecializedCalculator(BaseCalculator):
         super().__init__(parameters, dumpfile, **kwargs)
 
     def backengine(self):
-        pass
+        self._BaseCalculator__data = numpy.random.normal(loc=self.parameters.photon_energy,
+                scale=0.001*self.parameters.photon_energy,
+                size=(100,)
+                )
+            
+        return 0
 
-    def saveH5(self, fname, openpmd=True):
-        pass
-
-
+    def saveH5(self, openpmd=False):
+        with h5py.File(self.output_path, "w") as h5:
+            ds = h5.create_dataset("/data", data=self.data)    
+            
+            h5.close()
 #This project has received funding from the European Union's Horizon 2020 research and innovation programme under grant agreement No. 823852.

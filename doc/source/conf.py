@@ -14,7 +14,8 @@
 #
 import os
 import sys
-sys.path.insert(0, os.path.abspath('../../pyviniyl'))
+#sys.path.insert(0, os.path.abspath('../../pyviniyl'))
+import pyvinyl
 
 
 # -- Project information -----------------------------------------------------
@@ -88,6 +89,7 @@ html_theme = 'alabaster'
 # documentation.
 #
 # html_theme_options = {}
+
 
 # Add any paths that contain custom static files (such as style sheets) here,
 # relative to this directory. They are copied after the builtin static files,
@@ -181,6 +183,8 @@ epub_exclude_files = ['search.html']
 
 
 # -- Extension configuration -------------------------------------------------
+autoclass_content = "both"
+autodoc_default_flags = ["members", "show-inheritance"]
 
 # -- Options for intersphinx extension ---------------------------------------
 
