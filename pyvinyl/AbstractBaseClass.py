@@ -1,5 +1,5 @@
 """
-:module AbstractBaseClass: Module hosting the AbstractBaseClass and BaseParameters
+:module AbstractBaseClass: Module hosting the AbstractBaseClass and Parameters
 abstract classes.
 """
 

@@ -1,7 +1,7 @@
 import unittest
 
 from pyvinyl.BeamlinePropagator import BeamlinePropagator, BeamlinePropagatorParameters
-from pyvinyl.BaseCalculator import BaseCalculator, BaseParameters
+from pyvinyl.BaseCalculator import BaseCalculator, Parameters
 
 
 class BeamlinePropagatorParametersTest(unittest.TestCase):
@@ -40,7 +40,7 @@ class BeamlinePropagatorParametersTest(unittest.TestCase):
 
         # Test provenance.
         self.assertIsInstance(parameters, BeamlinePropagatorParameters)
-        self.assertIsInstance(parameters, BaseParameters)
+        self.assertIsInstance(parameters, Parameters)
 
 class BeamlinePropagatorTest(unittest.TestCase):
     """
