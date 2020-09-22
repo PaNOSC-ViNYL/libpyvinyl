@@ -4,8 +4,7 @@ import json
 import numpy
 from jsons import JsonSerializable
 
-from pyvinyl.BaseCalculator import BaseCalculator, Parameters
-from pyvinyl.BaseCalculator import SpecializedParameters, SpecializedCalculator
+from pyvinyl.BaseCalculator import BaseCalculator, Parameters, SpecializedParameters, SpecializedCalculator
 from pyvinyl.AbstractBaseClass import AbstractBaseClass
 
 import logging
@@ -115,6 +114,46 @@ class BaseCalculatorTest(unittest.TestCase):
         self.assertTrue(hasattr(calculator, 'saveH5'))
         self.assertTrue(hasattr(calculator, 'data'))
         self.assertTrue(hasattr(SpecializedCalculator, 'run_from_cli'))
+
+    def test_derived_class(self):
+        """ Test that a derived class is functional. """
+        from RandomImageCalculator import RandomImageCalculator
+
+        parameters = Parameters(photon_energy=6e3, pulse_energy=1.0e-6, grid_size_x=128, grid_size_y=128)
+
+        ### Setup the calculator
+        calculator  = RandomImageCalculator(parameters, output_path="out.h5")
+
+        ### Run the backengine
+        self.assertEqual(calculator.backengine(), 0)
+
+        ### Look at the data and store as hdf5
+        self.assertSequenceEqual(calculator.data.shape, ((128, 128)))
+        
+        # Save as h5.
+        calculator.saveH5(calculator.output_path)
+        self.assertIn(calculator.output_path, os.listdir())
+
+        ### Save the parameters to a human readable json file.
+        parameters.to_json("my_parameters.json")
+        self.assertIn('my_parameters.json', os.listdir())
+
+        ### Save calculator to binary dump.
+        dumpfile = calculator.dump()
+        self.assertIn(os.path.basename(dumpfile), os.listdir())
+
+        ### Load back parameters
+        new_parameters = Parameters.from_json("my_parameters.json")
+        self.assertEqual(new_parameters.photon_energy, calculator.parameters.photon_energy)
+
+        reloaded_calculator = SpecializedCalculator(dumpfile=dumpfile)
+        reloaded_calculator.data
+
+        self.assertAlmostEqual(numpy.linalg.norm(reloaded_calculator.data - calculator.data), 0.0)
+
+        reloaded_calculator.parameters.photon_energy
+        self.assertEqual(reloaded_calculator.parameters.photon_energy, calculator.parameters.photon_energy)
+
 
 class ParametersTest(unittest.TestCase):
     """

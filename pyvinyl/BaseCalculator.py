@@ -161,7 +161,7 @@ class BaseCalculator(AbstractBaseClass):
 
         """
         
-        # Set datae
+        # Set data
         self.__data = None
 
         if parameters is None and dumpfile is None:
@@ -300,6 +300,17 @@ class BaseCalculator(AbstractBaseClass):
             result=0
 
         return result
+
+    def _set_data(self, data):
+        """ """
+        """ Private method to store the data on the object. 
+
+        :param data: The data to store.
+        
+        """
+
+        self.__data = data
+
 
 # Mocks for testing. Have to be here to work around bug in dill that does not
 # like classes to be defined outside of __main__.
