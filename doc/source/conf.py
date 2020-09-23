@@ -15,12 +15,12 @@
 import os
 import sys
 #sys.path.insert(0, os.path.abspath('../../pyviniyl'))
-import pyvinyl
+import libpyvinyl
 
 
 # -- Project information -----------------------------------------------------
 
-project = 'pyvinyl'
+project = 'libpyvinyl'
 copyright = '2020, Carsten Fortmann-Grote, Mads Bertelsen, Juncheng E'
 author = 'Carsten Fortmann-Grote, Mads Bertelsen, Juncheng E'
 
@@ -110,7 +110,7 @@ html_static_path = ['_static']
 # -- Options for HTMLHelp output ---------------------------------------------
 
 # Output file base name for HTML help builder.
-htmlhelp_basename = 'pyvinyldoc'
+htmlhelp_basename = 'libpyvinyldoc'
 
 
 # -- Options for LaTeX output ------------------------------------------------
@@ -137,7 +137,7 @@ latex_elements = {
 # (source start file, target name, title,
 #  author, documentclass [howto, manual, or own class]).
 latex_documents = [
-    (master_doc, 'pyvinyl.tex', 'pyvinyl Documentation',
+    (master_doc, 'libpyvinyl.tex', 'libpyvinyl Documentation',
      'Carsten Fortmann-Grote, Mads Bertelsen, Juncheng E', 'manual'),
 ]
 
@@ -147,7 +147,7 @@ latex_documents = [
 # One entry per manual page. List of tuples
 # (source start file, name, description, authors, manual section).
 man_pages = [
-    (master_doc, 'pyvinyl', 'pyvinyl Documentation',
+    (master_doc, 'libpyvinyl', 'libpyvinyl Documentation',
      [author], 1)
 ]
 
@@ -158,8 +158,8 @@ man_pages = [
 # (source start file, target name, title, author,
 #  dir menu entry, description, category)
 texinfo_documents = [
-    (master_doc, 'pyvinyl', 'pyvinyl Documentation',
-     author, 'pyvinyl', 'One line description of project.',
+    (master_doc, 'libpyvinyl', 'libpyvinyl Documentation',
+     author, 'libpyvinyl', 'One line description of project.',
      'Miscellaneous'),
 ]
 
