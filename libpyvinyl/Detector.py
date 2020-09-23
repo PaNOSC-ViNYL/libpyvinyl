@@ -6,7 +6,7 @@ abstract classes.
 
 ####################################################################################
 #                                                                                  #
-# This file is part of pyvinyl - The APIs for Virtual Neutron and x-raY            #
+# This file is part of libpyvinyl - The APIs for Virtual Neutron and x-raY            #
 # Laboratory.                                                                      #
 #                                                                                  #
 # Copyright (C) 2020  Carsten Fortmann-Grote                                       #
@@ -25,9 +25,9 @@ abstract classes.
 #                                                                                  #
 ####################################################################################
 
-from pyvinyl.BaseCalculator import BaseCalculator, BaseParameters
+from libpyvinyl.BaseCalculator import BaseCalculator, Parameters
 
-class DetectorParameters(BaseParameters):
+class DetectorParameters(Parameters):
     def __init__(self, **kwargs):
         
         super().__init__(**kwargs)

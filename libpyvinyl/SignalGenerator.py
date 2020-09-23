@@ -1,12 +1,12 @@
 """
-:module RadiationSampleInteractor: Module hosting the RadiationSampleInteractor and RadiationSampleInteractorParameters
+:module SignalGenerator: Module hosting the SignalGenerator and SignalGeneratorParameters
 abstract classes.
 """
 
 
 ####################################################################################
 #                                                                                  #
-# This file is part of pyvinyl - The APIs for Virtual Neutron and x-raY            #
+# This file is part of libpyvinyl - The APIs for Virtual Neutron and x-raY            #
 # Laboratory.                                                                      #
 #                                                                                  #
 # Copyright (C) 2020  Carsten Fortmann-Grote                                       #
@@ -25,16 +25,15 @@ abstract classes.
 #                                                                                  #
 ####################################################################################
 
-from pyvinyl.BaseCalculator import BaseCalculator, BaseParameters
+from libpyvinyl.BaseCalculator import BaseCalculator, Parameters
 
-class RadiationSampleInteractorParameters(BaseParameters):
+class SignalGeneratorParameters(Parameters):
     def __init__(self, **kwargs):
         
         super().__init__(**kwargs)
 
 
-
-class RadiationSampleInteractor(BaseCalculator):
+class SignalGenerator(BaseCalculator):
     def __init__(self, parameters=None, dumpfile=None, **kwargs):
         
         super().__init__(parameters, dumpfile, **kwargs)

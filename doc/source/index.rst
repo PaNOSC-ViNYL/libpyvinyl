@@ -11,6 +11,8 @@ Welcome to pyvinyl's documentation!
    :caption: Contents:
 
 
+.. .. include:: include/introduction.rst
+.. include:: include/refman.rst
 
 Indices and tables
 ==================

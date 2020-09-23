@@ -4,9 +4,8 @@ import json
 import numpy
 from jsons import JsonSerializable
 
-from pyvinyl.BaseCalculator import BaseCalculator, BaseParameters
-from pyvinyl.BaseCalculator import SpecializedParameters, SpecializedCalculator
-from pyvinyl.AbstractBaseClass import AbstractBaseClass
+from libpyvinyl.BaseCalculator import BaseCalculator, Parameters, SpecializedParameters, SpecializedCalculator
+from libpyvinyl.AbstractBaseClass import AbstractBaseClass
 
 import logging
 logging.basicConfig(format='%(asctime)s %(levelname)s:%(message)s', level=logging.DEBUG)
@@ -84,7 +83,10 @@ class BaseCalculatorTest(unittest.TestCase):
     
     def test_resurrect_from_dump(self):
         """ Test loading from dumpfile. """
+
         calculator = self.__default_calculator
+
+        calculator.backengine()
 
         # dump
         dump = calculator.dump()
@@ -96,7 +98,10 @@ class BaseCalculatorTest(unittest.TestCase):
         self.assertIsInstance(calculator, SpecializedCalculator)
 
         self.assertEqual(calculator.parameters.photon_energy,
-                self.__default_parameters.photon_energy)
+                         self.__default_parameters.photon_energy
+                         )
+
+        self.assertIsNotNone(calculator.data)
 
     def test_attributes(self):
         """ Test that all required attributes are present. """
@@ -110,7 +115,47 @@ class BaseCalculatorTest(unittest.TestCase):
         self.assertTrue(hasattr(calculator, 'data'))
         self.assertTrue(hasattr(SpecializedCalculator, 'run_from_cli'))
 
-class BaseParametersTest(unittest.TestCase):
+    def test_derived_class(self):
+        """ Test that a derived class is functional. """
+        from RandomImageCalculator import RandomImageCalculator
+
+        parameters = Parameters(photon_energy=6e3, pulse_energy=1.0e-6, grid_size_x=128, grid_size_y=128)
+
+        ### Setup the calculator
+        calculator  = RandomImageCalculator(parameters, output_path="out.h5")
+
+        ### Run the backengine
+        self.assertEqual(calculator.backengine(), 0)
+
+        ### Look at the data and store as hdf5
+        self.assertSequenceEqual(calculator.data.shape, ((128, 128)))
+        
+        # Save as h5.
+        calculator.saveH5(calculator.output_path)
+        self.assertIn(calculator.output_path, os.listdir())
+
+        ### Save the parameters to a human readable json file.
+        parameters.to_json("my_parameters.json")
+        self.assertIn('my_parameters.json', os.listdir())
+
+        ### Save calculator to binary dump.
+        dumpfile = calculator.dump()
+        self.assertIn(os.path.basename(dumpfile), os.listdir())
+
+        ### Load back parameters
+        new_parameters = Parameters.from_json("my_parameters.json")
+        self.assertEqual(new_parameters.photon_energy, calculator.parameters.photon_energy)
+
+        reloaded_calculator = SpecializedCalculator(dumpfile=dumpfile)
+        reloaded_calculator.data
+
+        self.assertAlmostEqual(numpy.linalg.norm(reloaded_calculator.data - calculator.data), 0.0)
+
+        reloaded_calculator.parameters.photon_energy
+        self.assertEqual(reloaded_calculator.parameters.photon_energy, calculator.parameters.photon_energy)
+
+
+class ParametersTest(unittest.TestCase):
     """
     Test class for the BaseCalculator class.
     """
@@ -139,11 +184,6 @@ class BaseParametersTest(unittest.TestCase):
         for d in self.__dirs_to_remove:
             if os.path.isdir(d): shutil.rmtree(d)
 
-    def test_base_class_constructor_raises(self):
-        """ Test that we cannot construct instances of the base class. """
-
-        self.assertRaises(TypeError, BaseParameters)
-
     def test_default_construction(self):
         """ Testing the default construction of the class. """
 
@@ -155,7 +195,7 @@ class BaseParametersTest(unittest.TestCase):
                 )
 
         self.assertIsInstance(parameters, SpecializedParameters)
-        self.assertIsInstance(parameters, BaseParameters)
+        self.assertIsInstance(parameters, Parameters)
         self.assertIsInstance(parameters, JsonSerializable)
         self.assertIsInstance(parameters, AbstractBaseClass)
 
@@ -167,7 +207,7 @@ class BaseParametersTest(unittest.TestCase):
         new_parameters = parameters(photon_energy=10.00)
 
         self.assertIsInstance(new_parameters, SpecializedParameters)
-        self.assertIsInstance(new_parameters, BaseParameters)
+        self.assertIsInstance(new_parameters, Parameters)
         self.assertIsInstance(new_parameters, AbstractBaseClass)
         self.assertEqual(new_parameters.photon_energy, 10.00)
         self.assertEqual(new_parameters.pulse_energy, parameters.pulse_energy)
@@ -202,7 +242,7 @@ class BaseParametersTest(unittest.TestCase):
     def test_serialize_list(self):
         """ Test serialization of parameters. """
         # Define  parameters with numpy array as an argument.
-        class ListParameters(BaseParameters):
+        class ListParameters(Parameters):
             def __init__(self, 
                     array_par:list,
                     scalar_par:float,
@@ -249,7 +289,7 @@ class BaseParametersTest(unittest.TestCase):
         parameters. """
 
         # Define nested parameters.
-        class OuterParameters(BaseParameters):
+        class OuterParameters(Parameters):
             def __init__(self, 
                     inner_parameters:SpecializedParameters,
                     **kwargs,

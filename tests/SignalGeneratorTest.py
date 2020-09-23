@@ -1,7 +1,7 @@
 import unittest
 
-from pyvinyl.SignalGenerator import SignalGenerator, SignalGeneratorParameters
-from pyvinyl.BaseCalculator import BaseCalculator, BaseParameters
+from libpyvinyl.SignalGenerator import SignalGenerator, SignalGeneratorParameters
+from libpyvinyl.BaseCalculator import BaseCalculator, Parameters
 
 
 class SignalGeneratorTest(unittest.TestCase):
