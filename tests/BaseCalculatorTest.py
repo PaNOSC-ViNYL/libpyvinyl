@@ -4,8 +4,8 @@ import json
 import numpy
 from jsons import JsonSerializable
 
-from pyvinyl.BaseCalculator import BaseCalculator, Parameters, SpecializedParameters, SpecializedCalculator
-from pyvinyl.AbstractBaseClass import AbstractBaseClass
+from libpyvinyl.BaseCalculator import BaseCalculator, Parameters, SpecializedParameters, SpecializedCalculator
+from libpyvinyl.AbstractBaseClass import AbstractBaseClass
 
 import logging
 logging.basicConfig(format='%(asctime)s %(levelname)s:%(message)s', level=logging.DEBUG)

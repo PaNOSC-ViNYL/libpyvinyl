@@ -6,7 +6,7 @@
 
 ####################################################################################
 #                                                                                  #
-# This file is part of pyvinyl - The APIs for Virtual Neutron and x-raY            #
+# This file is part of libpyvinyl - The APIs for Virtual Neutron and x-raY            #
 # Laboratory.                                                                      #
 #                                                                                  #
 # Copyright (C) 2020  Carsten Fortmann-Grote                                       #
@@ -29,7 +29,7 @@ from abc import abstractmethod
 from jsons import JsonSerializable
 from numbers import Number
 from numpy import ndarray
-from pyvinyl.AbstractBaseClass import AbstractBaseClass
+from libpyvinyl.AbstractBaseClass import AbstractBaseClass
 from tempfile import mkstemp
 import copy
 import dill
@@ -109,7 +109,7 @@ class BaseCalculator(AbstractBaseClass):
 
     :class BaseCalculator: Base class of all calculators.
     
-    This class is provides the pyvinyl API. It defines all methods 
+    This class is provides the libpyvinyl API. It defines all methods 
     through which a user interacts with the simulation backengines.
 
     This class is to be used as a base class for all calculators that implement

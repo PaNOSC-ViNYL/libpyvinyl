@@ -1,7 +1,7 @@
 import unittest
 
-from pyvinyl.BeamlinePropagator import BeamlinePropagator, BeamlinePropagatorParameters
-from pyvinyl.BaseCalculator import BaseCalculator, Parameters
+from libpyvinyl.BeamlinePropagator import BeamlinePropagator, BeamlinePropagatorParameters
+from libpyvinyl.BaseCalculator import BaseCalculator, Parameters
 
 
 class BeamlinePropagatorParametersTest(unittest.TestCase):

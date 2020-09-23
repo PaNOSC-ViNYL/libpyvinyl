@@ -1,12 +1,12 @@
 """
-:module BeamlinePropagator: Module hosting the BeamlinePropagator and BeamlinePropagatorParameters
+:module Detector: Module hosting the Detector and DetectorParameters
 abstract classes.
 """
 
 
 ####################################################################################
 #                                                                                  #
-# This file is part of pyvinyl - The APIs for Virtual Neutron and x-raY            #
+# This file is part of libpyvinyl - The APIs for Virtual Neutron and x-raY            #
 # Laboratory.                                                                      #
 #                                                                                  #
 # Copyright (C) 2020  Carsten Fortmann-Grote                                       #
@@ -25,15 +25,15 @@ abstract classes.
 #                                                                                  #
 ####################################################################################
 
-from pyvinyl.BaseCalculator import BaseCalculator, Parameters
+from libpyvinyl.BaseCalculator import BaseCalculator, Parameters
 
-class BeamlinePropagatorParameters(Parameters):
+class DetectorParameters(Parameters):
     def __init__(self, **kwargs):
         
         super().__init__(**kwargs)
 
 
-class BeamlinePropagator(BaseCalculator):
+class Detector(BaseCalculator):
     def __init__(self, parameters=None, dumpfile=None, **kwargs):
         
         super().__init__(parameters, dumpfile, **kwargs)

@@ -1,7 +1,7 @@
 import unittest
 
-from pyvinyl.RadiationSampleInteractor import RadiationSampleInteractor, RadiationSampleInteractorParameters
-from pyvinyl.BaseCalculator import BaseCalculator, Parameters
+from libpyvinyl.RadiationSampleInteractor import RadiationSampleInteractor, RadiationSampleInteractorParameters
+from libpyvinyl.BaseCalculator import BaseCalculator, Parameters
 
 
 class RadiationSampleInteractorTest(unittest.TestCase):
