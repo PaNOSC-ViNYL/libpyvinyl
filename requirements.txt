@@ -3,3 +3,4 @@ dill
 numpy
 scipy
 jsons
+h5py
