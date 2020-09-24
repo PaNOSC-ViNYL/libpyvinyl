@@ -23,7 +23,7 @@ The anticipated use is to inherit specialised `Calculators` from `BaseCalculator
 implement the core functionality in the derived class. In particular, this is required
 for the methods responsible to launch a simulation (`run()`) .
 
-As an example, we demonstrate in an [accompanying notebook](doc/source/include/notebooks/example-01.ipynb)
+As an example, we demonstrate in an [accompanying notebook](https://github.com/PaNOSC-ViNYL/libpyninyl/doc/source/include/notebooks/example-01.ipynb)
 how to declare a derived `Calculator` and implement a `backengine` method. The example then
 shows how to run the simulation, store the results in a `hdf5` file, snapshot the simulation 
 and reload the simulation into memory.

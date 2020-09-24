@@ -10,8 +10,10 @@ Welcome to libpyvinyl's documentation!
    :maxdepth: 2
    :caption: Contents:
 
+   Introduction <include/README.md>
    Example <include/notebooks/example-01>
    Reference Manual <include/refman>
+
 
 Indices and tables
 ==================
