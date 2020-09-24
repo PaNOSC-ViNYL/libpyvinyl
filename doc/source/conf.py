@@ -15,7 +15,7 @@
 import os
 import sys
 
-sys.path.insert(0,'../../libpyvinyl')
+sys.path.insert(0,'../libpyvinyl')
 import libpyvinyl
 import sphinx_rtd_theme
 
