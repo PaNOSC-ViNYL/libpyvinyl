@@ -6,7 +6,7 @@ from jsons import JsonSerializable
 
 from libpyvinyl.BaseCalculator import BaseCalculator, Parameters, SpecializedParameters, SpecializedCalculator
 from libpyvinyl.AbstractBaseClass import AbstractBaseClass
-from .RandomImageCalculator import RandomImageCalculator
+from RandomImageCalculator import RandomImageCalculator
 
 import logging
 logging.basicConfig(format='%(asctime)s %(levelname)s:%(message)s', level=logging.DEBUG)
