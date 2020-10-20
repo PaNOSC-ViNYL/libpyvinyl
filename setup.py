@@ -12,7 +12,7 @@ requirements = ["pint",
 setup(
   name='libpyvinyl',
   packages=['libpyvinyl'],
-  version='0.0.1',
+  version='0.0.2',
   license='LGPLv3',
   description='The python API for photon and neutron simulation codes in the Photon and Neutron Open Science Cloud (PaNOSC).',
   author='Carsten Fortmann-Grote',
