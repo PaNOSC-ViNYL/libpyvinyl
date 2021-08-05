@@ -1,7 +1,8 @@
 import math
+from libpyvinyl.AbstractBaseClass import AbstractBaseClass
 
 
-class Parameter:
+class Parameter(AbstractBaseClass):
     """
     Description of a single parameter
     """

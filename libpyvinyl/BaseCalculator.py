@@ -26,6 +26,7 @@
 
 from abc import abstractmethod
 from libpyvinyl.AbstractBaseClass import AbstractBaseClass
+from libpyvinyl.Parameters import Parameters
 from tempfile import mkstemp
 import copy
 import dill
@@ -34,7 +35,6 @@ import sys
 import logging
 import numpy
 import os
-from .Parameters import Parameters
 
 logging.basicConfig(format='%(asctime)s %(levelname)s:%(message)s',
                     level=logging.WARNING)
@@ -261,7 +261,7 @@ class SpecializedCalculator(BaseCalculator):
         if not isinstance(self.parameters, Parameters):
             self.parameters = Parameters()
         self.parameters.new_parameter("photon_energy",
-                                      unit="keV",
+                                      unit="eV",
                                       comment="Photon energy")
         self.parameters['photon_energy'].set_value(photon_energy)
 
@@ -272,8 +272,8 @@ class SpecializedCalculator(BaseCalculator):
 
     def backengine(self):
         self._BaseCalculator__data = numpy.random.normal(
-            loc=self.parameters['photon_energy'],
-            scale=0.001 * self.parameters['photon_energy'],
+            loc=self.parameters['photon_energy'].value,
+            scale=0.001 * self.parameters['photon_energy'].value,
             size=(100, ))
 
         return 0

@@ -1,6 +1,7 @@
 import unittest
 import os
 import tempfile
+import json
 
 from libpyvinyl.Parameters import Parameter
 from libpyvinyl.Parameters import Parameters
@@ -105,8 +106,8 @@ class Test_Parameters(unittest.TestCase):
         parameters.add(par1)
         parameters.add(par2)
         with tempfile.TemporaryDirectory() as d:
-            # tmp_file = os.path.join(d, 'test.json')
-            tmp_file = 'test.json'
+            tmp_file = os.path.join(d, 'test.json')
+            # tmp_file = 'test.json'
             parameters.to_json(tmp_file)
             params_json = Parameters.from_json(tmp_file)
             self.assertEqual(params_json['test2'].value, 10)
@@ -121,6 +122,7 @@ def source_calculator():
                              unit="eV",
                              comment="Source energy setting")
     parameters["energy"].add_legal_interval(0, 1E6)
+    parameters["energy"].set_value(4000)
 
     parameters.new_parameter("delta_energy",
                              unit="eV",
@@ -174,4 +176,9 @@ class Test_Instruments(unittest.TestCase):
         self.instr_parameters.add("Sample bottom", bottom_sample_pars)
 
     def test_json(self):
-        self.instr_parameters.to_json('instrument.json')
+        with tempfile.TemporaryDirectory() as d:
+            temp_file = os.path.join(d, 'test.json')
+            # temp_file = 'instrument.json'
+            self.instr_parameters.to_json(temp_file)
+            instr_json = ParametersCollection.from_json(temp_file)
+            self.assertEqual(instr_json['Source']['energy'].value, 4000)

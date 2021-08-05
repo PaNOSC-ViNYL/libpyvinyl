@@ -3,27 +3,43 @@ import os
 import shutil
 import numpy
 from jsons import JsonSerializable
+import copy
+import json
 
-from libpyvinyl.BaseCalculator import BaseCalculator, Parameters, SpecializedParameters, SpecializedCalculator
+from libpyvinyl.BaseCalculator import BaseCalculator, SpecializedCalculator
+from libpyvinyl.Parameters import Parameters, ParametersCollection
 from libpyvinyl.AbstractBaseClass import AbstractBaseClass
 from RandomImageCalculator import RandomImageCalculator
 
 import logging
-logging.basicConfig(format='%(asctime)s %(levelname)s:%(message)s', level=logging.DEBUG)
+
+logging.basicConfig(format='%(asctime)s %(levelname)s:%(message)s',
+                    level=logging.DEBUG)
 
 
 class BaseCalculatorTest(unittest.TestCase):
     """
     Test class for the BaseCalculator class.
     """
-
     @classmethod
     def setUpClass(cls):
         """ Setting up the test class. """
-        cls.__default_parameters = SpecializedParameters(photon_energy=109.98,
-                                                         pulse_energy=32.39)
+        parameters = Parameters()
+        parameters.new_parameter("photon_energy",
+                                 unit="keV",
+                                 comment="Photon energy")
+        parameters['photon_energy'].set_value(109.98)
 
-        cls.__default_calculator = SpecializedCalculator(cls.__default_parameters)
+        parameters.new_parameter("pulse_energy",
+                                 unit="joule",
+                                 comment="Pulse energy")
+        parameters['pulse_energy'].set_value(32.39)
+        cls.__default_parameters = parameters
+        # cls.__default_parameters = SpecializedParameters(photon_energy=109.98,
+        #                                                  pulse_energy=32.39)
+
+        cls.__default_calculator = SpecializedCalculator(
+            cls.__default_parameters)
 
     @classmethod
     def tearDownClass(cls):
@@ -65,27 +81,33 @@ class BaseCalculatorTest(unittest.TestCase):
 
         self.assertRaises(TypeError, SpecializedCalculator, 1)
 
-    def test_copy_construction(self):
+    def test_deep_copy(self):
         """ Test the copy constructor behaves as expected. """
 
-        new_parameters = self.__default_parameters(photon_energy=10.00)
+        new_parameters = copy.deepcopy(self.__default_parameters)
+        new_parameters['photon_energy'].set_value(10.00)
         new_calculator = self.__default_calculator(parameters=new_parameters)
         self.assertIsInstance(new_calculator, SpecializedCalculator)
         self.assertIsInstance(new_calculator, BaseCalculator)
         self.assertIsInstance(new_calculator, AbstractBaseClass)
-        self.assertEqual(new_calculator.parameters.photon_energy, 10.00)
+        self.assertEqual(new_calculator.parameters['photon_energy'].value,
+                         10.00)
 
-        new_calculator_2 = new_calculator(parameters=self.__default_parameters(pulse_energy=34.87))
-        self.assertEqual(new_calculator_2.parameters.photon_energy, 109.98)
-        self.assertEqual(new_calculator_2.parameters.pulse_energy, 34.87)
- 
+        new_parameters = copy.deepcopy(self.__default_parameters)
+        new_parameters['pulse_energy'].set_value(34.87)
+        new_calculator_2 = new_calculator(parameters=new_parameters)
+        self.assertEqual(new_calculator_2.parameters['photon_energy'].value,
+                         109.98)
+        self.assertEqual(new_calculator_2.parameters['pulse_energy'].value,
+                         34.87)
+
     def test_dump(self):
         """ Test dumping to file. """
         calculator = self.__default_calculator
-        
+
         self.__files_to_remove.append(calculator.dump())
         self.__files_to_remove.append(calculator.dump("dump.dill"))
-    
+
     def test_resurrect_from_dump(self):
         """ Test loading from dumpfile. """
 
@@ -102,9 +124,8 @@ class BaseCalculatorTest(unittest.TestCase):
         calculator = SpecializedCalculator(dumpfile=dump)
         self.assertIsInstance(calculator, SpecializedCalculator)
 
-        self.assertEqual(calculator.parameters.photon_energy,
-                         self.__default_parameters.photon_energy
-                         )
+        self.assertEqual(calculator.parameters['photon_energy'].value,
+                         self.__default_parameters['photon_energy'].value)
 
         self.assertIsNotNone(calculator.data)
 
@@ -122,7 +143,21 @@ class BaseCalculatorTest(unittest.TestCase):
 
     def test_derived_class(self):
         """ Test that a derived class is functional. """
-        parameters = Parameters(photon_energy=6e3, pulse_energy=1.0e-6, grid_size_x=128, grid_size_y=128)
+        parameters = Parameters()
+        parameters.new_parameter("photon_energy",
+                                 unit="eV",
+                                 comment="Photon energy")
+        parameters['photon_energy'].set_value(6e3)
+
+        parameters.new_parameter("pulse_energy",
+                                 unit="joule",
+                                 comment="Pulse energy")
+        parameters['pulse_energy'].set_value(1.0e-6)
+
+        parameters.new_parameter("grid_size_x", unit="", comment="grid size x")
+        parameters['grid_size_x'].set_value(128)
+        parameters.new_parameter("grid_size_y", unit="", comment="grid size y")
+        parameters['grid_size_y'].set_value(128)
 
         # Setup the calculator
         calculator = RandomImageCalculator(parameters, output_path="out.h5")
@@ -132,43 +167,58 @@ class BaseCalculatorTest(unittest.TestCase):
 
         # Look at the data and store as hdf5
         self.assertSequenceEqual(calculator.data.shape, (128, 128))
-        
+
         # Save as h5.
         calculator.saveH5(calculator.output_path)
         self.assertIn(calculator.output_path, os.listdir())
+        self.__files_to_remove.append(calculator.output_path)
 
         # Save the parameters to a human readable json file.
         parameters.to_json("my_parameters.json")
         self.assertIn('my_parameters.json', os.listdir())
+        self.__files_to_remove.append("my_parameters.json")
 
         # Save calculator to binary dump.
         dumpfile = calculator.dump()
+        self.__files_to_remove.append(dumpfile)
         self.assertIn(os.path.basename(dumpfile), os.listdir())
 
         # Load back parameters
         new_parameters = Parameters.from_json("my_parameters.json")
-        self.assertEqual(new_parameters.photon_energy, calculator.parameters.photon_energy)
+        self.assertEqual(new_parameters['photon_energy'].value,
+                         calculator.parameters['photon_energy'].value)
 
         reloaded_calculator = SpecializedCalculator(dumpfile=dumpfile)
         reloaded_calculator.data
 
-        self.assertAlmostEqual(numpy.linalg.norm(reloaded_calculator.data - calculator.data), 0.0)
+        self.assertAlmostEqual(
+            numpy.linalg.norm(reloaded_calculator.data - calculator.data), 0.0)
 
-        reloaded_calculator.parameters.photon_energy
-        self.assertEqual(reloaded_calculator.parameters.photon_energy, calculator.parameters.photon_energy)
+        reloaded_calculator.parameters['photon_energy'].value
+        self.assertEqual(reloaded_calculator.parameters['photon_energy'].value,
+                         calculator.parameters['photon_energy'].value)
 
 
 class ParametersTest(unittest.TestCase):
     """
     Test class for the BaseCalculator class.
     """
-
     @classmethod
     def setUpClass(cls):
         """ Setting up the test class. """
-        cls.__default_parameters = SpecializedParameters(photon_energy=109.98,
-                                                         pulse_energy=32.39
-                                                         )
+        parameters = Parameters()
+        parameters.new_parameter("photon_energy",
+                                 unit="keV",
+                                 comment="Photon energy")
+        parameters['photon_energy'].set_value(109.98)
+
+        parameters.new_parameter("pulse_energy",
+                                 unit="joule",
+                                 comment="Pulse energy")
+        parameters['pulse_energy'].set_value(32.39)
+        cls.__default_parameters = parameters
+        # cls.__default_parameters = SpecializedParameters(photon_energy=109.98,
+        #                                                  pulse_energy=32.39)
 
     @classmethod
     def tearDownClass(cls):
@@ -177,7 +227,7 @@ class ParametersTest(unittest.TestCase):
 
     def setUp(self):
         """ Setting up a test. """
-        self.__files_to_remove = []
+        self.__files_to_remove = ['tmp_numpy.json',"tmp_scalar.json","tmp_nested.json"]
         self.__dirs_to_remove = []
 
     def tearDown(self):
@@ -190,151 +240,134 @@ class ParametersTest(unittest.TestCase):
             if os.path.isdir(d):
                 shutil.rmtree(d)
 
-    def test_default_construction(self):
-        """ Testing the default construction of the class. """
-
-        self.assertRaises(TypeError, SpecializedParameters)
-
-        parameters = SpecializedParameters(
-                photon_energy=10.0,
-                pulse_energy=20.0,
-                )
-
-        self.assertIsInstance(parameters, SpecializedParameters)
-        self.assertIsInstance(parameters, Parameters)
-        self.assertIsInstance(parameters, JsonSerializable)
-        self.assertIsInstance(parameters, AbstractBaseClass)
-
     def test_copy_construction(self):
         """ Test the copy constructor behaves as expected. """
 
-        parameters = self.__default_parameters
+        new_parameters = copy.deepcopy(self.__default_parameters)
 
-        new_parameters = parameters(photon_energy=10.00)
+        new_parameters['photon_energy'].set_value(10.00)
 
-        self.assertIsInstance(new_parameters, SpecializedParameters)
         self.assertIsInstance(new_parameters, Parameters)
         self.assertIsInstance(new_parameters, AbstractBaseClass)
-        self.assertEqual(new_parameters.photon_energy, 10.00)
-        self.assertEqual(new_parameters.pulse_energy, parameters.pulse_energy)
-   
+        self.assertEqual(new_parameters['photon_energy'].value, 10.00)
+        self.assertEqual(new_parameters['pulse_energy'].value, self.__default_parameters['pulse_energy'].value)
+
     def test_serialize_scalar(self):
         """ Test serialization of parameters. """
         # Test writing.
         parameters = self.__default_parameters
 
         # Test dumping to json dict.
-        dump = parameters.dump()
+        dump = parameters.to_dict()
         self.assertIsInstance(dump, dict)
-        self.assertEqual(dump['photon_energy'], 109.98)
-        self.assertEqual(dump['pulse_energy'], 32.39)
-        
+        self.assertEqual(dump['photon_energy']['value'], 109.98)
+        self.assertEqual(dump['pulse_energy']['value'], 32.39)
+
         # Test serialization to file.
         parameters.to_json("tmp_scalar.json")
         self.assertIn('tmp_scalar.json',
-               os.listdir( os.path.abspath(os.path.dirname(__file__))))
+                      os.listdir(os.path.abspath(os.path.dirname(__file__))))
 
         # Test loading.
-        new_parameters = SpecializedParameters.from_json('tmp_scalar.json')
-        self.assertIsInstance(new_parameters, SpecializedParameters)
-        self.assertEqual(new_parameters.photon_energy, 109.98)
-        self.assertEqual(dump['pulse_energy'], 32.39)
+        new_parameters = Parameters.from_json('tmp_scalar.json')
+        self.assertIsInstance(new_parameters, Parameters)
+        self.assertEqual(new_parameters['photon_energy'].value, 109.98)
+        self.assertEqual(dump['pulse_energy']['value'], 32.39)
 
         # Update.
-        new_parameters.pulse_energy = 763.43
-        self.assertEqual(new_parameters.photon_energy, 109.98)
-        self.assertEqual(new_parameters.pulse_energy, 763.43)
+        new_parameters['pulse_energy'].set_value(763.43)
+        self.assertEqual(new_parameters['photon_energy'].value, 109.98)
+        self.assertEqual(new_parameters['pulse_energy'].value, 763.43)
 
     def test_serialize_list(self):
         """ Test serialization of parameters. """
-        # Define  parameters with numpy array as an argument.
-        class ListParameters(Parameters):
-            def __init__(self, 
-                    array_par:list,
-                    scalar_par:float,
-                    **kwargs,
-                    ):
 
-                super().__init__(
-                        array_par=array_par,
-                        scalar_par=scalar_par,
-                        **kwargs,
-                        )
+        # Define  parameters with numpy array as an argument.
 
         # Test writing.
-        par=[i*0.2354 for i in range(10)]
+        par = [i * 0.2354 for i in range(10)]
         sc = numpy.random.random()
 
-        parameters = ListParameters(
-                array_par=par,
-                scalar_par=sc,
-                )
+        parameters = Parameters()
+        parameters.new_parameter("array_par")
+        parameters['array_par'].set_value(par)
+        parameters.new_parameter("scalar_par")
+        parameters['scalar_par'].set_value(sc)
 
         # Test dumping to json dict.
-        dump = parameters.dump()
+        dump = parameters.to_dict()
 
         self.assertIsInstance(dump, dict)
-        self.assertSequenceEqual(dump['array_par'], par)
-        self.assertEqual(dump['scalar_par'], sc)
-        
+        self.assertSequenceEqual(dump['array_par']['value'], par)
+        self.assertEqual(dump['scalar_par']['value'], sc)
+
         # Test serialization to file.
-        fname='tmp_numpy.json'
+        fname = 'tmp_numpy.json'
         parameters.to_json(fname)
         self.assertIn(fname,
-               os.listdir( os.path.abspath(os.path.dirname(__file__))))
+                      os.listdir(os.path.abspath(os.path.dirname(__file__))))
 
         # Test loading.
-        new_parameters = ListParameters.from_json(fname)
-        self.assertIsInstance(new_parameters, ListParameters)
-        self.assertIsInstance(new_parameters.array_par, list)
-        self.assertSequenceEqual(new_parameters.array_par, par)
-        self.assertEqual(new_parameters.scalar_par, sc)
+        new_parameters = Parameters.from_json(fname)
+        self.assertIsInstance(new_parameters, Parameters)
+        self.assertIsInstance(new_parameters['array_par'].value, list)
+        self.assertSequenceEqual(new_parameters['array_par'].value, par)
+        self.assertEqual(new_parameters['scalar_par'].value, sc)
 
     def test_serialize_object(self):
         """ Test serialization of parameters in the case of nested object
         parameters. """
 
         # Define nested parameters.
-        class OuterParameters(Parameters):
-            def __init__(self, 
-                    inner_parameters:SpecializedParameters,
-                    **kwargs,
-                    ):
+        outer = ParametersCollection()
+        outer.add("inner_parameters", self.__default_parameters)
 
-                super().__init__(
-                        inner_parameters=inner_parameters,
-                        **kwargs,
-                        )
-
-        inner = self.__default_parameters
-        outer = OuterParameters(inner)
-
-        outer_dump = outer.dump()
+        outer_dump = outer.to_dict()
+        # print(json.dumps(outer_dump, indent=4))
 
         self.assertIsInstance(outer_dump, dict)
 
-        expected_dict = {'inner_parameters': {'photon_energy': 109.98, 'pulse_energy': 32.39}}
+        expected_dict = {
+            "inner_parameters": {
+                "photon_energy": {
+                    "name": "photon_energy",
+                    "unit": "keV",
+                    "comment": "Photon energy",
+                    "value": 109.98,
+                    "legal_intervals": [],
+                    "illegal_intervals": [],
+                    "options": []
+                },
+                "pulse_energy": {
+                    "name": "pulse_energy",
+                    "unit": "joule",
+                    "comment": "Pulse energy",
+                    "value": 32.39,
+                    "legal_intervals": [],
+                    "illegal_intervals": [],
+                    "options": []
+                }
+            }
+        }
 
         self.assertEqual(
-                outer_dump['inner_parameters']['photon_energy'],
-                self.__default_parameters.photon_energy
-                )
+            outer_dump['inner_parameters']['photon_energy']['value'],
+            self.__default_parameters['photon_energy'].value)
         self.assertEqual(
-                outer_dump['inner_parameters']['pulse_energy'],
-                self.__default_parameters.pulse_energy
-                )
+            outer_dump['inner_parameters']['pulse_energy']['value'],
+            self.__default_parameters['pulse_energy'].value)
 
         # Test serialization to file.
-        fname='tmp_nested.json'
+        fname = 'tmp_nested.json'
         outer.to_json(fname)
         self.assertIn(fname,
-               os.listdir( os.path.abspath(os.path.dirname(__file__))))
+                      os.listdir(os.path.abspath(os.path.dirname(__file__))))
 
         # Test loading.
-        new_parameters = OuterParameters.from_json(fname)
-        self.assertIsInstance(new_parameters, OuterParameters)
-        self.assertIsInstance(new_parameters.inner_parameters, SpecializedParameters )
+        new_parameters = ParametersCollection.from_json(fname)
+        self.assertIsInstance(new_parameters, ParametersCollection)
+        self.assertIsInstance(new_parameters['inner_parameters'], Parameters)
+
 
 if __name__ == '__main__':
     unittest.main()
-

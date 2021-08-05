@@ -1,8 +1,9 @@
 import json
+from libpyvinyl.AbstractBaseClass import AbstractBaseClass
 from .Parameter import Parameter
 
 
-class Parameters:
+class Parameters(AbstractBaseClass):
     """
     Collection of parameters related to a single calculator
 
@@ -194,7 +195,7 @@ class MasterParameters(Parameters):
         self.parameters[key].set_value(value)
 
 
-class ParametersCollection:
+class ParametersCollection(AbstractBaseClass):
     """
     Object intended for use as instrument parameters
 
@@ -208,6 +209,35 @@ class ParametersCollection:
         """
         self.parameters_dict = {}
         self.master = MasterParameters(self.parameters_dict)
+
+    @classmethod
+    def from_json(cls, fname: str):
+        """
+        Initialize an instance from a json file.
+
+        :param fname: The filename (path) of the json file.
+        :type  fname: str
+
+        """
+        with open(fname, 'r') as fp:
+            instance = cls.from_dict(json.load(fp))
+
+        return instance
+
+    @classmethod
+    def from_dict(cls, instrument_dict: dict):
+        """
+        Initialize an instance from a dict.
+
+        :param fname: The filename (path) of the json file.
+        :type  fname: str
+
+        """
+        parameters = cls()
+        for key in instrument_dict:
+            parameters.add(key, Parameters.from_dict(instrument_dict[key]))
+
+        return parameters
 
     def to_dict(self):
         params_collect = {}
