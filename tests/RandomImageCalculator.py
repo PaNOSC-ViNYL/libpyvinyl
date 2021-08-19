@@ -14,6 +14,14 @@ class RandomImageCalculator(BaseCalculator):
                          dumpfile=dumpfile,
                          output_path=output_path)
 
+    def setParams(self, grid_size_x: int = 128, grid_size_y: int = 128):
+        if not isinstance(self.parameters, Parameters):
+            self.parameters = Parameters()
+        self.parameters.new_parameter("grid_size_x")
+        self.parameters['grid_size_x'].set_value(grid_size_x)
+        self.parameters.new_parameter("grid_size_y")
+        self.parameters['grid_size_y'].set_value(grid_size_y)
+
     def backengine(self):
         tmpdata = numpy.random.random((self.parameters['grid_size_x'].value,
                                        self.parameters['grid_size_y'].value))

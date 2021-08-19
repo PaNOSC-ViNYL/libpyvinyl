@@ -182,3 +182,6 @@ class Test_Instruments(unittest.TestCase):
             self.instr_parameters.to_json(temp_file)
             instr_json = ParametersCollection.from_json(temp_file)
             self.assertEqual(instr_json['Source']['energy'].value, 4000)
+
+if __name__ == '__main__':
+    unittest.main()
