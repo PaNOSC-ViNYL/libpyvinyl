@@ -1,3 +1,5 @@
+ # Created by Mads Bertelsen and modified by Juncheng E
+
 import json
 from libpyvinyl.AbstractBaseClass import AbstractBaseClass
 from .Parameter import Parameter

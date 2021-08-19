@@ -1,3 +1,5 @@
+# Created by Mads Bertelsen and modified by Juncheng E
+
 import math
 from libpyvinyl.AbstractBaseClass import AbstractBaseClass
 
