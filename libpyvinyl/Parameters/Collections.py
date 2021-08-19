@@ -82,7 +82,7 @@ class Parameters(AbstractBaseClass):
         """
         del self.parameters[key]
 
-    def print_indented(self, indents):
+    def __print_indented(self, indents):
         """
         returns string describing this object, can optionally be indented
         """
@@ -93,7 +93,7 @@ class Parameters(AbstractBaseClass):
         return string
 
     def __repr__(self):
-        return self.print_indented(0)
+        return self.__print_indented(0)
 
     @classmethod
     def from_json(cls, fname: str):
