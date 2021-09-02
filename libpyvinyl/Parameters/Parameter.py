@@ -73,7 +73,11 @@ class Parameter(AbstractBaseClass):
 
     def is_legal(self, value=None):
         """
-        Checks whether or not given or contained value is legal given constraints
+        Checks whether or not given or contained value is legal given constraints.
+
+        Illegal intervals have the highest priority to be checked. Then it will check the
+        legal intervals and options. The overlaps among the constrains will be overridden by
+        the constrain of higher priority.
         """
         if value is None:
             value = self.value
@@ -110,8 +114,9 @@ class Parameter(AbstractBaseClass):
         Print the legal and illegal intervals of this parameter.
         """
         print(self.name)
-        print('legal intervals:', self.legal_intervals)
         print('illegal intervals:', self.illegal_intervals)
+        print('legal intervals:', self.legal_intervals)
+        print('options', self.options)
 
     def clear_legal_intervals(self):
         """
@@ -124,6 +129,12 @@ class Parameter(AbstractBaseClass):
         Clear the illegal intervals of this parameter.
         """
         self.illegal_intervals = []
+
+    def clear_options(self):
+        """
+        Clear the option values of this parameter.
+        """
+        self.options = []
 
     def print_line(self):
         """

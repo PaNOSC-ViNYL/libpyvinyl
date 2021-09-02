@@ -75,6 +75,7 @@ class Test_Parameter(unittest.TestCase):
     def test_print_legal_interval(self):
         par = Parameter("test")
         par.add_legal_interval(3, 4.5)
+        par.add_option(9.8)
         par.print_paramter_constraints()
 
     def test_clear_intervals(self):
@@ -87,7 +88,10 @@ class Test_Parameter(unittest.TestCase):
         self.assertEqual(par.legal_intervals, [])
         par.clear_illegal_intervals()
         self.assertEqual(par.illegal_intervals, [])
-
+        par.add_option(9.7)
+        self.assertEqual(par.options, [9.7])
+        par.clear_options()
+        self.assertEqual(par.options, [])
 
 class Test_Parameters(unittest.TestCase):
     def test_initialize_parameters_from_list(self):
