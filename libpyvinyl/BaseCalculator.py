@@ -55,8 +55,11 @@ class BaseCalculator(AbstractBaseClass):
 
     """
     @abstractmethod
-    def __init__(self, parameters=None, dumpfile=None, **kwargs):
+    def __init__(self, name, parameters=None, dumpfile=None, **kwargs):
         """
+
+        :param name: The name for this calculator.
+        :type  name: str
 
         :param parameters: The parameters for this calculator.
         :type  parameters: Parameters
@@ -96,6 +99,7 @@ class BaseCalculator(AbstractBaseClass):
 
         """
 
+        self.name = name
         # Set data
         self.__data = None
 
@@ -253,9 +257,9 @@ class BaseCalculator(AbstractBaseClass):
 # Mocks for testing. Have to be here to work around bug in dill that does not
 # like classes to be defined outside of __main__.
 class SpecializedCalculator(BaseCalculator):
-    def __init__(self, parameters=None, dumpfile=None, **kwargs):
+    def __init__(self, name, parameters=None, dumpfile=None, **kwargs):
 
-        super().__init__(parameters, dumpfile, **kwargs)
+        super().__init__(name, parameters, dumpfile, **kwargs)
 
     def setParams(self, photon_energy: float = 10, pulse_energy: float = 1e-3):
         if not isinstance(self.parameters, Parameters):
