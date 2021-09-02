@@ -150,10 +150,10 @@ def sample_calculator():
     parameters.new_parameter("height", unit="cm", comment="Sample height")
     parameters["height"].add_legal_interval(0, None)
 
-    parameters.new_parameter("absorption",
+    absporption = parameters.new_parameter("absorption",
                              unit="barns",
                              comment="absorption cross section")
-    parameters["absorption"].add_legal_interval(0, None)
+    absporption.add_legal_interval(0, None)
 
     return parameters
 

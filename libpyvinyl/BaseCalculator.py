@@ -98,12 +98,16 @@ class BaseCalculator(AbstractBaseClass):
 
         # Set data
         self.__data = None
-        self.parameters = parameters
 
+        if parameters is None and dumpfile is None:
+            raise AttributeError(
+                "At least one of 'parameters' or 'dumpfile' must be given.")
 
         if dumpfile is not None:
             self.__load_from_dump(dumpfile)
 
+        if parameters is not None:
+            self.parameters = parameters
 
         if "output_path" in kwargs:
             self.output_path = kwargs["output_path"]
@@ -205,9 +209,6 @@ class BaseCalculator(AbstractBaseClass):
 
     @abstractmethod
     def backengine(self):
-        if self.parameters is None and self.dumpfile is None:
-            raise AttributeError(
-                "At least one of 'parameters' or 'dumpfile' must be given.")
         pass
 
     @classmethod

@@ -65,6 +65,7 @@ class Parameters(AbstractBaseClass):
         """
         new_parameter = Parameter(*args, **kwargs)
         self.add(new_parameter)
+        return new_parameter
 
     def __getitem__(self, key):
         """
