@@ -105,6 +105,26 @@ class Parameter(AbstractBaseClass):
         # Since no options matched the parameter, it is illegal
         return False
 
+    def print_paramter_constraints(self):
+        """
+        Print the legal and illegal intervals of this parameter.
+        """
+        print(self.name)
+        print('legal intervals:', self.legal_intervals)
+        print('illegal intervals:', self.illegal_intervals)
+
+    def clear_legal_intervals(self):
+        """
+        Clear the legal intervals of this parameter.
+        """
+        self.legal_intervals = []
+
+    def clear_illegal_intervals(self):
+        """
+        Clear the illegal intervals of this parameter.
+        """
+        self.illegal_intervals = []
+
     def print_line(self):
         """
         returns string with one line description of parameter
