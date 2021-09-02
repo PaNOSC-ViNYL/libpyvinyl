@@ -151,8 +151,8 @@ def sample_calculator():
     parameters["height"].add_legal_interval(0, None)
 
     absporption = parameters.new_parameter("absorption",
-                             unit="barns",
-                             comment="absorption cross section")
+                                           unit="barns",
+                                           comment="absorption cross section")
     absporption.add_legal_interval(0, None)
 
     return parameters
@@ -175,6 +175,21 @@ class Test_Instruments(unittest.TestCase):
         bottom_sample_pars = sample_calculator()
         self.instr_parameters.add("Sample bottom", bottom_sample_pars)
 
+    def test_link(self):
+        description = "Absorption cross section for both samples"
+        links = {"Sample top": "absorption", "Sample bottom": "absorption"}
+        master_value = 3.4
+        self.instr_parameters.add_master_parameter("absorption",
+                                                   links,
+                                                   unit="barns",
+                                                   comment=description)
+        self.instr_parameters.master["absorption"] = master_value
+        top_value = self.instr_parameters["Sample top"]["absorption"].value
+        bottom_value = self.instr_parameters["Sample bottom"][
+            "absorption"].value
+        self.assertEqual(top_value, master_value)
+        self.assertEqual(bottom_value, master_value)
+
     def test_json(self):
         with tempfile.TemporaryDirectory() as d:
             temp_file = os.path.join(d, 'test.json')
@@ -182,6 +197,7 @@ class Test_Instruments(unittest.TestCase):
             self.instr_parameters.to_json(temp_file)
             instr_json = ParametersCollection.from_json(temp_file)
             self.assertEqual(instr_json['Source']['energy'].value, 4000)
+
 
 if __name__ == '__main__':
     unittest.main()
