@@ -55,7 +55,7 @@ class BaseCalculator(AbstractBaseClass):
 
     """
     @abstractmethod
-    def __init__(self, name, parameters=None, dumpfile=None, **kwargs):
+    def __init__(self, name:str, parameters=None, dumpfile=None, **kwargs):
         """
 
         :param name: The name for this calculator.
@@ -99,19 +99,21 @@ class BaseCalculator(AbstractBaseClass):
 
         """
 
-        self.name = name
+        if isinstance(name, str):
+            self.name = name
+        else:
+            raise TypeError("name should be in str type.")
         # Set data
         self.__data = None
 
-        if parameters is None and dumpfile is None:
-            raise AttributeError(
-                "At least one of 'parameters' or 'dumpfile' must be given.")
+        if isinstance(parameters, (type(None), Parameters)):
+            self.parameters = parameters
+        else:
+            raise TypeError("parameters should be in Parameters type.")
 
+        # Must load after setting paramters to avoid being overrode by empty parameters.
         if dumpfile is not None:
             self.__load_from_dump(dumpfile)
-
-        if parameters is not None:
-            self.parameters = parameters
 
         if "output_path" in kwargs:
             self.output_path = kwargs["output_path"]
