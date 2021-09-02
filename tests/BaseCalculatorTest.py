@@ -25,10 +25,10 @@ class BaseCalculatorTest(unittest.TestCase):
     def setUpClass(cls):
         """ Setting up the test class. """
         parameters = Parameters()
-        parameters.new_parameter("photon_energy",
+        photon_energy = parameters.new_parameter("photon_energy",
                                  unit="keV",
                                  comment="Photon energy")
-        parameters['photon_energy'].set_value(109.98)
+        photon_energy.set_value(109.98)
 
         parameters.new_parameter("pulse_energy",
                                  unit="joule",
