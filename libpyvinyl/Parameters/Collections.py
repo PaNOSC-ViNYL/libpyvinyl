@@ -71,7 +71,10 @@ class Parameters(AbstractBaseClass):
         """
         Gets parameter with given name from internal dict
         """
-        return self.parameters[key]
+        try:
+            return self.parameters[key]
+        except KeyError:
+            raise KeyError("Call parameters by parameters[key], it doesn't support list function.")
 
     def __setitem__(self, key, value):
         """
@@ -85,7 +88,7 @@ class Parameters(AbstractBaseClass):
         """
         del self.parameters[key]
 
-    def __print_indented(self, indents):
+    def print_indented(self, indents):
         """
         returns string describing this object, can optionally be indented
         """
@@ -96,7 +99,7 @@ class Parameters(AbstractBaseClass):
         return string
 
     def __repr__(self):
-        return self.__print_indented(0)
+        return self.print_indented(0)
 
     @classmethod
     def from_json(cls, fname: str):

@@ -35,9 +35,9 @@ class RadiationSampleInteractorParameters(Parameters):
 
 
 class RadiationSampleInteractor(BaseCalculator):
-    def __init__(self, parameters=None, dumpfile=None, **kwargs):
+    def __init__(self,name, parameters=None, dumpfile=None, **kwargs):
         
-        super().__init__(parameters, dumpfile, **kwargs)
+        super().__init__(name, parameters, dumpfile, **kwargs)
 
     def backengine(self):
         pass

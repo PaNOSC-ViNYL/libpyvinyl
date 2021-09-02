@@ -115,6 +115,16 @@ class Test_Parameters(unittest.TestCase):
 
         self.assertEqual(parameters["test"].value, 8)
         self.assertEqual(parameters["test2"].value, 10)
+    
+    def test_print_parameters(self):
+        par1 = Parameter("test")
+        par1.set_value(8)
+        par2 = Parameter("test2", unit="meV")
+        par2.set_value(10)
+        parameters = Parameters()
+        parameters.add(par1)
+        parameters.add(par2)
+        print(parameters)
 
     def test_json(self):
         par1 = Parameter("test")
@@ -209,6 +219,9 @@ class Test_Instruments(unittest.TestCase):
             "absorption"].value
         self.assertEqual(top_value, master_value)
         self.assertEqual(bottom_value, master_value)
+
+    def test_print(self):
+        print(self.instr_parameters)
 
     def test_json(self):
         with tempfile.TemporaryDirectory() as d:

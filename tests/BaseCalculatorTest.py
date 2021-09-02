@@ -38,7 +38,7 @@ class BaseCalculatorTest(unittest.TestCase):
         # cls.__default_parameters = SpecializedParameters(photon_energy=109.98,
         #                                                  pulse_energy=32.39)
 
-        cls.__default_calculator = SpecializedCalculator(
+        cls.__default_calculator = SpecializedCalculator('default',
             cls.__default_parameters)
 
     @classmethod
@@ -73,7 +73,7 @@ class BaseCalculatorTest(unittest.TestCase):
         # Test positional arguments
         # self.assertRaises(AttributeError, SpecializedCalculator)
 
-        calculator = SpecializedCalculator(self.__default_parameters)
+        calculator = SpecializedCalculator('default',self.__default_parameters)
 
         self.assertIsInstance(calculator, SpecializedCalculator)
         self.assertIsInstance(calculator, BaseCalculator)
@@ -121,7 +121,7 @@ class BaseCalculatorTest(unittest.TestCase):
 
         del calculator
 
-        calculator = SpecializedCalculator(dumpfile=dump)
+        calculator = SpecializedCalculator('dump',dumpfile=dump)
         self.assertIsInstance(calculator, SpecializedCalculator)
 
         self.assertEqual(calculator.parameters['photon_energy'].value,
@@ -160,7 +160,7 @@ class BaseCalculatorTest(unittest.TestCase):
         parameters['grid_size_y'].set_value(128)
 
         # Setup the calculator
-        calculator = RandomImageCalculator(parameters, output_path="out.h5")
+        calculator = RandomImageCalculator('ramdom', parameters, output_path="out.h5")
 
         # Run the backengine
         self.assertEqual(calculator.backengine(), 0)
@@ -188,7 +188,7 @@ class BaseCalculatorTest(unittest.TestCase):
         self.assertEqual(new_parameters['photon_energy'].value,
                          calculator.parameters['photon_energy'].value)
 
-        reloaded_calculator = SpecializedCalculator(dumpfile=dumpfile)
+        reloaded_calculator = SpecializedCalculator('derived',dumpfile=dumpfile)
         reloaded_calculator.data
 
         self.assertAlmostEqual(

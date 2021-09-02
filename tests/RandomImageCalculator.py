@@ -5,12 +5,14 @@ import h5py
 
 class RandomImageCalculator(BaseCalculator):
     def __init__(self,
+                 name,
                  parameters=None,
                  dumpfile=None,
                  input_path=None,
                  output_path=None):
 
-        super().__init__(parameters=parameters,
+        super().__init__(name,
+                         parameters=parameters,
                          dumpfile=dumpfile,
                          output_path=output_path)
 
