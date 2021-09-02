@@ -27,8 +27,7 @@ class Instrument():
 
     @property
     def master(self):
-        instrument_master = InstrumentMaster(self.calculators, self.parameters)
-        return instrument_master
+        return self.parameters.master
 
     def list_calculators(self):
         string = f"- Instrument: {self.name} -\n"
@@ -49,21 +48,21 @@ class Instrument():
         del self.parameters[calculator_name]
 
 
-class InstrumentMaster():
-    """The class to set a master parameter for instrument calculators"""
-    def __init__(self, calculators, parameters):
-        super(InstrumentMaster, self).__init__()
-        self.calculators = calculators
-        self.parameters = parameters
+# class InstrumentMaster():
+#     """The class to set a master parameter for instrument calculators"""
+#     def __init__(self, calculators, parameters):
+#         super(InstrumentMaster, self).__init__()
+#         self.calculators = calculators
+#         self.parameters = parameters
 
-    def __setitem__(self, key, value):
-        """
-        Apply the master parameter to calculators
-        """
-        self.parameters.master[key] = value
-        master_parameter = self.parameters.master.parameters[key]
-        if master_parameter.links is not None:
-            for calculator in master_parameter.links:
-                calculator_par_name = master_parameter.links[calculator]
-                calculator_params =  self.calculators[calculator].parameters
-                calculator_params[calculator_par_name] = value
+#     def __setitem__(self, key, value):
+#         """
+#         Apply the master parameter to calculators
+#         """
+#         self.parameters.master[key] = value
+#         master_parameter = self.parameters.master.parameters[key]
+#         if master_parameter.links is not None:
+#             for calculator in master_parameter.links:
+#                 calculator_par_name = master_parameter.links[calculator]
+#                 calculator_params =  self.calculators[calculator].parameters
+#                 calculator_params[calculator_par_name] = value
