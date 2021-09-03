@@ -92,6 +92,7 @@ class Test_Parameter(unittest.TestCase):
         par.clear_options()
         self.assertEqual(par.options, [])
 
+
 class Test_Parameters(unittest.TestCase):
     def test_initialize_parameters_from_list(self):
         par1 = Parameter("test")
@@ -114,7 +115,7 @@ class Test_Parameters(unittest.TestCase):
 
         self.assertEqual(parameters["test"].value, 8)
         self.assertEqual(parameters["test2"].value, 10)
-    
+
     def test_print_parameters(self):
         par1 = Parameter("test")
         par1.set_value(8)
@@ -188,6 +189,11 @@ def sample_calculator():
 
 
 class Test_Instruments(unittest.TestCase):
+    @classmethod
+    def setUpClass(cls):
+        """ Setting up the test class. """
+        cls.d = tempfile.TemporaryDirectory()
+
     def setUp(self):
         # We start creating our instrument with a InstrumentParameters
         self.instr_parameters = InstrumentParameters()
@@ -204,6 +210,11 @@ class Test_Instruments(unittest.TestCase):
         bottom_sample_pars = sample_calculator()
         self.instr_parameters.add("Sample bottom", bottom_sample_pars)
 
+    @classmethod
+    def tearDownClass(cls):
+        """ Tearing down the test class. """
+        cls.d.cleanup()
+
     def test_link(self):
         description = "Absorption cross section for both samples"
         links = {"Sample top": "absorption", "Sample bottom": "absorption"}
@@ -218,17 +229,37 @@ class Test_Instruments(unittest.TestCase):
             "absorption"].value
         self.assertEqual(top_value, master_value)
         self.assertEqual(bottom_value, master_value)
+        master_params = self.instr_parameters.master.parameters
+        self.assertIn("absorption", master_params.keys())
+        self.assertEqual(master_value, master_params["absorption"].value)
+        self.assertEqual(self.instr_parameters.master["absorption"].links,
+                         links)
 
     def test_print(self):
         print(self.instr_parameters)
 
     def test_json(self):
-        with tempfile.TemporaryDirectory() as d:
-            temp_file = os.path.join(d, 'test.json')
-            # temp_file = 'instrument.json'
-            self.instr_parameters.to_json(temp_file)
-            instr_json = InstrumentParameters.from_json(temp_file)
-            self.assertEqual(instr_json['Source']['energy'].value, 4000)
+        description = "Absorption cross section for both samples"
+        links = {"Sample top": "absorption", "Sample bottom": "absorption"}
+        master_value = 3.4
+        self.instr_parameters.add_master_parameter("absorption",
+                                                   links,
+                                                   unit="barns",
+                                                   comment=description)
+        self.instr_parameters.master["absorption"] = master_value
+        temp_file = os.path.join(self.d.name, 'test.json')
+        # temp_file = 'instrument.json'
+        self.instr_parameters.to_json(temp_file)
+        print(self.instr_parameters)
+
+        # From json
+        instr_json = InstrumentParameters.from_json(temp_file)
+        self.assertEqual(instr_json['Source']['energy'].value, 4000)
+        master_params = instr_json.master.parameters
+        self.assertIn("absorption", master_params.keys())
+        self.assertEqual(master_value, master_params["absorption"].value)
+        self.assertEqual(self.instr_parameters.master["absorption"].links,
+                         links)
 
 
 if __name__ == '__main__':

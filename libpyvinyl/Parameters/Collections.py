@@ -241,12 +241,16 @@ class InstrumentParameters(AbstractBaseClass):
         """
         parameters = cls()
         for key in instrument_dict:
-            parameters.add(key, CalculatorParameters.from_dict(instrument_dict[key]))
+            if key != "master":
+                parameters.add(key, CalculatorParameters.from_dict(instrument_dict[key]))
+        if "master" in instrument_dict.keys():
+            parameters.master = CalculatorParameters.from_dict(instrument_dict["master"])
 
         return parameters
 
     def to_dict(self):
         params_collect = {}
+        params_collect['master'] = self.master.to_dict()
         for key in self.parameters_dict:
             params_collect[key] = self.parameters_dict[key].to_dict()
         return params_collect
