@@ -2,7 +2,8 @@
 :module Instrument: Module hosting the Instrument class
 """
 
-from libpyvinyl.Parameters.Collections import ParametersCollection
+from libpyvinyl.Parameters.Collections import InstrumentParameters
+from pathlib import Path
 
 
 class Instrument():
@@ -17,7 +18,7 @@ class Instrument():
         """
         self.name = name
         self.calculators = {}
-        self.parameters = ParametersCollection()
+        self.parameters = InstrumentParameters()
         if calculators is not None:
             for calculator in calculators:
                 self.add_calculator(calculator)
@@ -28,6 +29,19 @@ class Instrument():
     @property
     def master(self):
         return self.parameters.master
+
+    def set_base_path(self, base: str):
+        """Set each calculator's output_path as 'base_path/calculator.name'.
+
+        Args:
+            base (str): The base path to be set.
+        """
+        self.base_path = base
+        basePath = Path(base)
+        for key in self.calculators:
+            outputPath = basePath / self.calculators[key].name
+            calculator = self.calculators[key]
+            calculator.output_path = str(outputPath)
 
     def list_calculators(self):
         string = f"- Instrument: {self.name} -\n"

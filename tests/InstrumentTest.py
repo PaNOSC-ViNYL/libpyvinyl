@@ -99,6 +99,16 @@ class InstrumentTest(unittest.TestCase):
         energy2 = my_instrument.calculators['test2'].parameters['photon_energy'].value
         self.assertEqual(energy1, 10)
         self.assertEqual(energy2, 10)
+
+    def testSetBasePath(self):
+        """ Testing setup base path for calculators """
+
+        my_instrument = Instrument('myInstrument')
+        my_instrument.add_calculator(self.calculator1)
+        my_instrument.add_calculator(self.calculator2)
+        my_instrument.set_base_path('test')
+        self.assertEqual(my_instrument.calculators["test1"].output_path, 'test/test1')
+        self.assertEqual(my_instrument.calculators["test2"].output_path, 'test/test2')
 if __name__ == '__main__':
     unittest.main()
 
