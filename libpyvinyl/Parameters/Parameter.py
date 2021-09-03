@@ -82,19 +82,18 @@ class Parameter(AbstractBaseClass):
         if value is None:
             value = self.value
 
+        # Check illegal intervals
         for illegal_interval in self.illegal_intervals:
             if illegal_interval[0] < value < illegal_interval[1]:
                 return False
 
-        is_outside_a_legal_interval = False
+        # Check legal intervals
         is_inside_a_legal_interval = False
         for legal_interval in self.legal_intervals:
             if legal_interval[0] < value < legal_interval[1]:
                 is_inside_a_legal_interval = True
-            else:
-                is_outside_a_legal_interval = True
 
-        if is_outside_a_legal_interval and not is_inside_a_legal_interval:
+        if not is_inside_a_legal_interval and len(self.legal_intervals) > 0:
             return False
 
         # checked intervals, can return if options not used (frequent case)
