@@ -7,7 +7,7 @@ import copy
 import json
 
 from libpyvinyl.BaseCalculator import BaseCalculator, SpecializedCalculator
-from libpyvinyl.Parameters import Parameters, ParametersCollection
+from libpyvinyl.Parameters import CalculatorParameters, InstrumentParameters
 from libpyvinyl.AbstractBaseClass import AbstractBaseClass
 from RandomImageCalculator import RandomImageCalculator
 
@@ -24,10 +24,10 @@ class BaseCalculatorTest(unittest.TestCase):
     @classmethod
     def setUpClass(cls):
         """ Setting up the test class. """
-        parameters = Parameters()
+        parameters = CalculatorParameters()
         photon_energy = parameters.new_parameter("photon_energy",
-                                 unit="keV",
-                                 comment="Photon energy")
+                                                 unit="keV",
+                                                 comment="Photon energy")
         photon_energy.set_value(109.98)
 
         parameters.new_parameter("pulse_energy",
@@ -38,8 +38,8 @@ class BaseCalculatorTest(unittest.TestCase):
         # cls.__default_parameters = SpecializedParameters(photon_energy=109.98,
         #                                                  pulse_energy=32.39)
 
-        cls.__default_calculator = SpecializedCalculator('default',
-            cls.__default_parameters)
+        cls.__default_calculator = SpecializedCalculator(
+            'default', cls.__default_parameters)
 
     @classmethod
     def tearDownClass(cls):
@@ -73,7 +73,8 @@ class BaseCalculatorTest(unittest.TestCase):
         # Test positional arguments
         # self.assertRaises(AttributeError, SpecializedCalculator)
 
-        calculator = SpecializedCalculator('default',self.__default_parameters)
+        calculator = SpecializedCalculator('default',
+                                           self.__default_parameters)
 
         self.assertIsInstance(calculator, SpecializedCalculator)
         self.assertIsInstance(calculator, BaseCalculator)
@@ -121,7 +122,7 @@ class BaseCalculatorTest(unittest.TestCase):
 
         del calculator
 
-        calculator = SpecializedCalculator('dump',dumpfile=dump)
+        calculator = SpecializedCalculator('dump', dumpfile=dump)
         self.assertIsInstance(calculator, SpecializedCalculator)
 
         self.assertEqual(calculator.parameters['photon_energy'].value,
@@ -143,7 +144,7 @@ class BaseCalculatorTest(unittest.TestCase):
 
     def test_derived_class(self):
         """ Test that a derived class is functional. """
-        parameters = Parameters()
+        parameters = CalculatorParameters()
         parameters.new_parameter("photon_energy",
                                  unit="eV",
                                  comment="Photon energy")
@@ -160,7 +161,9 @@ class BaseCalculatorTest(unittest.TestCase):
         parameters['grid_size_y'].set_value(128)
 
         # Setup the calculator
-        calculator = RandomImageCalculator('ramdom', parameters, output_path="out.h5")
+        calculator = RandomImageCalculator('ramdom',
+                                           parameters,
+                                           output_path="out.h5")
 
         # Run the backengine
         self.assertEqual(calculator.backengine(), 0)
@@ -184,11 +187,12 @@ class BaseCalculatorTest(unittest.TestCase):
         self.assertIn(os.path.basename(dumpfile), os.listdir())
 
         # Load back parameters
-        new_parameters = Parameters.from_json("my_parameters.json")
+        new_parameters = CalculatorParameters.from_json("my_parameters.json")
         self.assertEqual(new_parameters['photon_energy'].value,
                          calculator.parameters['photon_energy'].value)
 
-        reloaded_calculator = SpecializedCalculator('derived',dumpfile=dumpfile)
+        reloaded_calculator = SpecializedCalculator('derived',
+                                                    dumpfile=dumpfile)
         reloaded_calculator.data
 
         self.assertAlmostEqual(
@@ -206,7 +210,7 @@ class ParametersTest(unittest.TestCase):
     @classmethod
     def setUpClass(cls):
         """ Setting up the test class. """
-        parameters = Parameters()
+        parameters = CalculatorParameters()
         parameters.new_parameter("photon_energy",
                                  unit="keV",
                                  comment="Photon energy")
@@ -227,7 +231,9 @@ class ParametersTest(unittest.TestCase):
 
     def setUp(self):
         """ Setting up a test. """
-        self.__files_to_remove = ['tmp_numpy.json',"tmp_scalar.json","tmp_nested.json"]
+        self.__files_to_remove = [
+            'tmp_numpy.json', "tmp_scalar.json", "tmp_nested.json"
+        ]
         self.__dirs_to_remove = []
 
     def tearDown(self):
@@ -247,10 +253,11 @@ class ParametersTest(unittest.TestCase):
 
         new_parameters['photon_energy'].set_value(10.00)
 
-        self.assertIsInstance(new_parameters, Parameters)
+        self.assertIsInstance(new_parameters, CalculatorParameters)
         self.assertIsInstance(new_parameters, AbstractBaseClass)
         self.assertEqual(new_parameters['photon_energy'].value, 10.00)
-        self.assertEqual(new_parameters['pulse_energy'].value, self.__default_parameters['pulse_energy'].value)
+        self.assertEqual(new_parameters['pulse_energy'].value,
+                         self.__default_parameters['pulse_energy'].value)
 
     def test_serialize_scalar(self):
         """ Test serialization of parameters. """
@@ -269,8 +276,8 @@ class ParametersTest(unittest.TestCase):
                       os.listdir(os.path.abspath(os.path.dirname(__file__))))
 
         # Test loading.
-        new_parameters = Parameters.from_json('tmp_scalar.json')
-        self.assertIsInstance(new_parameters, Parameters)
+        new_parameters = CalculatorParameters.from_json('tmp_scalar.json')
+        self.assertIsInstance(new_parameters, CalculatorParameters)
         self.assertEqual(new_parameters['photon_energy'].value, 109.98)
         self.assertEqual(dump['pulse_energy']['value'], 32.39)
 
@@ -288,7 +295,7 @@ class ParametersTest(unittest.TestCase):
         par = [i * 0.2354 for i in range(10)]
         sc = numpy.random.random()
 
-        parameters = Parameters()
+        parameters = CalculatorParameters()
         parameters.new_parameter("array_par")
         parameters['array_par'].set_value(par)
         parameters.new_parameter("scalar_par")
@@ -308,8 +315,8 @@ class ParametersTest(unittest.TestCase):
                       os.listdir(os.path.abspath(os.path.dirname(__file__))))
 
         # Test loading.
-        new_parameters = Parameters.from_json(fname)
-        self.assertIsInstance(new_parameters, Parameters)
+        new_parameters = CalculatorParameters.from_json(fname)
+        self.assertIsInstance(new_parameters, CalculatorParameters)
         self.assertIsInstance(new_parameters['array_par'].value, list)
         self.assertSequenceEqual(new_parameters['array_par'].value, par)
         self.assertEqual(new_parameters['scalar_par'].value, sc)
@@ -319,7 +326,7 @@ class ParametersTest(unittest.TestCase):
         parameters. """
 
         # Define nested parameters.
-        outer = ParametersCollection()
+        outer = InstrumentParameters()
         outer.add("inner_parameters", self.__default_parameters)
 
         outer_dump = outer.to_dict()
@@ -364,9 +371,10 @@ class ParametersTest(unittest.TestCase):
                       os.listdir(os.path.abspath(os.path.dirname(__file__))))
 
         # Test loading.
-        new_parameters = ParametersCollection.from_json(fname)
-        self.assertIsInstance(new_parameters, ParametersCollection)
-        self.assertIsInstance(new_parameters['inner_parameters'], Parameters)
+        new_parameters = InstrumentParameters.from_json(fname)
+        self.assertIsInstance(new_parameters, InstrumentParameters)
+        self.assertIsInstance(new_parameters['inner_parameters'],
+                              CalculatorParameters)
 
 
 if __name__ == '__main__':

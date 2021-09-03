@@ -25,9 +25,9 @@ abstract classes.
 #                                                                                  #
 ####################################################################################
 
-from libpyvinyl.BaseCalculator import BaseCalculator, Parameters
+from libpyvinyl.BaseCalculator import BaseCalculator, CalculatorParameters
 
-class RadiationSampleInteractorParameters(Parameters):
+class RadiationSampleInteractorParameters(CalculatorParameters):
     def __init__(self, **kwargs):
         
         super().__init__(**kwargs)

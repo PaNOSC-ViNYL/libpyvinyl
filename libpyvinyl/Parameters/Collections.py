@@ -1,11 +1,11 @@
- # Created by Mads Bertelsen and modified by Juncheng E
+# Created by Mads Bertelsen and modified by Juncheng E
 
 import json
 from libpyvinyl.AbstractBaseClass import AbstractBaseClass
 from .Parameter import Parameter
 
 
-class Parameters(AbstractBaseClass):
+class CalculatorParameters(AbstractBaseClass):
     """
     Collection of parameters related to a single calculator
 
@@ -169,7 +169,7 @@ class MasterParameter(Parameter):
         self.links = links
 
 
-class MasterParameters(Parameters):
+class MasterParameters(CalculatorParameters):
     """
     Master Parameters object that contain all master parameters with the
     additional ability to set values for the other parameters this master
@@ -201,7 +201,7 @@ class MasterParameters(Parameters):
         self.parameters[key].set_value(value)
 
 
-class ParametersCollection(AbstractBaseClass):
+class InstrumentParameters(AbstractBaseClass):
     """
     Object intended for use as instrument parameters
 
@@ -241,7 +241,7 @@ class ParametersCollection(AbstractBaseClass):
         """
         parameters = cls()
         for key in instrument_dict:
-            parameters.add(key, Parameters.from_dict(instrument_dict[key]))
+            parameters.add(key, CalculatorParameters.from_dict(instrument_dict[key]))
 
         return parameters
 
@@ -266,7 +266,7 @@ class ParametersCollection(AbstractBaseClass):
         """
         Here key could be a calculator object or a reference to such an object, like its name
         """
-        if not isinstance(parameters, Parameters):
+        if not isinstance(parameters, CalculatorParameters):
             raise RuntimeError(
                 "ParametersCollection holds objects of type Parameters,"
                 + " was provided with something else.")

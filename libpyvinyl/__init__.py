@@ -1,1 +1,1 @@
-from .BaseCalculator import BaseCalculator, Parameters
+from .BaseCalculator import BaseCalculator, CalculatorParameters

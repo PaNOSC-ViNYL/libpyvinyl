@@ -26,7 +26,7 @@
 
 from abc import abstractmethod
 from libpyvinyl.AbstractBaseClass import AbstractBaseClass
-from libpyvinyl.Parameters import Parameters
+from libpyvinyl.Parameters import CalculatorParameters
 from tempfile import mkstemp
 import copy
 import dill
@@ -55,7 +55,7 @@ class BaseCalculator(AbstractBaseClass):
 
     """
     @abstractmethod
-    def __init__(self, name:str, parameters=None, dumpfile=None, **kwargs):
+    def __init__(self, name: str, parameters=None, dumpfile=None, **kwargs):
         """
 
         :param name: The name for this calculator.
@@ -106,10 +106,11 @@ class BaseCalculator(AbstractBaseClass):
         # Set data
         self.__data = None
 
-        if isinstance(parameters, (type(None), Parameters)):
+        if isinstance(parameters, (type(None), CalculatorParameters)):
             self.parameters = parameters
         else:
-            raise TypeError("parameters should be in Parameters type.")
+            raise TypeError(
+                "parameters should be in CalculatorParameters type.")
 
         # Must load after setting paramters to avoid being overrode by empty parameters.
         if dumpfile is not None:
@@ -122,7 +123,7 @@ class BaseCalculator(AbstractBaseClass):
         """ The copy constructor
 
         :param parameters: The parameters for the new calculator.
-        :type  parameters: Parameters
+        :type  parameters: CalculatorParameters
 
         :param kwargs: key-value pairs of parameters to change in the new instance.
 
@@ -166,9 +167,9 @@ class BaseCalculator(AbstractBaseClass):
     @parameters.setter
     def parameters(self, val):
 
-        if not isinstance(val, (type(None), Parameters)):
+        if not isinstance(val, (type(None), CalculatorParameters)):
             raise TypeError(
-                """Passed argument 'parameters' has wrong type. Expected Parameters, found {}."""
+                """Passed argument 'parameters' has wrong type. Expected CalculatorParameters, found {}."""
                 .format(type(val)))
 
         self.__parameters = val
@@ -183,9 +184,10 @@ class BaseCalculator(AbstractBaseClass):
 
         if fname is None:
             _, fname = mkstemp(
-                #suffix="_dump.dill",
-                #prefix=self.__class__.__name__[-1],
-                dir=os.getcwd(), )
+                suffix="_dump.dill",
+                prefix=self.__class__.__name__[-1],
+                dir=os.getcwd(),
+            )
         try:
             with open(fname, "wb") as file_handle:
                 dill.dump(self, file_handle)
@@ -264,8 +266,8 @@ class SpecializedCalculator(BaseCalculator):
         super().__init__(name, parameters, dumpfile, **kwargs)
 
     def setParams(self, photon_energy: float = 10, pulse_energy: float = 1e-3):
-        if not isinstance(self.parameters, Parameters):
-            self.parameters = Parameters()
+        if not isinstance(self.parameters, CalculatorParameters):
+            self.parameters = CalculatorParameters()
         self.parameters.new_parameter("photon_energy",
                                       unit="eV",
                                       comment="Photon energy")
@@ -291,4 +293,4 @@ class SpecializedCalculator(BaseCalculator):
             h5.close()
 
 
-#This project has received funding from the European Union's Horizon 2020 research and innovation programme under grant agreement No. 823852.
+# This project has received funding from the European Union's Horizon 2020 research and innovation programme under grant agreement No. 823852.

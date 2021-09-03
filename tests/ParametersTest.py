@@ -1,11 +1,10 @@
 import unittest
 import os
 import tempfile
-import json
 
 from libpyvinyl.Parameters import Parameter
-from libpyvinyl.Parameters import Parameters
-from libpyvinyl.Parameters import ParametersCollection
+from libpyvinyl.Parameters import CalculatorParameters
+from libpyvinyl.Parameters import InstrumentParameters
 
 
 class Test_Parameter(unittest.TestCase):
@@ -99,7 +98,7 @@ class Test_Parameters(unittest.TestCase):
         par1.set_value(8)
         par2 = Parameter("test2", unit="meV")
 
-        parameters = Parameters([par1, par2])
+        parameters = CalculatorParameters([par1, par2])
 
         self.assertEqual(parameters["test"].value, 8)
 
@@ -109,7 +108,7 @@ class Test_Parameters(unittest.TestCase):
         par2 = Parameter("test2", unit="meV")
         par2.set_value(10)
 
-        parameters = Parameters()
+        parameters = CalculatorParameters()
         parameters.add(par1)
         parameters.add(par2)
 
@@ -121,7 +120,7 @@ class Test_Parameters(unittest.TestCase):
         par1.set_value(8)
         par2 = Parameter("test2", unit="meV")
         par2.set_value(10)
-        parameters = Parameters()
+        parameters = CalculatorParameters()
         parameters.add(par1)
         parameters.add(par2)
         print(parameters)
@@ -132,14 +131,14 @@ class Test_Parameters(unittest.TestCase):
         par2 = Parameter("test2", unit="meV")
         par2.set_value(10)
 
-        parameters = Parameters()
+        parameters = CalculatorParameters()
         parameters.add(par1)
         parameters.add(par2)
         with tempfile.TemporaryDirectory() as d:
             tmp_file = os.path.join(d, 'test.json')
             # tmp_file = 'test.json'
             parameters.to_json(tmp_file)
-            params_json = Parameters.from_json(tmp_file)
+            params_json = CalculatorParameters.from_json(tmp_file)
             self.assertEqual(params_json['test2'].value, 10)
 
 
@@ -147,7 +146,7 @@ def source_calculator():
     """
     Little dummy calculator that sets up a parameters object for a source
     """
-    parameters = Parameters()
+    parameters = CalculatorParameters()
     parameters.new_parameter("energy",
                              unit="eV",
                              comment="Source energy setting")
@@ -173,7 +172,7 @@ def sample_calculator():
     """
     Little dummy calculator that sets up a parameters object for a sample
     """
-    parameters = Parameters()
+    parameters = CalculatorParameters()
     parameters.new_parameter("radius", unit="cm", comment="Sample radius")
     parameters["radius"].add_legal_interval(0, None)  # To infinite
 
@@ -190,8 +189,8 @@ def sample_calculator():
 
 class Test_Instruments(unittest.TestCase):
     def setUp(self):
-        # We start creating our instrument with a ParametersCollection
-        self.instr_parameters = ParametersCollection()
+        # We start creating our instrument with a InstrumentParameters
+        self.instr_parameters = InstrumentParameters()
 
         # We insert a source and get some parameters out
         source_pars = source_calculator()
@@ -228,7 +227,7 @@ class Test_Instruments(unittest.TestCase):
             temp_file = os.path.join(d, 'test.json')
             # temp_file = 'instrument.json'
             self.instr_parameters.to_json(temp_file)
-            instr_json = ParametersCollection.from_json(temp_file)
+            instr_json = InstrumentParameters.from_json(temp_file)
             self.assertEqual(instr_json['Source']['energy'].value, 4000)
 
 

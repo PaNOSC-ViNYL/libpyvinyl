@@ -1,2 +1,2 @@
 from .Parameter import Parameter
-from .Collections import Parameters, ParametersCollection, MasterParameter
+from .Collections import InstrumentParameters, CalculatorParameters, MasterParameter

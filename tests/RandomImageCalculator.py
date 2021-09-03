@@ -1,4 +1,4 @@
-from libpyvinyl.BaseCalculator import BaseCalculator, Parameters
+from libpyvinyl.BaseCalculator import BaseCalculator, CalculatorParameters
 import numpy
 import h5py
 
@@ -17,8 +17,8 @@ class RandomImageCalculator(BaseCalculator):
                          output_path=output_path)
 
     def setParams(self, grid_size_x: int = 128, grid_size_y: int = 128):
-        if not isinstance(self.parameters, Parameters):
-            self.parameters = Parameters()
+        if not isinstance(self.parameters, CalculatorParameters):
+            self.parameters = CalculatorParameters()
         self.parameters.new_parameter("grid_size_x")
         self.parameters['grid_size_x'].set_value(grid_size_x)
         self.parameters.new_parameter("grid_size_y")
