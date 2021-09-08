@@ -1,0 +1,161 @@
+{
+    "Master": {
+        "absorption": {
+            "links": {
+                "Sample top": "absorption",
+                "Sample bottom": "absorption"
+            },
+            "name": "absorption",
+            "unit": "barns",
+            "comment": "Absorption cross section for both samples",
+            "value": 3.4,
+            "legal_intervals": [],
+            "illegal_intervals": [],
+            "options": []
+        }
+    },
+    "Source": {
+        "energy": {
+            "name": "energy",
+            "unit": "eV",
+            "comment": "Source energy setting",
+            "value": 4000,
+            "legal_intervals": [
+                [
+                    0,
+                    1000000.0
+                ]
+            ],
+            "illegal_intervals": [],
+            "options": []
+        },
+        "delta_energy": {
+            "name": "delta_energy",
+            "unit": "eV",
+            "comment": "Energy spread fwhm",
+            "value": null,
+            "legal_intervals": [
+                [
+                    0,
+                    400
+                ]
+            ],
+            "illegal_intervals": [],
+            "options": []
+        },
+        "position": {
+            "name": "position",
+            "unit": "cm",
+            "comment": "Source center",
+            "value": null,
+            "legal_intervals": [
+                [
+                    -1.5,
+                    1.5
+                ]
+            ],
+            "illegal_intervals": [],
+            "options": []
+        },
+        "gaussian": {
+            "name": "gaussian",
+            "unit": null,
+            "comment": "False for flat, True for gaussian",
+            "value": null,
+            "legal_intervals": [],
+            "illegal_intervals": [],
+            "options": [
+                false,
+                true
+            ]
+        }
+    },
+    "Sample top": {
+        "radius": {
+            "name": "radius",
+            "unit": "cm",
+            "comment": "Sample radius",
+            "value": null,
+            "legal_intervals": [
+                [
+                    0,
+                    Infinity
+                ]
+            ],
+            "illegal_intervals": [],
+            "options": []
+        },
+        "height": {
+            "name": "height",
+            "unit": "cm",
+            "comment": "Sample height",
+            "value": null,
+            "legal_intervals": [
+                [
+                    0,
+                    Infinity
+                ]
+            ],
+            "illegal_intervals": [],
+            "options": []
+        },
+        "absorption": {
+            "name": "absorption",
+            "unit": "barns",
+            "comment": "absorption cross section",
+            "value": 3.4,
+            "legal_intervals": [
+                [
+                    0,
+                    Infinity
+                ]
+            ],
+            "illegal_intervals": [],
+            "options": []
+        }
+    },
+    "Sample bottom": {
+        "radius": {
+            "name": "radius",
+            "unit": "cm",
+            "comment": "Sample radius",
+            "value": null,
+            "legal_intervals": [
+                [
+                    0,
+                    Infinity
+                ]
+            ],
+            "illegal_intervals": [],
+            "options": []
+        },
+        "height": {
+            "name": "height",
+            "unit": "cm",
+            "comment": "Sample height",
+            "value": null,
+            "legal_intervals": [
+                [
+                    0,
+                    Infinity
+                ]
+            ],
+            "illegal_intervals": [],
+            "options": []
+        },
+        "absorption": {
+            "name": "absorption",
+            "unit": "barns",
+            "comment": "absorption cross section",
+            "value": 3.4,
+            "legal_intervals": [
+                [
+                    0,
+                    Infinity
+                ]
+            ],
+            "illegal_intervals": [],
+            "options": []
+        }
+    }
+}
