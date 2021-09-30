@@ -1,4 +1,4 @@
-from setuptools import setup
+from setuptools import setup, find_packages
 import sys
 
 requirements = ["pint",
@@ -11,7 +11,7 @@ requirements = ["pint",
 
 setup(
   name='libpyvinyl',
-  packages=['libpyvinyl'],
+  packages=find_packages(include=['libpyvinyl', 'libpyvinyl.*']),
   version='0.0.2',
   license='LGPLv3',
   description='The python API for photon and neutron simulation codes in the Photon and Neutron Open Science Cloud (PaNOSC).',
@@ -32,4 +32,4 @@ setup(
     'Programming Language :: Python :: 3.7',
     'Programming Language :: Python :: 3.8',
   ],
-) 
+)
