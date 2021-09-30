@@ -14,7 +14,7 @@ class Instrument():
         :param name: The name of this instrument
         :type name: str
         :param calculators: A collection of Calculator objects.
-        :type calculators: list
+        :type calculators: dict
         """
         self.name = name
         self.calculators = {}
