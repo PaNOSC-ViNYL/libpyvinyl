@@ -10,7 +10,6 @@ class InstrumentTest(unittest.TestCase):
     """
     Test class for the Detector class.
     """
-
     @classmethod
     def setUpClass(cls):
         """ Setting up the test class. """
@@ -77,13 +76,14 @@ class InstrumentTest(unittest.TestCase):
         self.assertEqual(len(my_instrument.calculators), 2)
         my_instrument.remove_calculator(self.calculator1.name)
         self.assertEqual(len(my_instrument.calculators), 1)
-    
+
     def testEditCalculator(self):
         """ Testing edit calculator """
         my_instrument = Instrument('myInstrument')
         my_instrument.add_calculator(self.calculator1)
         my_instrument.parameters['test1']['photon_energy'] = 15
-        energy1 = my_instrument.calculators['test1'].parameters['photon_energy'].value
+        energy1 = my_instrument.calculators['test1'].parameters[
+            'photon_energy'].value
         self.assertEqual(energy1, 15)
 
     def testAddMaster(self):
@@ -95,8 +95,10 @@ class InstrumentTest(unittest.TestCase):
         links = {'test1': 'photon_energy', 'test2': 'photon_energy'}
         my_instrument.add_master_parameter('photon_energy', links)
         my_instrument.master['photon_energy'] = 10
-        energy1 = my_instrument.calculators['test1'].parameters['photon_energy'].value
-        energy2 = my_instrument.calculators['test2'].parameters['photon_energy'].value
+        energy1 = my_instrument.calculators['test1'].parameters[
+            'photon_energy'].value
+        energy2 = my_instrument.calculators['test2'].parameters[
+            'photon_energy'].value
         self.assertEqual(energy1, 10)
         self.assertEqual(energy2, 10)
 
@@ -107,8 +109,11 @@ class InstrumentTest(unittest.TestCase):
         my_instrument.add_calculator(self.calculator1)
         my_instrument.add_calculator(self.calculator2)
         my_instrument.set_base_path('test')
-        self.assertEqual(my_instrument.calculators["test1"].output_path, 'test/test1')
-        self.assertEqual(my_instrument.calculators["test2"].output_path, 'test/test2')
+        self.assertEqual(my_instrument.calculators["test1"].output_path,
+                         'test/test1')
+        self.assertEqual(my_instrument.calculators["test2"].output_path,
+                         'test/test2')
+
+
 if __name__ == '__main__':
     unittest.main()
-

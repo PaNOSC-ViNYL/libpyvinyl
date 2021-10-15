@@ -16,9 +16,9 @@ class Instrument():
         :param calculators: A collection of Calculator objects.
         :type calculators: dict
         """
-        self.name = name
-        self.calculators = {}
-        self.parameters = InstrumentParameters()
+        self.__name = name
+        self.__calculators = {}
+        self.__parameters = InstrumentParameters()
         if calculators is not None:
             for calculator in calculators:
                 self.add_calculator(calculator)
@@ -27,14 +27,36 @@ class Instrument():
         self.parameters.add_master_parameter(name, links, **kwargs)
 
     @property
+    def name(self):
+        """The name of this instrument."""
+        return self.__name
+
+    @name.setter
+    def name(self, value: str):
+        self.__name = value
+
+    @property
+    def calculators(self):
+        """The list of calculators. It's modified either when constructing the class instance
+        or using the `add_calculator` function.
+        """
+        return self.__calculators
+
+    @property
+    def parameters(self):
+        """The parameter collection of each calculator in the instrument. These parameters are links to the 
+        exact parameters of each calculator."""
+        return self.__parameters
+
+    @property
     def master(self):
         return self.parameters.master
 
     def set_base_path(self, base: str):
         """Set each calculator's output_path as 'base_path/calculator.name'.
 
-        Args:
-            base (str): The base path to be set.
+        :param base: The base path to be set.
+        :type base: str
         """
         self.base_path = base
         basePath = Path(base)
@@ -54,9 +76,9 @@ class Instrument():
         print(self.parameters)
 
     def add_calculator(self, calculator):
-        self.calculators[calculator.name] = calculator
-        self.parameters.add(calculator.name, calculator.parameters)
+        self.__calculators[calculator.name] = calculator
+        self.__parameters.add(calculator.name, calculator.parameters)
 
     def remove_calculator(self, calculator_name):
-        del self.calculators[calculator_name]
-        del self.parameters[calculator_name]
+        del self.__calculators[calculator_name]
+        del self.__parameters[calculator_name]
