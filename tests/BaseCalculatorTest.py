@@ -1,14 +1,16 @@
 import unittest
 import os
-import json
+import shutil
 import numpy
 from jsons import JsonSerializable
 
 from libpyvinyl.BaseCalculator import BaseCalculator, Parameters, SpecializedParameters, SpecializedCalculator
 from libpyvinyl.AbstractBaseClass import AbstractBaseClass
+from RandomImageCalculator import RandomImageCalculator
 
 import logging
 logging.basicConfig(format='%(asctime)s %(levelname)s:%(message)s', level=logging.DEBUG)
+
 
 class BaseCalculatorTest(unittest.TestCase):
     """
@@ -19,7 +21,8 @@ class BaseCalculatorTest(unittest.TestCase):
     def setUpClass(cls):
         """ Setting up the test class. """
         cls.__default_parameters = SpecializedParameters(photon_energy=109.98,
-                pulse_energy=32.39)
+                                                         pulse_energy=32.39)
+
         cls.__default_calculator = SpecializedCalculator(cls.__default_parameters)
 
     @classmethod
@@ -37,9 +40,11 @@ class BaseCalculatorTest(unittest.TestCase):
         """ Tearing down a test. """
 
         for f in self.__files_to_remove:
-            if os.path.isfile(f): os.remove(f)
+            if os.path.isfile(f):
+                os.remove(f)
         for d in self.__dirs_to_remove:
-            if os.path.isdir(d): shutil.rmtree(d)
+            if os.path.isdir(d):
+                shutil.rmtree(d)
 
     def test_base_class_constructor_raises(self):
         """ Test that we cannot construct instances of the base class. """
@@ -117,32 +122,30 @@ class BaseCalculatorTest(unittest.TestCase):
 
     def test_derived_class(self):
         """ Test that a derived class is functional. """
-        from RandomImageCalculator import RandomImageCalculator
-
         parameters = Parameters(photon_energy=6e3, pulse_energy=1.0e-6, grid_size_x=128, grid_size_y=128)
 
-        ### Setup the calculator
-        calculator  = RandomImageCalculator(parameters, output_path="out.h5")
+        # Setup the calculator
+        calculator = RandomImageCalculator(parameters, output_path="out.h5")
 
-        ### Run the backengine
+        # Run the backengine
         self.assertEqual(calculator.backengine(), 0)
 
-        ### Look at the data and store as hdf5
-        self.assertSequenceEqual(calculator.data.shape, ((128, 128)))
+        # Look at the data and store as hdf5
+        self.assertSequenceEqual(calculator.data.shape, (128, 128))
         
         # Save as h5.
         calculator.saveH5(calculator.output_path)
         self.assertIn(calculator.output_path, os.listdir())
 
-        ### Save the parameters to a human readable json file.
+        # Save the parameters to a human readable json file.
         parameters.to_json("my_parameters.json")
         self.assertIn('my_parameters.json', os.listdir())
 
-        ### Save calculator to binary dump.
+        # Save calculator to binary dump.
         dumpfile = calculator.dump()
         self.assertIn(os.path.basename(dumpfile), os.listdir())
 
-        ### Load back parameters
+        # Load back parameters
         new_parameters = Parameters.from_json("my_parameters.json")
         self.assertEqual(new_parameters.photon_energy, calculator.parameters.photon_energy)
 
@@ -164,7 +167,8 @@ class ParametersTest(unittest.TestCase):
     def setUpClass(cls):
         """ Setting up the test class. """
         cls.__default_parameters = SpecializedParameters(photon_energy=109.98,
-                pulse_energy=32.39)
+                                                         pulse_energy=32.39
+                                                         )
 
     @classmethod
     def tearDownClass(cls):
@@ -180,9 +184,11 @@ class ParametersTest(unittest.TestCase):
         """ Tearing down a test. """
 
         for f in self.__files_to_remove:
-            if os.path.isfile(f): os.remove(f)
+            if os.path.isfile(f):
+                os.remove(f)
         for d in self.__dirs_to_remove:
-            if os.path.isdir(d): shutil.rmtree(d)
+            if os.path.isdir(d):
+                shutil.rmtree(d)
 
     def test_default_construction(self):
         """ Testing the default construction of the class. """
