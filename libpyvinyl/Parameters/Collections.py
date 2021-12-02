@@ -1,6 +1,6 @@
 # Created by Mads Bertelsen and modified by Juncheng E
 
-import json
+import json_tricks as json
 from collections import OrderedDict
 
 from libpyvinyl.AbstractBaseClass import AbstractBaseClass
@@ -13,6 +13,7 @@ class CalculatorParameters(AbstractBaseClass):
 
     Parameters are stored in a dict using their name as key
     """
+
     def __init__(self, parameters=None):
         """
         Creates a Parameters object, optionally with list of parameter objects
@@ -26,8 +27,7 @@ class CalculatorParameters(AbstractBaseClass):
         Checks given parameter is of type Parameter
         """
         if not isinstance(parameter, Parameter):
-            raise RuntimeError(
-                "A non-Parameter object was given to Parameters class.")
+            raise RuntimeError("A non-Parameter object was given to Parameters class.")
 
     def check_list_type(self, parameter_list):
         """
@@ -48,8 +48,7 @@ class CalculatorParameters(AbstractBaseClass):
             self.check_list_type(parameter)
             for par in parameter:
                 if par.name in self.parameters:
-                    raise RuntimeError(
-                        "Duplicate parameter name in parameters!")
+                    raise RuntimeError("Duplicate parameter name in parameters!")
 
                 self.parameters[par.name] = par
             return
@@ -76,7 +75,9 @@ class CalculatorParameters(AbstractBaseClass):
         try:
             return self.parameters[key]
         except KeyError:
-            raise KeyError("Call parameters by parameters[key], it doesn't support list function.")
+            raise KeyError(
+                "Call parameters by parameters[key], it doesn't support list function."
+            )
 
     def __setitem__(self, key, value):
         """
@@ -112,7 +113,7 @@ class CalculatorParameters(AbstractBaseClass):
         :type  fname: str
 
         """
-        with open(fname, 'r') as fp:
+        with open(fname, "r") as fp:
             instance = cls.from_dict(json.load(fp))
 
         return instance
@@ -146,8 +147,8 @@ class CalculatorParameters(AbstractBaseClass):
         :type  fname: str
 
         """
-        with open(fname, 'w') as fp:
-            json.dump(self.to_dict(), fp, indent=4)
+        with open(fname, "w") as fp:
+            json.dump(self.to_dict(), fp, indent=4, allow_nan=True)
 
 
 class MasterParameter(Parameter):
@@ -157,6 +158,7 @@ class MasterParameter(Parameter):
     system is added that contains information on which Parameters objects this
     master parameter should control parameters from.
     """
+
     def __init__(self, *args, **kwargs):
         """
         Create MasterParameter with uninitialized links
@@ -177,6 +179,7 @@ class MasterParameters(CalculatorParameters):
     additional ability to set values for the other parameters this master
     should control.
     """
+
     def __init__(self, parameters_dict, *args, **kwargs):
         """
         Create MasterParameters object with given parameters dict
@@ -211,6 +214,7 @@ class InstrumentParameters(AbstractBaseClass):
     have master parameters which control parameters for a number of
     calculators at once.
     """
+
     def __init__(self):
         """
         Create an empty ParametersCollection instance
@@ -227,7 +231,7 @@ class InstrumentParameters(AbstractBaseClass):
         :type  fname: str
 
         """
-        with open(fname, 'r') as fp:
+        with open(fname, "r") as fp:
             instance = cls.from_dict(json.load(fp))
 
         return instance
@@ -244,15 +248,19 @@ class InstrumentParameters(AbstractBaseClass):
         parameters = cls()
         for key in instrument_dict:
             if key != "Master":
-                parameters.add(key, CalculatorParameters.from_dict(instrument_dict[key]))
+                parameters.add(
+                    key, CalculatorParameters.from_dict(instrument_dict[key])
+                )
         if "Master" in instrument_dict.keys():
-            parameters.master = CalculatorParameters.from_dict(instrument_dict["Master"])
+            parameters.master = CalculatorParameters.from_dict(
+                instrument_dict["Master"]
+            )
 
         return parameters
 
     def to_dict(self):
         params_collect = {}
-        params_collect['Master'] = self.master.to_dict()
+        params_collect["Master"] = self.master.to_dict()
         for key in self.parameters_dict:
             params_collect[key] = self.parameters_dict[key].to_dict()
         return params_collect
@@ -265,8 +273,8 @@ class InstrumentParameters(AbstractBaseClass):
         :type  fname: str
 
         """
-        with open(fname, 'w') as fp:
-            json.dump(self.to_dict(), fp, indent=4)
+        with open(fname, "w") as fp:
+            json.dump(self.to_dict(), fp, indent=4, allow_nan=True)
 
     def add(self, key, parameters):
         """
@@ -275,7 +283,8 @@ class InstrumentParameters(AbstractBaseClass):
         if not isinstance(parameters, CalculatorParameters):
             raise RuntimeError(
                 "ParametersCollection holds objects of type Parameters,"
-                + " was provided with something else.")
+                + " was provided with something else."
+            )
 
         self.parameters_dict[key] = parameters
 
@@ -290,8 +299,7 @@ class InstrumentParameters(AbstractBaseClass):
 
         for link_key in links:
             if link_key not in self.parameters_dict:
-                raise RuntimeError(
-                    "A link had a key which was not recognized.")
+                raise RuntimeError("A link had a key which was not recognized.")
 
         master_parameter.add_links(links)
         self.master.add(master_parameter)
