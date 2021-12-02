@@ -28,12 +28,12 @@ class BaseCalculatorTest(unittest.TestCase):
         photon_energy = parameters.new_parameter("photon_energy",
                                                  unit="keV",
                                                  comment="Photon energy")
-        photon_energy.set_value(109.98)
+        photon_energy.value = 109.98
 
         parameters.new_parameter("pulse_energy",
                                  unit="joule",
                                  comment="Pulse energy")
-        parameters['pulse_energy'].set_value(32.39)
+        parameters['pulse_energy'].value = 32.39
         cls.__default_parameters = parameters
         # cls.__default_parameters = SpecializedParameters(photon_energy=109.98,
         #                                                  pulse_energy=32.39)
@@ -86,7 +86,7 @@ class BaseCalculatorTest(unittest.TestCase):
         """ Test the copy constructor behaves as expected. """
 
         new_parameters = copy.deepcopy(self.__default_parameters)
-        new_parameters['photon_energy'].set_value(10.00)
+        new_parameters['photon_energy'].value = 10.00
         new_calculator = self.__default_calculator(parameters=new_parameters)
         self.assertIsInstance(new_calculator, SpecializedCalculator)
         self.assertIsInstance(new_calculator, BaseCalculator)
@@ -95,7 +95,7 @@ class BaseCalculatorTest(unittest.TestCase):
                          10.00)
 
         new_parameters = copy.deepcopy(self.__default_parameters)
-        new_parameters['pulse_energy'].set_value(34.87)
+        new_parameters['pulse_energy'].value = 34.87
         new_calculator_2 = new_calculator(parameters=new_parameters)
         self.assertEqual(new_calculator_2.parameters['photon_energy'].value,
                          109.98)
@@ -148,17 +148,17 @@ class BaseCalculatorTest(unittest.TestCase):
         parameters.new_parameter("photon_energy",
                                  unit="eV",
                                  comment="Photon energy")
-        parameters['photon_energy'].set_value(6e3)
+        parameters['photon_energy'].value = 6e3
 
         parameters.new_parameter("pulse_energy",
                                  unit="joule",
                                  comment="Pulse energy")
-        parameters['pulse_energy'].set_value(1.0e-6)
+        parameters['pulse_energy'].value = 1.0e-6
 
         parameters.new_parameter("grid_size_x", unit="", comment="grid size x")
-        parameters['grid_size_x'].set_value(128)
+        parameters['grid_size_x'].value = 128
         parameters.new_parameter("grid_size_y", unit="", comment="grid size y")
-        parameters['grid_size_y'].set_value(128)
+        parameters['grid_size_y'].value = 128
 
         # Setup the calculator
         calculator = RandomImageCalculator('ramdom',
@@ -214,12 +214,12 @@ class ParametersTest(unittest.TestCase):
         parameters.new_parameter("photon_energy",
                                  unit="keV",
                                  comment="Photon energy")
-        parameters['photon_energy'].set_value(109.98)
+        parameters['photon_energy'].value = 109.98
 
         parameters.new_parameter("pulse_energy",
                                  unit="joule",
                                  comment="Pulse energy")
-        parameters['pulse_energy'].set_value(32.39)
+        parameters['pulse_energy'].value = 32.39
         cls.__default_parameters = parameters
         # cls.__default_parameters = SpecializedParameters(photon_energy=109.98,
         #                                                  pulse_energy=32.39)
@@ -251,7 +251,7 @@ class ParametersTest(unittest.TestCase):
 
         new_parameters = copy.deepcopy(self.__default_parameters)
 
-        new_parameters['photon_energy'].set_value(10.00)
+        new_parameters['photon_energy'].value = 10.00
 
         self.assertIsInstance(new_parameters, CalculatorParameters)
         self.assertIsInstance(new_parameters, AbstractBaseClass)
@@ -282,7 +282,7 @@ class ParametersTest(unittest.TestCase):
         self.assertEqual(dump['pulse_energy']['value'], 32.39)
 
         # Update.
-        new_parameters['pulse_energy'].set_value(763.43)
+        new_parameters['pulse_energy'].value = 763.43
         self.assertEqual(new_parameters['photon_energy'].value, 109.98)
         self.assertEqual(new_parameters['pulse_energy'].value, 763.43)
 
@@ -297,9 +297,9 @@ class ParametersTest(unittest.TestCase):
 
         parameters = CalculatorParameters()
         parameters.new_parameter("array_par")
-        parameters['array_par'].set_value(par)
+        parameters['array_par'].value = par
         parameters.new_parameter("scalar_par")
-        parameters['scalar_par'].set_value(sc)
+        parameters['scalar_par'].value = sc
 
         # Test dumping to json dict.
         dump = parameters.to_dict()

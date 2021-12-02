@@ -1,6 +1,8 @@
 # Created by Mads Bertelsen and modified by Juncheng E
 
 import json
+from collections import OrderedDict
+
 from libpyvinyl.AbstractBaseClass import AbstractBaseClass
 from .Parameter import Parameter
 
@@ -15,7 +17,7 @@ class CalculatorParameters(AbstractBaseClass):
         """
         Creates a Parameters object, optionally with list of parameter objects
         """
-        self.parameters = {}
+        self.parameters = OrderedDict()
         if parameters is not None:
             self.add(parameters)
 
@@ -80,7 +82,7 @@ class CalculatorParameters(AbstractBaseClass):
         """
         Sets value of parameter with given key to given value
         """
-        self.parameters[key].set_value(value)
+        self.parameters[key].value = value
 
     def __delitem__(self, key):
         """
@@ -198,7 +200,7 @@ class MasterParameters(CalculatorParameters):
                 calculator_par_name = master_parameter.links[calculator]
                 self.parameters_dict[calculator][calculator_par_name] = value
 
-        self.parameters[key].set_value(value)
+        self.parameters[key].value = value
 
 
 class InstrumentParameters(AbstractBaseClass):
