@@ -54,6 +54,18 @@ class Test_Parameter(unittest.TestCase):
         self.assertTrue(par.is_legal("A"))
         self.assertTrue(par.is_legal(38))
 
+    def test_parameter_interval_plus_option(self):
+        par = Parameter("test")
+        par.add_legal_interval(None, 8.5)  # minus infinite to 8.5
+        par.add_illegal_interval(3, 4.5)
+        par.add_option(11)
+
+        self.assertTrue(par.is_legal(-831.0))
+        self.assertFalse(par.is_legal(3.5))
+        self.assertTrue(par.is_legal(5.0))
+        self.assertFalse(par.is_legal(10.0))
+        self.assertTrue(par.is_legal(11.0))
+
     def test_parameter_set_value(self):
         par = Parameter("test")
         par.add_legal_interval(3, 4.5)
@@ -106,6 +118,14 @@ class Test_Parameter(unittest.TestCase):
         par.add_option(9.8)
         print(par)
 
+    def test_parameter_iterable(self):
+        par = Parameter("test")
+        par.add_legal_interval(3, 4.5)
+        par.add_option(7)
+        self.assertFalse(par.is_legal([0.5, 3.2, 5.0]))
+        self.assertTrue(par.is_legal([3.1, 4.2, 4.4]))
+        self.assertTrue(par.is_legal([3.1, 4.2, 4.4, 7]))
+
 
 class Test_Parameters(unittest.TestCase):
     def test_initialize_parameters_from_list(self):
@@ -150,11 +170,11 @@ class Test_Parameters(unittest.TestCase):
         parameters.add(par1)
         parameters.add(par2)
         with tempfile.TemporaryDirectory() as d:
-            tmp_file = os.path.join(d, 'test.json')
+            tmp_file = os.path.join(d, "test.json")
             # tmp_file = 'test.json'
             parameters.to_json(tmp_file)
             params_json = CalculatorParameters.from_json(tmp_file)
-            self.assertEqual(params_json['test2'].value, 10)
+            self.assertEqual(params_json["test2"].value, 10)
 
 
 def source_calculator():
@@ -162,22 +182,17 @@ def source_calculator():
     Little dummy calculator that sets up a parameters object for a source
     """
     parameters = CalculatorParameters()
-    parameters.new_parameter("energy",
-                             unit="eV",
-                             comment="Source energy setting")
-    parameters["energy"].add_legal_interval(0, 1E6)
+    parameters.new_parameter("energy", unit="eV", comment="Source energy setting")
+    parameters["energy"].add_legal_interval(0, 1e6)
     parameters["energy"].value = 4000
 
-    parameters.new_parameter("delta_energy",
-                             unit="eV",
-                             comment="Energy spread fwhm")
+    parameters.new_parameter("delta_energy", unit="eV", comment="Energy spread fwhm")
     parameters["delta_energy"].add_legal_interval(0, 400)
 
     parameters.new_parameter("position", unit="cm", comment="Source center")
     parameters["position"].add_legal_interval(-1.5, 1.5)
 
-    parameters.new_parameter("gaussian",
-                             comment="False for flat, True for gaussian")
+    parameters.new_parameter("gaussian", comment="False for flat, True for gaussian")
     parameters["gaussian"].add_option([False, True])
 
     return parameters
@@ -194,9 +209,9 @@ def sample_calculator():
     parameters.new_parameter("height", unit="cm", comment="Sample height")
     parameters["height"].add_legal_interval(0, None)
 
-    absporption = parameters.new_parameter("absorption",
-                                           unit="barns",
-                                           comment="absorption cross section")
+    absporption = parameters.new_parameter(
+        "absorption", unit="barns", comment="absorption cross section"
+    )
     absporption.add_legal_interval(0, None)
 
     return parameters
@@ -205,7 +220,7 @@ def sample_calculator():
 class Test_Instruments(unittest.TestCase):
     @classmethod
     def setUpClass(cls):
-        """ Setting up the test class. """
+        """Setting up the test class."""
         cls.d = tempfile.TemporaryDirectory()
 
     def setUp(self):
@@ -226,28 +241,25 @@ class Test_Instruments(unittest.TestCase):
 
     @classmethod
     def tearDownClass(cls):
-        """ Tearing down the test class. """
+        """Tearing down the test class."""
         cls.d.cleanup()
 
     def test_link(self):
         description = "Absorption cross section for both samples"
         links = {"Sample top": "absorption", "Sample bottom": "absorption"}
         master_value = 3.4
-        self.instr_parameters.add_master_parameter("absorption",
-                                                   links,
-                                                   unit="barns",
-                                                   comment=description)
+        self.instr_parameters.add_master_parameter(
+            "absorption", links, unit="barns", comment=description
+        )
         self.instr_parameters.master["absorption"] = master_value
         top_value = self.instr_parameters["Sample top"]["absorption"].value
-        bottom_value = self.instr_parameters["Sample bottom"][
-            "absorption"].value
+        bottom_value = self.instr_parameters["Sample bottom"]["absorption"].value
         self.assertEqual(top_value, master_value)
         self.assertEqual(bottom_value, master_value)
         master_params = self.instr_parameters.master.parameters
         self.assertIn("absorption", master_params.keys())
         self.assertEqual(master_value, master_params["absorption"].value)
-        self.assertEqual(self.instr_parameters.master["absorption"].links,
-                         links)
+        self.assertEqual(self.instr_parameters.master["absorption"].links, links)
 
     def test_print(self):
         print(self.instr_parameters)
@@ -256,25 +268,23 @@ class Test_Instruments(unittest.TestCase):
         description = "Absorption cross section for both samples"
         links = {"Sample top": "absorption", "Sample bottom": "absorption"}
         master_value = 3.4
-        self.instr_parameters.add_master_parameter("absorption",
-                                                   links,
-                                                   unit="barns",
-                                                   comment=description)
+        self.instr_parameters.add_master_parameter(
+            "absorption", links, unit="barns", comment=description
+        )
         self.instr_parameters.master["absorption"] = master_value
-        temp_file = os.path.join(self.d.name, 'test.json')
+        temp_file = os.path.join(self.d.name, "test.json")
         # temp_file = 'instrument.json'
         self.instr_parameters.to_json(temp_file)
         print(self.instr_parameters)
 
         # From json
         instr_json = InstrumentParameters.from_json(temp_file)
-        self.assertEqual(instr_json['Source']['energy'].value, 4000)
+        self.assertEqual(instr_json["Source"]["energy"].value, 4000)
         master_params = instr_json.master.parameters
         self.assertIn("absorption", master_params.keys())
         self.assertEqual(master_value, master_params["absorption"].value)
-        self.assertEqual(self.instr_parameters.master["absorption"].links,
-                         links)
+        self.assertEqual(self.instr_parameters.master["absorption"].links, links)
 
 
-if __name__ == '__main__':
+if __name__ == "__main__":
     unittest.main()
