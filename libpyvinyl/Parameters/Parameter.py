@@ -8,6 +8,7 @@ class Parameter(AbstractBaseClass):
     """
     Description of a single parameter
     """
+
     def __init__(self, name, unit=None, comment=None):
         """
         Creates parameter with given name, optionally unit and comment
@@ -16,48 +17,69 @@ class Parameter(AbstractBaseClass):
         self.unit = unit
         self.comment = comment
         self._value = None
-        self.legal_intervals = []
-        self.illegal_intervals = []
+        self.intervals = []
+        self._intervals_are_legal = None
         self.options = []
+        self._options_are_legal = None
 
     @classmethod
     def from_dict(cls, param_dict):
-        param = cls(param_dict['name'], param_dict['unit'],
-                    param_dict['comment'])
+        param = cls(param_dict["name"], param_dict["unit"], param_dict["comment"])
         for key in param_dict:
             param.__dict__[key] = param_dict[key]
         return param
 
-    def add_legal_interval(self, min_value, max_value):
+    def add_interval(self, min_value, max_value, intervals_are_legal):
         """
-        Sets a legal interval for this parameter, None for infinite
+        Sets an interval for this parameter, None for infinite
         """
+        if self._intervals_are_legal is None:
+            self._intervals_are_legal = intervals_are_legal
+        else:
+            if self._intervals_are_legal != intervals_are_legal:
+                print("WARNING: All intervals should be either legal or illegal.")
+                print(
+                    "         Interval: ["
+                    + str(min_value)
+                    + ":"
+                    + str(max_value)
+                    + "] is declared differently w.r.t. to the previous intervals"
+                )
+                # should it throw an expection?
+                raise ValueError("Parameter", "interval", "multiple validities")
+
         if min_value is None:
             min_value = -math.inf
         if max_value is None:
             max_value = math.inf
 
-        self.legal_intervals.append([min_value, max_value])
+        self.intervals.append([min_value, max_value])
 
-    def add_illegal_interval(self, min_value, max_value):
-        """
-        Sets an illegal interval for this parameter, None for infinite
-        """
-        if min_value is None:
-            min_value = -math.inf
-        if max_value is None:
-            max_value = math.inf
+    def set_intervals_as_legal(self, mybool=True):
+        self._intervals_are_legal = mybool
 
-        self.illegal_intervals.append([min_value, max_value])
-
-    def add_option(self, option):
+    def add_option(self, option, options_are_legal):
         """
         Sets allowed values for this parameter
         """
+        if self._options_are_legal is None:
+            self._options_are_legal = options_are_legal
+        else:
+            if self._options_are_legal != options_are_legal:
+                print("WARNING: All options should be either legal or illegal.")
+                print(
+                    "         This option is declared differently w.r.t. to the previous ones"
+                )
+                # should it throw an expection?
+                raise ValueError("Parameter", "options", "multiple validities")
+
         if isinstance(option, list):
             self.options += option
         else:
             self.options.append(option)
+
+    def set_option_as_legal(self, mybool=True):
+        self.options_are_legal = mybool
 
     @property
     def value(self):
@@ -75,7 +97,7 @@ class Parameter(AbstractBaseClass):
         else:
             raise ValueError("Value of parameter '" + self.name + "' illegal.")
 
-    def is_legal(self, value=None):
+    def is_legal(self, values=None):
         """
         Checks whether or not given or contained value is legal given constraints.
 
@@ -83,55 +105,71 @@ class Parameter(AbstractBaseClass):
         legal intervals and options. The overlaps among the constrains will be overridden by
         the constrain of higher priority.
         """
-        if value is None:
-            value = self._value
 
-        # Check illegal intervals
-        for illegal_interval in self.illegal_intervals:
-            if illegal_interval[0] < value < illegal_interval[1]:
+        truths = []
+        if values is None:
+            values = self._value
+
+        if not hasattr(values, "__iter__") or isinstance(values, str):
+            #            print(str(hasattr(values, "__iter__")) + str(values))
+            value = values
+
+            for option in self.options:
+                if option == value:
+                    #
+                    return self._options_are_legal
+
+            # Check illegal intervals
+            for interval in self.intervals:
+                if interval[0] < value < interval[1]:
+                    #
+                    return self._intervals_are_legal
+            # T: are legal values
+            # F: are illegal values
+            # 0: empty list
+            #
+            # P I -> truth
+            # T T -> F
+            # F T -> F
+            # 0 T -> F
+            # T F -> T
+            # F F -> T
+            # 0 F -> T
+            # T 0 -> F
+            # F 0 -> T
+            # 0 0 -> T
+
+            return (not self._intervals_are_legal and len(self.intervals) > 0) or (
+                len(self.intervals) is 0
+                and (not self._options_are_legal or len(self.options) is 0)
+            )
+
+        # else
+        for value in values:
+            truths.append(self.is_legal(value))
+
+        # all values have to be True
+        for truth in truths:
+            if truth == False:
                 return False
 
-        # Check legal intervals
-        is_inside_a_legal_interval = False
-        for legal_interval in self.legal_intervals:
-            if legal_interval[0] < value < legal_interval[1]:
-                is_inside_a_legal_interval = True
-
-        if not is_inside_a_legal_interval and len(self.legal_intervals) > 0:
-            return False
-
-        # checked intervals, can return if options not used (frequent case)
-        if len(self.options) == 0:
-            return True
-
-        for option in self.options:
-            if option == value:
-                # If the value matches any option, it is legal
-                return True
-
-        # Since no options matched the parameter, it is illegal
-        return False
+        return True
 
     def print_paramter_constraints(self):
         """
         Print the legal and illegal intervals of this parameter.
         """
         print(self.name)
-        print('illegal intervals:', self.illegal_intervals)
-        print('legal intervals:', self.legal_intervals)
-        print('options', self.options)
+        print("intervals:", self.intervals)
+        print("intervals are legal:", self._intervals_are_legal)
+        print("options", self.options)
+        print("options are legal:", self._options_are_legal)
 
-    def clear_legal_intervals(self):
+    def clear_intervals(self):
         """
-        Clear the legal intervals of this parameter.
+        Clear the intervals of this parameter.
         """
-        self.legal_intervals = []
-
-    def clear_illegal_intervals(self):
-        """
-        Clear the illegal intervals of this parameter.
-        """
-        self.illegal_intervals = []
+        self.intervals = []
 
     def clear_options(self):
         """
@@ -159,14 +197,9 @@ class Parameter(AbstractBaseClass):
             string += self.comment
         string += 3 * " "
 
-        for legal_interval in self.legal_intervals:
-            interval = "L[" + str(legal_interval[0]) + ", " + str(
-                legal_interval[1]) + "]"
-            string += interval.ljust(10)
-
-        for illegal_interval in self.illegal_intervals:
-            interval = "I[" + str(illegal_interval[0]) + ", " + str(
-                illegal_interval[1]) + "]"
+        for interval in self.intervals:
+            legal = "L" if self._intervals_are_legal else "I"
+            interval = legal + "[" + str(interval[0]) + ", " + str(interval[1]) + "]"
             string += interval.ljust(10)
 
         if len(self.options) > 0:
@@ -195,20 +228,17 @@ class Parameter(AbstractBaseClass):
         if self.comment is not None:
             string += " " + self.comment + "\n"
 
-        if len(self.legal_intervals) > 0:
-            string += "  Legal intervals:\n"
-        for legal_interval in self.legal_intervals:
-            string += "    [" + str(legal_interval[0]) + "," + str(
-                legal_interval[1]) + "]\n"
-
-        if len(self.illegal_intervals) > 0:
-            string += "  Illegal intervals:\n"
-        for illegal_interval in self.illegal_intervals:
-            string += "    [" + str(illegal_interval[0]) + ", " + str(
-                illegal_interval[1]) + "]\n"
+        if len(self.intervals) > 0:
+            string += (
+                "  Legal intervals:\n"
+                if self._intervals_are_legal
+                else "  Illegal intervals:\n"
+            )
+        for interval in self.intervals:
+            string += "    [" + str(interval[0]) + "," + str(interval[1]) + "]\n"
 
         if len(self.options) > 0:
-            string += "  Allowed values:\n"
+            string += "  Allowed values:\n"  # FIXME
         for option in self.options:
             string += "    " + str(option) + "\n"
 
