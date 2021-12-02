@@ -15,7 +15,7 @@ class Parameter(AbstractBaseClass):
         self.name = name
         self.unit = unit
         self.comment = comment
-        self.value = None
+        self._value = None
         self.legal_intervals = []
         self.illegal_intervals = []
         self.options = []
@@ -59,17 +59,21 @@ class Parameter(AbstractBaseClass):
         else:
             self.options.append(option)
 
-    def set_value(self, value):
+    @property
+    def value(self):
+        return self._value
+
+    @value.setter
+    def value(self, value):
         """
         Sets value of this parameter if value is legal, otherwise warning is shown
 
         This could be expanded to raise an exception, or such could be in is_legal
         """
         if self.is_legal(value):
-            self.value = value
+            self._value = value
         else:
-            print("WARNING: Value of parameter '" + self.name
-                  + "' illegal, ignored.")
+            raise ValueError("Value of parameter '" + self.name + "' illegal.")
 
     def is_legal(self, value=None):
         """
@@ -80,7 +84,7 @@ class Parameter(AbstractBaseClass):
         the constrain of higher priority.
         """
         if value is None:
-            value = self.value
+            value = self._value
 
         # Check illegal intervals
         for illegal_interval in self.illegal_intervals:
