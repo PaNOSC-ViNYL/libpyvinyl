@@ -13,6 +13,7 @@ class BaseData(AbstractBaseClass):
                 'description': 'UNKNOWN data format',  # FORMAT DISCRIPTION
                 'ext': '',  # FORMAT EXTENSION
                 'module': '',  # API MODULE NAME OF THE FORMAT
+                'format_class': '',  # API MODULE NAME OF THE FORMAT
                 'read_kwargs': [''],  # KEYWORDS LIST NEEDED TO READ
                 'write_kwargs': ['']  # KEYWORDS LIST NEEDED TO WRITE
             }
@@ -22,12 +23,22 @@ class BaseData(AbstractBaseClass):
     def ioformats(self):
         return self._ioformats
 
-    def _add_ioformat(self, key: str, description: str, ext: str,
-                      read_kwargs: list, write_kwargs: list):
-        self._ioformats[key]['description'] = description
-        self._ioformats[key]['ext'] = ext
-        self._ioformats[key]['read_kwargs'] = read_kwargs
-        self._ioformats[key]['write_kwargs'] = write_kwargs
+    @staticmethod
+    def _add_ioformat(ioformats,
+                      key: str,
+                      description: str,
+                      ext: str,
+                      module: str,
+                      format_class: str,
+                      read_kwargs=[''],
+                      write_kwargs=['']):
+        ioformats[key] = {}
+        ioformats[key]['description'] = description
+        ioformats[key]['ext'] = ext
+        ioformats[key]['module'] = module
+        ioformats[key]['format_class'] = format_class
+        ioformats[key]['read_kwargs'] = read_kwargs
+        ioformats[key]['write_kwargs'] = write_kwargs
 
     def listFormats(self):
         """Print supported formats"""
@@ -55,17 +66,18 @@ class BaseData(AbstractBaseClass):
     def read(self, filename: str, format: str, **kwargs):
         """Read the data from the file with the `filename` in the `format`. It returns an instance of the data class"""
         module_name = self._ioformats[format]['module']
-        data_module = import_module(module_name)
-        return data_module.read(filename, **kwargs)
+        format_class = self._ioformats[format]['format_class']
+        data_class = getattr(import_module(module_name), format_class)
+        return data_class.read(filename, **kwargs)
 
     def write(self, filename: str, format: str, **kwargs):
         """Save the data with the `filename` in the `format`."""
         module_name = self._ioformats[format]['module']
-        data_module = import_module(module_name)
-        data_module.write(self, filename, **kwargs)
+        format_class = self._ioformats[format]['format_class']
+        data_class = getattr(import_module(module_name), format_class)
+        data_class.write(self, filename, **kwargs)
 
     @classmethod
-    @abstractmethod
     def convert(self, input_filename, input_format, output_filename,
                 output_format, **kwargs):
         """Convert a file into another format"""
@@ -87,14 +99,13 @@ class BaseFormat(AbstractBaseClass):
     @abstractmethod
     def __init__(self):
         self.__format_register = {
-            'base': {  # FORMAT KEY
-                'description': 'Base data format',  # FORMAT DISCRIPTION
-                'ext': 'base',  # FORMAT EXTENSION
-                'module':
-                'libpyvinyl.BaseData.BaseFormat',  # API MODULE NAME OF THE FORMAT
-                'read_kwargs': [''],  # KEYWORDS LIST NEEDED TO READ
-                'write_kwargs': ['']  # KEYWORDS LIST NEEDED TO WRITE
-            }
+            'key': 'Base',  # FORMAT KEY
+            'description': 'Base data format',  # FORMAT DISCRIPTION
+            'ext': 'base',  # FORMAT EXTENSION
+            'module':
+            'libpyvinyl.BaseData.BaseFormat',  # API MODULE NAME OF THE FORMAT
+            'read_kwargs': [''],  # KEYWORDS LIST NEEDED TO READ
+            'write_kwargs': ['']  # KEYWORDS LIST NEEDED TO WRITE
         }
         self.__direct_convert_formats = ['format_key_01', 'format_key_02']
 
@@ -123,17 +134,3 @@ class BaseFormat(AbstractBaseClass):
             return True
         else:
             return False
-
-
-# class ExampleData(BaseData):
-#     def __init__(self):
-#         super().__init__()
-#         # self.listFormats()
-
-#     def read(self, filename: str, format: str):
-
-#     def write(self):
-#         pass
-
-#     def convert(self):
-#         pass
