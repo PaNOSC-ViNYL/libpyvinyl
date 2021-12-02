@@ -24,9 +24,11 @@ setup(
     'Intended Audience :: Science/Research',      # Define that your audience are developers
     'Topic :: Software Development :: Libraries :: Python Modules',
     'License :: OSI Approved :: GNU Lesser General Public License v3 or later (LGPLv3+)',
-    'Programming Language :: Python :: 3',      #Specify which pyhton versions that you want to support
+    'Programming Language :: Python :: 3', 
     'Programming Language :: Python :: 3.6',
     'Programming Language :: Python :: 3.7',
     'Programming Language :: Python :: 3.8',
+    'Programming Language :: Python :: 3.9',
+    'Programming Language :: Python :: 3.10',
   ],
 ) 
