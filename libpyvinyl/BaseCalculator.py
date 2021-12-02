@@ -271,12 +271,12 @@ class SpecializedCalculator(BaseCalculator):
         self.parameters.new_parameter("photon_energy",
                                       unit="eV",
                                       comment="Photon energy")
-        self.parameters['photon_energy'].set_value(photon_energy)
+        self.parameters['photon_energy'].value = photon_energy
 
         self.parameters.new_parameter("pulse_energy",
                                       unit="joule",
                                       comment="Pulse energy")
-        self.parameters['pulse_energy'].set_value(pulse_energy)
+        self.parameters['pulse_energy'].value = pulse_energy
 
     def backengine(self):
         self._BaseCalculator__data = numpy.random.normal(

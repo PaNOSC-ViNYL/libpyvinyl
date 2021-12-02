@@ -58,16 +58,18 @@ class Test_Parameter(unittest.TestCase):
         par = Parameter("test")
         par.add_legal_interval(3, 4.5)
 
-        par.set_value(4.0)
+        par.value = 4.0
         self.assertEqual(par.value, 4.0)
 
-        par.set_value(5.0)  # Since this is not allowed, will be ignored
+        with self.assertRaises(ValueError):
+            par.value = 5.0  # Should throw an error and be ignored
+
         self.assertEqual(par.value, 4.0)
 
     def test_parameter_from_dict(self):
         par = Parameter("test")
         par.add_legal_interval(3, 4.5)
-        par.set_value(4.0)
+        par.value = 4.0
         par_from_dict = Parameter.from_dict(par.__dict__)
         self.assertEqual(par_from_dict.value, 4.0)
 
@@ -92,11 +94,23 @@ class Test_Parameter(unittest.TestCase):
         par.clear_options()
         self.assertEqual(par.options, [])
 
+    def test_print_line(self):
+        par = Parameter("test")
+        par.add_legal_interval(3, 4.5)
+        par.add_option(9.8)
+        par.print_line()
+
+    def test_print(self):
+        par = Parameter("test")
+        par.add_legal_interval(3, 4.5)
+        par.add_option(9.8)
+        print(par)
+
 
 class Test_Parameters(unittest.TestCase):
     def test_initialize_parameters_from_list(self):
         par1 = Parameter("test")
-        par1.set_value(8)
+        par1.value = 8
         par2 = Parameter("test2", unit="meV")
 
         parameters = CalculatorParameters([par1, par2])
@@ -105,9 +119,9 @@ class Test_Parameters(unittest.TestCase):
 
     def test_initialize_parameters_from_add(self):
         par1 = Parameter("test")
-        par1.set_value(8)
+        par1.value = 8
         par2 = Parameter("test2", unit="meV")
-        par2.set_value(10)
+        par2.value = 10
 
         parameters = CalculatorParameters()
         parameters.add(par1)
@@ -118,9 +132,9 @@ class Test_Parameters(unittest.TestCase):
 
     def test_print_parameters(self):
         par1 = Parameter("test")
-        par1.set_value(8)
+        par1.value = 8
         par2 = Parameter("test2", unit="meV")
-        par2.set_value(10)
+        par2.value = 10
         parameters = CalculatorParameters()
         parameters.add(par1)
         parameters.add(par2)
@@ -128,9 +142,9 @@ class Test_Parameters(unittest.TestCase):
 
     def test_json(self):
         par1 = Parameter("test")
-        par1.set_value(8)
+        par1.value = 8
         par2 = Parameter("test2", unit="meV")
-        par2.set_value(10)
+        par2.value = 10
 
         parameters = CalculatorParameters()
         parameters.add(par1)
@@ -152,7 +166,7 @@ def source_calculator():
                              unit="eV",
                              comment="Source energy setting")
     parameters["energy"].add_legal_interval(0, 1E6)
-    parameters["energy"].set_value(4000)
+    parameters["energy"].value = 4000
 
     parameters.new_parameter("delta_energy",
                              unit="eV",
