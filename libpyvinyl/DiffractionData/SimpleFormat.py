@@ -1,5 +1,6 @@
 import h5py
-from libpyvinyl.BaseData import BaseFormat
+from libpyvinyl.BaseFormat import BaseFormat
+from libpyvinyl.BaseData import BaseData
 from libpyvinyl.DiffractionData import DiffractionData
 
 
