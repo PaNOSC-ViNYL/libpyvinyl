@@ -75,11 +75,6 @@ class BaseData(AbstractBaseClass):
         """Save the data with the `filename` in the `format`."""
         return format_class.write(self, filename, **kwargs)
 
-        module_name = self._ioformats[format]['module']
-        format_class = self._ioformats[format]['format_class']
-        data_class = getattr(import_module(module_name), format_class)
-        data_class.write(self, filename, **kwargs)
-
     @classmethod
     def convert(self, input_filename, input_format, output_filename,
                 output_format, **kwargs):
