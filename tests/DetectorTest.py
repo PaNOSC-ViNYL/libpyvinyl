@@ -1,7 +1,7 @@
 import unittest
 
 from libpyvinyl.Detector import Detector, DetectorParameters
-from libpyvinyl.BaseCalculator import BaseCalculator, Parameters
+from libpyvinyl.BaseCalculator import BaseCalculator, CalculatorParameters
 
 
 class DetectorTest(unittest.TestCase):

@@ -1,14 +1,13 @@
 import unittest
 
 from libpyvinyl.BeamlinePropagator import BeamlinePropagator, BeamlinePropagatorParameters
-from libpyvinyl.BaseCalculator import BaseCalculator, Parameters
+from libpyvinyl.BaseCalculator import BaseCalculator, CalculatorParameters
 
 
 class BeamlinePropagatorParametersTest(unittest.TestCase):
     """
     Test class for the BeamlinePropagatorParametes class.
     """
-
     @classmethod
     def setUpClass(cls):
         """ Setting up the test class. """
@@ -40,13 +39,13 @@ class BeamlinePropagatorParametersTest(unittest.TestCase):
 
         # Test provenance.
         self.assertIsInstance(parameters, BeamlinePropagatorParameters)
-        self.assertIsInstance(parameters, Parameters)
+        self.assertIsInstance(parameters, CalculatorParameters)
+
 
 class BeamlinePropagatorTest(unittest.TestCase):
     """
     Test class for the BeamlinePropagator class.
     """
-
     @classmethod
     def setUpClass(cls):
         """ Setting up the test class. """
@@ -81,6 +80,6 @@ class BeamlinePropagatorTest(unittest.TestCase):
         self.assertIsInstance(calculator, BeamlinePropagator)
         self.assertIsInstance(calculator, BaseCalculator)
 
+
 if __name__ == '__main__':
     unittest.main()
-
