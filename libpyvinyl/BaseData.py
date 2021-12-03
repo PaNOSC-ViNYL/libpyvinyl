@@ -63,15 +63,18 @@ class BaseData(AbstractBaseClass):
         print(out_string)
 
     @classmethod
-    def read(self, filename: str, format: str, **kwargs):
+    def read(self, filename: str, format_class, **kwargs):
         """Read the data from the file with the `filename` in the `format`. It returns an instance of the data class"""
-        module_name = self._ioformats[format]['module']
-        format_class = self._ioformats[format]['format_class']
-        data_class = getattr(import_module(module_name), format_class)
-        return data_class.read(filename, **kwargs)
+        # module_name = self._ioformats[format]['module']
+        # format_class = self._ioformats[format]['format_class']
+        # data_class = getattr(import_module(module_name), format_class)
+        ## This should work if read is a classmethod
+        return format_class.read(filename, **kwargs)
 
-    def write(self, filename: str, format: str, **kwargs):
+    def write(self, filename: str, format_class, **kwargs):
         """Save the data with the `filename` in the `format`."""
+        return format_class.write(self, filename, **kwargs)
+
         module_name = self._ioformats[format]['module']
         format_class = self._ioformats[format]['format_class']
         data_class = getattr(import_module(module_name), format_class)
@@ -94,43 +97,3 @@ class BaseData(AbstractBaseClass):
             out_data_module.write(data_obj, output_filename, **kwargs)
 
 
-class BaseFormat(AbstractBaseClass):
-    """The abstract format class. It's the interface of a certain data format."""
-    @abstractmethod
-    def __init__(self):
-        self.__format_register = {
-            'key': 'Base',  # FORMAT KEY
-            'description': 'Base data format',  # FORMAT DISCRIPTION
-            'ext': 'base',  # FORMAT EXTENSION
-            'module':
-            'libpyvinyl.BaseData.BaseFormat',  # API MODULE NAME OF THE FORMAT
-            'read_kwargs': [''],  # KEYWORDS LIST NEEDED TO READ
-            'write_kwargs': ['']  # KEYWORDS LIST NEEDED TO WRITE
-        }
-        self.__direct_convert_formats = ['format_key_01', 'format_key_02']
-
-    @property
-    def format_register(self):
-        return self.__format_register
-
-    @classmethod
-    @abstractmethod
-    def read(self, filename: str, **kwargs) -> BaseData:
-        """Read the data from the file with the `filename`. It returns an instance of the data class"""
-        return BaseData()
-
-    @classmethod
-    @abstractmethod
-    def write(self, object: BaseData, filename: str, **kwargs):
-        """Save the data with the `filename`."""
-        pass
-
-    @classmethod
-    @abstractmethod
-    def convert(self, input: str, output: str, output_format: str, **kwargs):
-        """Direct convert method, if the default converting would be too slow or not suitable for the output_format"""
-        if output_format in self.__direct_convert_formats:
-            # self.format_convert(input, input, output_format)
-            return True
-        else:
-            return False
