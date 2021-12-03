@@ -22,14 +22,7 @@ class DiffractionData(BaseData):
         return self.__distance
 
     @classmethod
-    def read(self, filename: str, format: str, **kwargs):
+    def read(self, filename: str, format, **kwargs):
         """Read the data from the file with the `filename` in the `format`. It returns an instance of the data class"""
-        ioformats = {}
-        self._add_ioformat(ioformats, 'simple',
-                           'Simple example data format', '.h5',
-                           'libpyvinyl.DiffractionData.SimpleFormat',
-                           'SimpleFormat')
-        module_name = ioformats[format]['module']
-        format_class = ioformats[format]['format_class']
-        data_class = getattr(import_module(module_name), format_class)
-        return data_class.read(filename, **kwargs)
+
+        return format.read(filename, **kwargs)
