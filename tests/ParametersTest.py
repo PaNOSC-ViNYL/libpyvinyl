@@ -143,14 +143,14 @@ class Test_Parameter(unittest.TestCase):
 
     def test_print_line(self):
         par = Parameter("test")
-        par.add_legal_interval(3, 4.5)
-        par.add_option(9.8)
+        par.add_interval(3, 4.5, True)
+        par.add_option(9.8, True)
         par.print_line()
 
     def test_print(self):
         par = Parameter("test")
-        par.add_legal_interval(3, 4.5)
-        par.add_option(9.8)
+        par.add_interval(3, 4.5, True)
+        par.add_option(9.8, True)
         print(par)
 
     def test_parameter_iterable(self):
