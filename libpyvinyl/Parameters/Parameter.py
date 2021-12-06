@@ -107,12 +107,8 @@ class Parameter(AbstractBaseClass):
         """
         Checks whether or not given or contained value is legal given constraints.
 
-        Illegal intervals have the highest priority to be checked. Then it will check the
-        legal intervals and options. The overlaps among the constrains will be overridden by
-        the constrain of higher priority.
         """
 
-        truths = []
         if values is None:
             values = self._value
 
@@ -120,50 +116,40 @@ class Parameter(AbstractBaseClass):
             #            print(str(hasattr(values, "__iter__")) + str(values))
             value = values
 
+            # obvious, if no conditions are defined, the value is always legal
+            if len(self._options) == 0 and len(self._intervals) == 0:
+                return True
+
+            # first check if the value is in any defined discrete value
             for option in self._options:
                 if option == value:
-                    #
                     return self._options_are_legal
 
-            # Check illegal intervals
-                    #
+            # secondly check if it is in any defined interval
             for interval in self._intervals:
                 if interval[0] <= value <= interval[1]:
                     return self._intervals_are_legal
-            # T: are legal values
-            # F: are illegal values
-            # 0: empty list
-            #
-            # P I -> truth
-            # T T -> F
-            # F T -> F
-            # 0 T -> F
-            # T F -> T
-            # F F -> T
-            # 0 F -> T
-            # T 0 -> F
-            # F 0 -> T
-            # 0 0 -> T
 
-            return (not self._intervals_are_legal and len(self.intervals) > 0) or (
-                len(self.intervals) == 0
-                and (not self._options_are_legal or len(self.options) == 0)
-            )
+            # at this point the value has not been found in any interval
+            # if intervals where defined and were forbidden intervals, the value should be accepted
+            if len(self._intervals) > 0:
+                return not self._intervals_are_legal
+
+            # if there where no intervals defined, then it depends if the discrete values were forbidden or allowed
+            return not self._options_are_legal
 
         # else
-        for value in values:
-            truths.append(self.is_legal(value))
-
         # all values have to be True
-        for truth in truths:
-            if truth is False:
+
+        for value in values:
+            if not self.is_legal(value):
                 return False
 
         return True
 
     def print_paramter_constraints(self):
         """
-        Print the legal and illegal intervals of this parameter.
+        Print the legal and illegal intervals of this parameter. FIXME
         """
         print(self.name)
         print("intervals:", self._intervals)
