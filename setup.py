@@ -1,13 +1,9 @@
 from setuptools import setup, find_packages
 import sys
 
-requirements = ["pint",
-                "dill",
-                "numpy",
-                "scipy",
-                "jsons",
-                "h5py",
-                ]
+with open("requirements.txt") as requirements_file:
+    require = requirements_file.read()
+    requirements = require.split()
 
 setup(
   name='libpyvinyl',

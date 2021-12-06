@@ -140,8 +140,8 @@ class Parameter(AbstractBaseClass):
             # 0 0 -> T
 
             return (not self._intervals_are_legal and len(self.intervals) > 0) or (
-                len(self.intervals) is 0
-                and (not self._options_are_legal or len(self.options) is 0)
+                len(self.intervals) == 0
+                and (not self._options_are_legal or len(self.options) == 0)
             )
 
         # else
@@ -150,7 +150,7 @@ class Parameter(AbstractBaseClass):
 
         # all values have to be True
         for truth in truths:
-            if truth == False:
+            if truth is False:
                 return False
 
         return True
