@@ -18,6 +18,20 @@ class Test_Parameter(unittest.TestCase):
         self.assertEqual(par.unit, "cm")
         self.assertEqual(par.comment, "comment string")
 
+    # no conditions
+    def test_parameter_no_legal_conditions(self):
+        par = Parameter("test")
+        self.assertTrue(par.is_legal(None))
+        self.assertTrue(par.is_legal(-999))
+        self.assertTrue(par.is_legal(-1))
+        self.assertTrue(par.is_legal(0))
+        self.assertTrue(par.is_legal(1))
+        self.assertTrue(par.is_legal("This is a string"))
+        self.assertTrue(par.is_legal(True))
+        self.assertTrue(par.is_legal(False))
+        self.assertTrue(par.is_legal([0, "A", True]))
+
+    # case 1: only legal interval
     def test_parameter_legal_interval(self):
         par = Parameter("test")
         par.add_interval(3, 4.5, True)
@@ -25,6 +39,7 @@ class Test_Parameter(unittest.TestCase):
         self.assertTrue(par.is_legal(3.5))
         self.assertFalse(par.is_legal(1.0))
 
+    # case 2: only illegal interval
     def test_parameter_illegal_interval(self):
         par = Parameter("test")
         par.add_interval(3, 4.5, False)
@@ -42,7 +57,8 @@ class Test_Parameter(unittest.TestCase):
         self.assertTrue(par.is_legal(5.0))
         self.assertFalse(par.is_legal(10.0))
 
-    def test_parameter_option(self):
+    # case 1: only legal option
+    def test_parameter_legal_option(self):
         par = Parameter("test")
         par.add_option(9.8, True)
         par.add_option(True, True)
@@ -63,42 +79,55 @@ class Test_Parameter(unittest.TestCase):
         self.assertTrue(par.is_legal(9.8))
         self.assertFalse(par.is_legal(3))
 
-    def test_parameter_legal_interval_plus_option(self):
+    # case 1: legal interval + legal option
+    def test_parameter_legal_interval_plus_legal_option(self):
         par = Parameter("test")
         par.add_interval(None, 8.5, True)  # minus infinite to 8.5
-        # par.add_illegal_interval(3, 4.5)
+        par.add_option(5, True)  # this is stupid, already accounted in the interval
         par.add_option(11, True)
 
         self.assertTrue(par.is_legal(-831.0))
-        self.assertFalse(par.is_legal(8.5))
+        self.assertTrue(par.is_legal(8.5))
         self.assertTrue(par.is_legal(5.0))
         self.assertFalse(par.is_legal(10.0))
         self.assertTrue(par.is_legal(11.0))
 
-    def test_parameter_illegal_interval_plus_option(self):
+    # case 2: illegal interval + illegal option
+    def test_parameter_illegal_interval_plus_illegal_option(self):
         par = Parameter("test")
         par.add_interval(None, 8.5, False)  # minus infinite to 8.5
-        # par.add_illegal_interval(3, 4.5)
-        par.add_option(11, True)
+        par.add_option(5, False)  # this is stupid, already accounted in the interval
+        par.add_option(11, False)
 
         self.assertFalse(par.is_legal(-831.0))
-        self.assertTrue(par.is_legal(8.5))
+        self.assertFalse(par.is_legal(8.5))  # illegal because closed interval
         self.assertFalse(par.is_legal(5.0))
         self.assertTrue(par.is_legal(10.0))
-        self.assertTrue(par.is_legal(11.0))
+        self.assertFalse(par.is_legal(11.0))
 
+    # case 3: legal interval + illegal option
     def test_parameter_legal_interval_plus_illegal_option(self):
         par = Parameter("test")
         par.add_interval(None, 8.5, True)  # minus infinite to 8.5
-
-        # par.add_illegal_interval(3, 4.5)
         par.add_option(5, False)
 
         self.assertTrue(par.is_legal(-831.0))
-        self.assertFalse(par.is_legal(8.5))
+        self.assertTrue(par.is_legal(8.5))
         self.assertFalse(par.is_legal(5.0))
         self.assertFalse(par.is_legal(10.0))
         self.assertFalse(par.is_legal(11.0))
+
+    # case 4: illegal interval + legal option
+    def test_parameter_legal_interval_plus_illegal_option(self):
+        par = Parameter("test")
+        par.add_interval(None, 8.5, False)  # minus infinite to 8.5
+        par.add_option(5, True)
+
+        self.assertFalse(par.is_legal(-831.0))
+        self.assertFalse(par.is_legal(8.5))
+        self.assertTrue(par.is_legal(5.0))
+        self.assertTrue(par.is_legal(10.0))
+        self.assertTrue(par.is_legal(11.0))
 
     def test_parameter_set_value(self):
         par = Parameter("test")
@@ -129,7 +158,7 @@ class Test_Parameter(unittest.TestCase):
     def test_clear_intervals(self):  # FIXME
         par = Parameter("test")
         par.add_interval(3, 4.5, True)
-        self.assertEqual(par.intervals, [[3, 4.5]])
+        self.assertEqual(par._intervals, [[3, 4.5]])
         # par.add_illegal_interval(5, 10)
         # self.assertEqual(par.illegal_intervals, [[5, 10]])
         par.clear_intervals()
@@ -137,9 +166,9 @@ class Test_Parameter(unittest.TestCase):
         # par.clear_illegal_intervals()
         # self.assertEqual(par.illegal_intervals, [])
         par.add_option(9.7, True)
-        self.assertEqual(par.options, [9.7])
+        self.assertEqual(par._options, [9.7])
         par.clear_options()
-        self.assertEqual(par.options, [])
+        self.assertEqual(par._options, [])
 
     def test_print_line(self):
         par = Parameter("test")
