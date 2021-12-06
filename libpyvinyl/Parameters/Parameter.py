@@ -17,9 +17,9 @@ class Parameter(AbstractBaseClass):
         self.unit = unit
         self.comment = comment
         self._value = None
-        self.intervals = []
+        self._intervals = []
         self._intervals_are_legal = None
-        self.options = []
+        self._options = []
         self._options_are_legal = None
 
     @classmethod
@@ -31,8 +31,20 @@ class Parameter(AbstractBaseClass):
 
     def add_interval(self, min_value, max_value, intervals_are_legal):
         """
-        Sets an interval for this parameter, None for infinite
+        Sets an interval for this parameter: [min_value, max_value]
+        The interval is closed on both sides: min_value and and max_value are included.
+
+        :param min_value: minimum value of the interval
+        :type min_value: float or None for infinite
+
+        :param max_value: maximum value of the interval
+        :type max_value: float or None for infinite
+
+        :param intervals_are_legal: if not done previously, it defines if all the intervals of this parameter should be considered as allowed or forbidden intervals.
+        :type intervals_are_legal: boolean
+
         """
+
         if self._intervals_are_legal is None:
             self._intervals_are_legal = intervals_are_legal
         else:
@@ -53,10 +65,7 @@ class Parameter(AbstractBaseClass):
         if max_value is None:
             max_value = math.inf
 
-        self.intervals.append([min_value, max_value])
-
-    def set_intervals_as_legal(self, mybool=True):
-        self._intervals_are_legal = mybool
+        self._intervals.append([min_value, max_value])
 
     def add_option(self, option, options_are_legal):
         """
@@ -74,12 +83,9 @@ class Parameter(AbstractBaseClass):
                 raise ValueError("Parameter", "options", "multiple validities")
 
         if isinstance(option, list):
-            self.options += option
+            self._options += option
         else:
-            self.options.append(option)
-
-    def set_option_as_legal(self, mybool=True):
-        self.options_are_legal = mybool
+            self._options.append(option)
 
     @property
     def value(self):
@@ -114,15 +120,15 @@ class Parameter(AbstractBaseClass):
             #            print(str(hasattr(values, "__iter__")) + str(values))
             value = values
 
-            for option in self.options:
+            for option in self._options:
                 if option == value:
                     #
                     return self._options_are_legal
 
             # Check illegal intervals
-            for interval in self.intervals:
                 if interval[0] < value < interval[1]:
                     #
+            for interval in self._intervals:
                     return self._intervals_are_legal
             # T: are legal values
             # F: are illegal values
@@ -160,22 +166,22 @@ class Parameter(AbstractBaseClass):
         Print the legal and illegal intervals of this parameter.
         """
         print(self.name)
-        print("intervals:", self.intervals)
+        print("intervals:", self._intervals)
         print("intervals are legal:", self._intervals_are_legal)
-        print("options", self.options)
+        print("options", self._options)
         print("options are legal:", self._options_are_legal)
 
     def clear_intervals(self):
         """
         Clear the intervals of this parameter.
         """
-        self.intervals = []
+        self._intervals = []
 
     def clear_options(self):
         """
         Clear the option values of this parameter.
         """
-        self.options = []
+        self._options = []
 
     def print_line(self):
         """
@@ -197,14 +203,14 @@ class Parameter(AbstractBaseClass):
             string += self.comment
         string += 3 * " "
 
-        for interval in self.intervals:
+        for interval in self._intervals:
             legal = "L" if self._intervals_are_legal else "I"
             interval = legal + "[" + str(interval[0]) + ", " + str(interval[1]) + "]"
             string += interval.ljust(10)
 
-        if len(self.options) > 0:
+        if len(self._options) > 0:
             values = "("
-            for option in self.options:
+            for option in self._options:
                 values += str(option) + ", "
             values = values.strip(", ")
             values += ")"
@@ -228,18 +234,18 @@ class Parameter(AbstractBaseClass):
         if self.comment is not None:
             string += " " + self.comment + "\n"
 
-        if len(self.intervals) > 0:
+        if len(self._intervals) > 0:
             string += (
                 "  Legal intervals:\n"
                 if self._intervals_are_legal
                 else "  Illegal intervals:\n"
             )
-        for interval in self.intervals:
+        for interval in self._intervals:
             string += "    [" + str(interval[0]) + "," + str(interval[1]) + "]\n"
 
-        if len(self.options) > 0:
+        if len(self._options) > 0:
             string += "  Allowed values:\n"  # FIXME
-        for option in self.options:
+        for option in self._options:
             string += "    " + str(option) + "\n"
 
         return string
