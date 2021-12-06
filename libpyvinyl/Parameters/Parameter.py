@@ -126,9 +126,9 @@ class Parameter(AbstractBaseClass):
                     return self._options_are_legal
 
             # Check illegal intervals
-                if interval[0] < value < interval[1]:
                     #
             for interval in self._intervals:
+                if interval[0] <= value <= interval[1]:
                     return self._intervals_are_legal
             # T: are legal values
             # F: are illegal values
