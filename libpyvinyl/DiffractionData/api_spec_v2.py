@@ -29,8 +29,8 @@ class InteractionCalculator(BaseCalculator):
         return self.base_path+'name'
     def backengine(self):
         # Native input
-        wavefront_fn = self.input[0].convert(self.__set_base_path('wavefront.native'),'interaction_native_wavefront')
-        sample_fn = self.input[1].convert(self.__set_base_path('sample.native'),'interaction_native_sample')
+        wavefront_fn = self.input[0].write(self.__set_base_path('wavefront.native'),'interaction_native_wavefront')
+        sample_fn = self.input[1].write(self.__set_base_path('sample.native'),'interaction_native_sample')
         # This can be a DataCollection if there are multiple data objects
         interaction_data = run_simulation_kernel(wavefront_fn, sample_fn, self.parameters)
         # The final result from the calculator, it's a DiffrasctionData object
@@ -41,10 +41,9 @@ class DiffractionCalculator(BaseCalculator):
         return self.base_path+'name'
     def backengine(self):
         # Native input
-        wavefront_fn = self.input[0].convert(self.__set_base_path('wavefront.native'),'calculator_native_wavefront')
-        sample_fn = self.input[1].convert(self.__set_base_path('sample.native'),'calculator_native_sample')
+        interaction_fn = self.input.write(self.__set_base_path('sample.native'), 'diffr_native_interaction')
         # This can be a DataCollection if there are multiple data objects
-        diffraction_data = run_simulation_kernel(wavefront_fn, sample_fn, self.parameters)
+        diffraction_data = run_simulation_kernel(interaction_fn, self.parameters)
         # The final result from the calculator, it's a DiffrasctionData object
         self.output = diffraction_data
 
