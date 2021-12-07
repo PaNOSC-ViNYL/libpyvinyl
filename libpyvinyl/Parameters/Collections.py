@@ -75,9 +75,7 @@ class CalculatorParameters(AbstractBaseClass):
         try:
             return self.parameters[key]
         except KeyError:
-            raise KeyError(
-                "Call parameters by parameters[key], it doesn't support list function."
-            )
+            raise KeyError(f"{key} is not a valid parameter name.")
 
     def __setitem__(self, key, value):
         """

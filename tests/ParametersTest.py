@@ -240,6 +240,15 @@ class Test_Parameters(unittest.TestCase):
             params_json = CalculatorParameters.from_json(tmp_file)
             self.assertEqual(params_json["test2"].value, 10)
 
+    def test_get_item(self):
+        par1 = Parameter("test")
+        par1.value = 8
+        par2 = Parameter("test2", unit="meV")
+        par2.value = 10
+
+        parameters = CalculatorParameters()
+        self.assertRaises(KeyError, parameters.__getitem__, "test3")
+
 
 def source_calculator():
     """
