@@ -27,7 +27,9 @@ class CalculatorParameters(AbstractBaseClass):
         Checks given parameter is of type Parameter
         """
         if not isinstance(parameter, Parameter):
-            raise RuntimeError("A non-Parameter object was given to Parameters class.")
+            raise RuntimeError(
+                "Object of type Parameter expected, received {}".format(type(parameter))
+            )
 
     def check_list_type(self, parameter_list):
         """
