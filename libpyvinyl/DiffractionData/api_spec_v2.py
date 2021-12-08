@@ -3,49 +3,82 @@ The following documents how the various classes in libpyvinyl and a IO class to 
 are supposed to be used.
 """
 
-import InteractionCalculator, DiffractionCalculator, DataCollection
-import WavefrontData, SampleData
+import os
+import subprocess
+import XmdynCalculator, DiffractionCalculator, DataCollection
+from WavefrontData import WavefrontData, WpgWavefrontFormat
+from SampleData import SampleData, XmdynSampleFormat
+# Class naming convention? XMDYNInteractionFormat or XmdynInteractionFormat
+from InteractionData import InteractionData, XmdynInteractionFormat
 
 
 
+# Case 01: Run simulation with the calcualtor generating output files
 base_path = 'my_base'
-interaction = InteractionCalculator()
-interaction.base_path = base_path
-interaction.input = DataCollection(WavefrontData.file('prop.h5',format='wpg'), SampleData.file('sample.pdb',format='pdb'))
-interaction.output_suffix = 'interaction'
-interaction.backengine()
+input = DataCollection(WavefrontData.file('prop.h5',format=WpgWavefrontFormat,key='wavefront'), SampleData.file('sample.pdb',format=XmdynSampleFormat,key='sample'))
+# The suffix of the output files (if generated)
+output_suffix = 'interaction/'
+interaction = XmdynCalculator(name='interaction', base_path=base_path, input=input, output_suffix=output_suffix)
+interaction_ouput = interaction.backengine()
 
-diffraction = DiffractionCalculator()
-diffraction.base_path = base_path
-diffraction.input = interaction.output
-diffraction.output_suffix = 'diffr'
-diffraction.backengine()
+output_suffix = 'diffraction/'
+diffraction = DiffractionCalculator(name='diffraction',base_path=base_path, input=interaction_ouput, output_suffix=output_suffix)
+diffraction_output = diffraction.backengine()
 # It will write the files with the suffix.
-diffraction.output.write(format='nexus')
+diffraction_output.write(format='nexus')
 
 # Inside backengine()
-class InteractionCalculator(BaseCalculator):
-    def __set_base_path(self, name):
-        return self.base_path+'name'
+class XmdynCalculator(BaseCalculator):
+    # Should be in BaseCalculator
+    def get_file_path(self, name):
+        """To keep the file directory consistent within the calculator."""
+        name = output_suffix + name
+        os.path.join(self.base_path, name)
+    # Should be in BaseCalculator
+    def list_input_keys(self):
+        for key in self.__expected_input_keys:
+            print(key)
+    def __run(wavefront_fn, sample_fn, parameters):
+        native_output_fn = 'interaction.native'
+        command_sequence = ['xmdyn',sample_fn,'par1',str(parameters['par1'].value),'output',self.get_file_path(native_output_fn)]
+        proc = subprocess.Popen(command_sequence, stdout=subprocess.PIPE)
+        for line in iter(proc.stdout.readline, b''):
+            print '>>> {}'.format(line.rstrip())
+        return InteractionData.file(native_output_fn, format='pdb',key='sample')
+
     def backengine(self):
         # Native input
-        wavefront_fn = self.input[0].write(self.__set_base_path('wavefront.native'),'interaction_native_wavefront')
-        sample_fn = self.input[1].write(self.__set_base_path('sample.native'),'interaction_native_sample')
-        # This can be a DataCollection if there are multiple data objects
-        interaction_data = run_simulation_kernel(wavefront_fn, sample_fn, self.parameters)
+        wavefront_fn = self.input['wavefront'].write(self.get_file_path('wavefront.native'),WpgWavefrontFormat)
+        sample_fn = self.input['sample'].write(self.get_file_path('sample.native'), XmdynSampleFormat)
+        # This is a DataCollection if there are multiple data objects
+        interaction_data = self.__run(wavefront_fn, sample_fn, self.parameters)
         # The final result from the calculator, it's a DiffrasctionData object
         self.output = interaction_data
+        return self.output
+    # Should be in BaseCalculator
+    def write(self, **kwargs):
+        return self.output.write(**kwargs)
 
 class DiffractionCalculator(BaseCalculator):
-    def __set_base_path(self, name):
-        return self.base_path+'name'
+    # Should be in BaseCalculator
+    def get_file_path(self, name):
+        name = output_suffix + name
+        os.path.join(self.base_path, name)
+    # Should be in BaseCalculator
+    def list_input_keys(self):
+        for key in self.__expected_input_keys:
+            print(key)
     def backengine(self):
         # Native input
-        interaction_fn = self.input.write(self.__set_base_path('sample.native'), 'diffr_native_interaction')
-        # This can be a DataCollection if there are multiple data objects
+        interaction_fn = self.input['interaction'].write(self.get_file_path('sample.native'), XmdynInteractionFormat)
+        # This is a DataCollection if there are multiple data objects
         diffraction_data = run_simulation_kernel(interaction_fn, self.parameters)
         # The final result from the calculator, it's a DiffrasctionData object
         self.output = diffraction_data
+        return self.output
+    # Should be in BaseCalculator
+    def write(self, **kwargs):
+        return self.output.write(**kwargs)
 
 # Instantiate an instrument class.
 spb = Instrument()
@@ -71,4 +104,4 @@ spb.run()
 for calculator in spb.calculators:
     calculator.backengine()
     # Write the default format in the calculator
-    calculator.output.write()
+    calculator.write()
