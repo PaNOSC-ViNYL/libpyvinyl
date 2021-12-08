@@ -4,3 +4,4 @@ numpy
 scipy
 jsons
 h5py
+json_tricks
