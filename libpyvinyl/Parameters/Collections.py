@@ -91,6 +91,24 @@ class CalculatorParameters(AbstractBaseClass):
         """
         del self.parameters[key]
 
+    def __iter__(self):
+        """
+        Facilitates looping through the contained parameters
+
+        Uses the built in iterator in the return of dict.values() so one can
+        iterate through the parameters with a for loop.
+        """
+        return self.parameters.values().__iter__()
+
+    def __next__(self):
+        """
+        Facilitates looping through the contained parameters
+
+        Uses the built in next method in the return of dict.values() so one can
+        iterate through the parameters with a for loop.
+        """
+        return self.parameters.values().__next__()
+
     def print_indented(self, indents):
         """
         returns string describing this object, can optionally be indented
