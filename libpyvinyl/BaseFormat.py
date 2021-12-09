@@ -1,7 +1,7 @@
 from abc import abstractmethod
 from libpyvinyl.AbstractBaseClass import AbstractBaseClass
-from importlib import import_module
 from libpyvinyl.BaseData import BaseData
+
 
 class BaseFormat(AbstractBaseClass):
     """The abstract format class. It's the interface of a certain data format."""
@@ -11,16 +11,20 @@ class BaseFormat(AbstractBaseClass):
             'key': 'Base',  # FORMAT KEY
             'description': 'Base data format',  # FORMAT DISCRIPTION
             'ext': 'base',  # FORMAT EXTENSION
-            'module':
-            'libpyvinyl.BaseData.BaseFormat',  # API MODULE NAM OF THE FORMAT
+            'format_class': 'BaseFormat',  # CLASS NAME OF THE FORMAT
             'read_kwargs': [''],  # KEYWORDS LIST NEEDED TO READ
             'write_kwargs': ['']  # KEYWORDS LIST NEEDED TO WRITE
         }
+        # The formats can be directly converted to this format.
         self.__direct_convert_formats = ['format_key_01', 'format_key_02']
 
     @property
     def format_register(self):
         return self.__format_register
+
+    @property
+    def direct_convert_formats(self):
+        return self.__direct_convert_formats
 
     @classmethod
     @abstractmethod
@@ -32,9 +36,7 @@ class BaseFormat(AbstractBaseClass):
     @abstractmethod
     def write(self, object: BaseData, filename: str, **kwargs):
         """Save the data with the `filename`."""
-
         raise NotImplementedError()
-        
 
     @classmethod
     @abstractmethod
