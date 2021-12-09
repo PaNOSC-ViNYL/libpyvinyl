@@ -57,7 +57,7 @@ class BaseData(AbstractBaseClass):
             else:
                 self.__ioformats[this_format][key] = val
 
-    def listFormats(self):
+    def list_formats(self):
         """Print supported formats"""
         out_string = ''
         for key in self.ioformats:
