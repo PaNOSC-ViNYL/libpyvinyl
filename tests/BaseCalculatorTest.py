@@ -202,6 +202,15 @@ class BaseCalculatorTest(unittest.TestCase):
         self.assertEqual(reloaded_calculator.parameters['photon_energy'].value,
                          calculator.parameters['photon_energy'].value)
 
+    def test_set_values(self):
+        calculator = self.__default_calculator
+
+        calculator.set_parameters(photon_energy=42.0)
+        self.assertEqual(calculator.parameters["photon_energy"].value, 42.0)
+
+        calculator.set_parameters({"photon_energy": 37.0})
+        self.assertEqual(calculator.parameters["photon_energy"].value, 37.0)
+
 
 class ParametersTest(unittest.TestCase):
     """
