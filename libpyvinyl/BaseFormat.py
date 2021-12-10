@@ -19,8 +19,8 @@ class BaseFormat(AbstractBaseClass):
         file_extension = 'base'
         read_kwargs = ['']
         write_kwargs = ['']
-        return self.__create_format_register(key, desciption, file_extension,
-                                             read_kwargs, write_kwargs)
+        return self._create_format_register(key, desciption, file_extension,
+                                            read_kwargs, write_kwargs)
 
     @staticmethod
     @abstractmethod
@@ -31,12 +31,12 @@ class BaseFormat(AbstractBaseClass):
         return [Aformat, BFormat]
 
     @classmethod
-    def __create_format_register(cls,
-                                 key: str,
-                                 desciption: str,
-                                 file_extension: str,
-                                 read_kwargs=[''],
-                                 write_kwargs=['']):
+    def _create_format_register(cls,
+                                key: str,
+                                desciption: str,
+                                file_extension: str,
+                                read_kwargs=[''],
+                                write_kwargs=['']):
         format_register = {
             'key': key,  # FORMAT KEY
             'description': desciption,  # FORMAT DISCRIPTION
@@ -104,8 +104,8 @@ class ExampleData(BaseData):
     def supported_formats(self):
         format_dict = {}
         # Add the suppoted format classes when creating a concrete class.
-        self.__add_ioformat(format_dict, ExampleAFormat)
-        self.__add_ioformat(format_dict, ExampleBFormat)
+        self._add_ioformat(format_dict, ExampleAFormat)
+        self._add_ioformat(format_dict, ExampleBFormat)
         return format_dict
 
 
@@ -122,15 +122,14 @@ class ExampleAFormat(BaseFormat):
         file_extension = '.npz'
         read_kwargs = ['']
         write_kwargs = ['']
-        return self.__create_format_register(key, desciption, file_extension,
-                                             read_kwargs, write_kwargs)
+        return self._create_format_register(key, desciption, file_extension,
+                                            read_kwargs, write_kwargs)
 
     @staticmethod
     def direct_convert_formats():
         # Assume the format can be converted directly to the formats supported by these classes:
         # AFormat, BFormat
         # Redefine this `direct_convert_formats` for a concrete format class
-        return []
         return [ExampleBFormat]
 
     @classmethod
@@ -151,26 +150,29 @@ class ExampleAFormat(BaseFormat):
             return object.from_file(filename, cls, key)
 
     @classmethod
-    def convert(cls, input: str, output: str, output_format_class: str, key,
+    def convert(cls,
+                input: str,
+                output: str,
+                output_format_class: str,
+                key=None,
                 **kwargs):
         """Direct convert method, if the default converting would be too slow or not suitable for the output_format"""
-        raise NotImplementedError
         if output_format_class is ExampleBFormat:
-            return self.convert_to_ExampleBFormat(input, output, key)
+            cls.convert_to_ExampleBFormat(input, output)
         else:
             raise TypeError(
                 "Unsupported format {}".format(output_format_class))
+        if key is not None:
+            return ExampleData.from_file(output, output_format_class, key)
 
-    # @classmethod
-    # def convert_to_AFormat(self, input: str, output: str, key):
-    #     """The engine of convert method."""
-    #     obj_key = key
-    #     with h5py.File(input, 'r') as h5_in:
-    #         with h5py.File(output, 'w') as h5_out:
-    #             for key, val in h5_in.items():
-    #                 if key != 'format':
-    #                     h5_out[key] = val[()]
-    #     return BaseData.from_file(output, AFormat, obj_key)
+    @classmethod
+    def convert_to_ExampleBFormat(cls, input: str, output: str):
+        """The engine of convert method."""
+        print("Converting ExampleA to ExampleB")
+        data_dict = np.load(input)
+        data = np.array([data_dict['arr'], np.zeros_like(data_dict['arr'])])
+        data[1, :] = data_dict['number']
+        np.save(output, data)
 
 
 class ExampleBFormat(BaseFormat):
@@ -186,8 +188,8 @@ class ExampleBFormat(BaseFormat):
         file_extension = '.npy'
         read_kwargs = ['']
         write_kwargs = ['']
-        return self.__create_format_register(key, desciption, file_extension,
-                                             read_kwargs, write_kwargs)
+        return self._create_format_register(key, desciption, file_extension,
+                                            read_kwargs, write_kwargs)
 
     @staticmethod
     def direct_convert_formats():
@@ -222,26 +224,27 @@ class ExampleBFormat(BaseFormat):
                 **kwargs):
         """Direct convert method, if the default converting would be too slow or not suitable for the output_format"""
         raise NotImplementedError
-        # if output_format_class is ExampleAFormat:
-        #     return self.convert_to_ExampleBFormat(input, output, key)
-        # else:
-        #     return False
-
-    # @classmethod
-    # def convert_to_AFormat(self, input: str, output: str, key):
-    #     """The engine of convert method."""
-    #     obj_key = key
-    #     with h5py.File(input, 'r') as h5_in:
-    #         with h5py.File(output, 'w') as h5_out:
-    #             for key, val in h5_in.items():
-    #                 if key != 'format':
-    #                     h5_out[key] = val[()]
-    #     return BaseData.from_file(output, AFormat, obj_key)
 
 
 if __name__ == '__main__':
     data = {'arr': np.zeros((2, 3)), 'number': 1}
+    # Python Dictionary mapping
     test1 = ExampleData.from_dict(data, key='test1')
+    # Write the Python Dictionary in ExampleBFormat and create the data class object
     test1_dataB = test1.write('data.npy', ExampleBFormat, key='test1_dataB')
+    # Write the file in ExampleAFormat without creating the data class object
     test1_dataB.write('data.npz', ExampleAFormat)
-    test1_dataA = test1_dataB.write('data.npz', ExampleAFormat, key='test1_dataA')
+    # Write the file in ExampleAFormat creating the data class object test1_dataA
+    test1_dataA = test1_dataB.write('data.npz',
+                                    ExampleAFormat,
+                                    key='test1_dataA')
+    # Write the file in ExampleBFormat from ExampleAFormat
+    test1_dataA.write('data_convert.npy', ExampleBFormat)
+    # Write the file in ExampleBFormat from ExampleAFormat creating the data class object test1_convert
+    test1_convert = test1_dataA.write('data_convert.npy',
+                                      ExampleBFormat,
+                                      key='test_convert')
+    # print(test1_dataA.get_data())
+    ExampleData.list_formats()
+    print(test1)
+    print(test1_convert)
