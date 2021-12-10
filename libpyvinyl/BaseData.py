@@ -40,7 +40,7 @@ class BaseData(AbstractBaseClass):
                 'Niether self.__data_dict or self.__filename was found.')
 
     @staticmethod
-    def __add_ioformat(format_dict, format_class):
+    def _add_ioformat(format_dict, format_class):
         register = format_class.format_register()
         for key, val in register.items():
             if key == 'key':
