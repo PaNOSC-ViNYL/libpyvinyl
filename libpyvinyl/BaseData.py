@@ -7,21 +7,15 @@ class BaseData(AbstractBaseClass):
     # It represents a python object
     """The abstract wrapper data class. It's designed in a way so that its inheritance is an API of a
     kind of data (e.g. wavefront, sample, and diffraction) rather than that of a certain data format."""
-    @abstractmethod
     def __init__(self,
                  key,
+                 expected_data,
                  data_dict=None,
                  filename=None,
                  file_format_class=None,
                  file_format_kwargs=None):
         self.__key = key
-        excepted_data = {}
-        excepted_data['data1'] = 1
-        excepted_data['data2'] = 2
-        self.__expected_data = excepted_data
-        self.__ioformats = {}
-        self._add_ioformat(openPMDFormat)
-        self._add_ioformat(singfelFormat)
+        self.__expected_data = expected_data
 
         # This will be always be None if the data class is mapped to a file
         self.__data_dict = data_dict
@@ -36,10 +30,6 @@ class BaseData(AbstractBaseClass):
         return self.__key
 
     @property
-    def ioformats(self):
-        return self.__ioformats
-
-    @property
     def mapping_type(self):
         if self.__data_dict is not None:
             return 'Python Dictionary'
@@ -49,19 +39,32 @@ class BaseData(AbstractBaseClass):
             raise TypeError(
                 'Niether self.__data_dict or self.__filename was found.')
 
-    def _add_ioformat(self, format_class):
-        for key, val in format_class.items():
+    @staticmethod
+    def __add_ioformat(format_dict, format_class):
+        register = format_class.format_register()
+        for key, val in register.items():
             if key == 'key':
                 this_format = val
-                self.__ioformats[val] = {}
+                format_dict[val] = {}
             else:
-                self.__ioformats[this_format][key] = val
+                format_dict[this_format][key] = val
 
+    @classmethod
+    @abstractmethod
+    def supported_formats(self):
+        format_dict = {}
+        # Add the suppoted format classes when creating a concrete class.
+        # See the example at xx
+        self.__add_ioformat(format_dict, FormatClass)
+        return format_dict
+
+    @classmethod
     def list_formats(self):
         """Print supported formats"""
         out_string = ''
-        for key in self.ioformats:
-            dicts = self.ioformats[key]
+        supported_formats = self.supported_formats()
+        for key in supported_formats:
+            dicts = supported_formats[key]
             out_string += f'Key: {key}\n'
             out_string += 'Description: {}\n'.format(dicts['description'])
             ext = dicts['ext']
@@ -80,23 +83,42 @@ class BaseData(AbstractBaseClass):
         print(out_string)
 
     @classmethod
-    def from_file(cls, filename: str, format_class, **kwargs):
+    def from_file(cls, filename: str, format_class, key, **kwargs):
         """Create the data class by the file in the `format`."""
-        return cls(filename=filename,
+        return cls(key,
+                   filename=filename,
                    file_format_class=format_class,
                    file_format_kwargs=kwargs)
 
     @classmethod
-    def from_dict(cls, data_dict):
+    def from_dict(cls, data_dict, key):
         """Create the data class by a python dictionary."""
-        return cls(data_dict=data_dict)
+        return cls(key, data_dict=data_dict)
 
-    def write(self, filename: str, format_class, **kwargs):
+    def write(self, filename: str, format_class, key=None, **kwargs):
         # From either a file or a python object to a file
         # The behaviour related to a file will always be handled by
         # the format class.
         """Save the data with the `filename` in the `format`."""
-        return format_class.write(self, filename, **kwargs)
+        # If it's a python dictionary mapping, write with the specified format_class
+        # directly.
+        if self.mapping_type == 'Python Dictionary':
+            return format_class.write(self, filename, key, **kwargs)
+        elif format_class in self.__file_format_class.direct_convert_formats():
+            return self.__file_format_class.convert(self.__filename, filename,
+                                                    format_class, key,
+                                                    **kwargs)
+        # If it's a file mapping and would like to write in the same fileformat of the
+        # mapping, it will let the user know that a file containing the data in the same format already existed.
+        elif format_class == self.__file_format_class:
+            print(
+                f"Hint: This data already existed in the file {self.__filename} in format {self.__file_format_class}. `cp {self.__filename} {filename}` could be faster."
+            )
+            print(
+                f"Will still write the data into the file {filename} in format {format_class}"
+            )
+        # The default behaviour is to read the data into a dict and write it to a file.
+        return format_class.write(self, filename, key, **kwargs)
 
     def get_dict_data(self):
         # python object to python object
