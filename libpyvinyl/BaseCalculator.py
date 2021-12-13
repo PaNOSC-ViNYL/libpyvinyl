@@ -174,6 +174,18 @@ class BaseCalculator(AbstractBaseClass):
 
         self.__parameters = val
 
+    def set_parameters(self, args_as_dict=None, **kwargs):
+        """
+        Sets parameters contained in this calculator using dict or kwargs
+        """
+        if args_as_dict is not None:
+            parameter_dict = args_as_dict
+        else:
+            parameter_dict = kwargs
+
+        for key, parameter_value in parameter_dict.items():
+            self.parameters[key].value = parameter_value
+
     def dump(self, fname=None):
         """
         Dump class instance to file.
