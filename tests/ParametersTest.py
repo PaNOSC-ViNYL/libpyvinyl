@@ -1,4 +1,5 @@
 import unittest
+import numpy
 import pytest
 import os
 import tempfile
@@ -282,6 +283,57 @@ class Test_Parameter(unittest.TestCase):
         self.assertTrue(par.is_legal([3.1, 4.2, 4.4]))
         self.assertTrue(par.is_legal([3.1, 4.2, 4.4, 7]))
 
+    def test_parameters_with_quantity(self):
+        """ Test if we can construct and use a Parameter instance passing  pint.Quantity and pint.Unit objects to the constructor and interval setter."""
+
+        # Define the base unit of my parameter object.
+        meter = Unit('meter')
+        self.assertIsInstance(meter, Unit)
+
+        minimum_undulator_length = 10.0 * meter
+        undulator_length = Parameter('undulator_length', meter)
+
+        self.assertIsInstance(undulator_length, Parameter)
+        self.assertEqual(undulator_length.unit, Unit('meter'))
+
+        undulator_length.add_interval(min_value=minimum_undulator_length,
+                                      max_value=numpy.inf*meter,
+                                      intervals_are_legal=True
+        )
+
+
+        self.assertTrue(undulator_length.is_legal(10.1 * meter))
+        self.assertFalse(undulator_length.is_legal(9.0 * meter))
+        self.assertTrue(undulator_length.is_legal(5.5e4 * Unit('centimeter')))
+
+    def test_parameters_with_quantity_powers(self):
+        """ Test if we can construct and use a Parameter instance passing  pint.Quantity and pint.Unit objects to the constructor and interval setter. Use different powers of 10 in parameter initialization and value assignment."""
+
+        # Define the base unit of my parameter object.
+        meter = Unit('meter')
+        centimeter = Unit('centimeter')
+        self.assertIsInstance(meter, Unit)
+
+        minimum_undulator_length = 10.0 * meter
+        undulator_length = Parameter('undulator_length', centimeter)
+
+        self.assertIsInstance(undulator_length, Parameter)
+        self.assertEqual(undulator_length.unit, Unit('centimeter'))
+
+        undulator_length.add_interval(min_value=minimum_undulator_length,
+                                      max_value=numpy.inf*meter,
+                                      intervals_are_legal=True
+        )
+
+        print(undulator_length)
+
+
+        self.assertTrue(undulator_length.is_legal(10.1 * meter))
+        self.assertFalse(undulator_length.is_legal(9.0 * centimeter))
+        self.assertTrue(undulator_length.is_legal(5.5e4 * Unit('centimeter')))
+
+
+
 
 class Test_Parameters(unittest.TestCase):
     def test_initialize_parameters_from_list(self):
@@ -474,7 +526,6 @@ class Test_Instruments(unittest.TestCase):
         self.assertIn("absorption", master_params.keys())
         self.assertEqual(master_value, master_params["absorption"].value)
         self.assertEqual(self.instr_parameters.master["absorption"].links, links)
-
 
 if __name__ == "__main__":
     unittest.main()
