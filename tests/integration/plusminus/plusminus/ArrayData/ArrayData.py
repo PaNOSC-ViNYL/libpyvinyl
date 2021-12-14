@@ -15,7 +15,7 @@ class ArrayData(BaseData):
         expected_data['array'] = None
         ### DataClass developer's job end
 
-        super().__init__(self, key, expected_data, data_dict, filename,
+        super().__init__(key, expected_data, data_dict, filename,
                          file_format_class, file_format_kwargs)
 
     @classmethod
