@@ -1,7 +1,8 @@
-from pathlib import Path
+from typing import Union
 import numpy as np
-from libpyvinyl import BaseCalculator, CalculatorParameters
+from libpyvinyl import CalculatorParameters
 from libpyvinyl.BaseData import DataCollection
+from plusminus.BaseCalculator import BaseCalculator
 from plusminus.NumberData import NumberData
 from plusminus.ArrayData import ArrayData
 
@@ -9,85 +10,33 @@ from plusminus.ArrayData import ArrayData
 class ArrayCalculator(BaseCalculator):
     def __init__(self,
                  name: str,
-                 input: DataCollection,
-                 input_keys=['input1', 'input2'],
-                 output_keys=['array_result'],
+                 input: Union[DataCollection, list, NumberData],
+                 input_keys: Union[list, str] = ['input1', 'input2'],
+                 output_keys: Union[list, str] = ['array_result'],
+                 output_data_types=[ArrayData],
                  output_filenames=[],
-                 parameters=None):
+                 instrument_base_dir='./',
+                 calculator_base_dir='ArrayCalculator',
+                 parameters: CalculatorParameters = None):
         """A python dict calculator to create an array from two inputs."""
-        if parameters is None:
-            self.__init_parameters()
-        self.__name = name
-        self.__input = input
-        assert len(input_keys) == 2
-        self.__input_keys = input_keys
-        self.__base_dir = None
-        self.base_dir = 'ArrayCalculator'
-        assert len(output_keys) == 1
-        self.__output_keys = output_keys
-        assert len(output_filenames) == 0
-        self.__output_filenames = output_filenames
+        super().__init__(name,
+                         input,
+                         input_keys,
+                         output_keys,
+                         output_data_types=output_data_types,
+                         output_filenames=output_filenames,
+                         instrument_base_dir=instrument_base_dir,
+                         calculator_base_dir=calculator_base_dir,
+                         parameters=parameters)
 
-    def __init_parameters(self):
+    def init_parameters(self):
         parameters = CalculatorParameters()
+        # Calculator developer edit
         multiply = parameters.new_parameter(
             "multiply", comment="Multiply the array by a value")
         multiply.value = 1
+        # Calculator developer end
         self.parameters = parameters
-
-    @property
-    def name(self):
-        return self.__name
-
-    @property
-    def input(self):
-        return self.__input
-
-    @property
-    def base_dir(self):
-        return self.__base_dir
-
-    @base_dir.setter
-    def base_dir(self, value):
-        self.set_base_dir(value)
-
-    def set_base_dir(self, value):
-        # Make sure the base_dir exists and set the base_dir.
-        Path(value).mkdir(parents=True, exist_ok=True)
-        self.__base_dir = value
-
-    @property
-    def input_keys(self):
-        return self.__input_keys
-
-    @property
-    def output_keys(self):
-        return self.__output_keys
-
-    @property
-    def output_filenames(self):
-        """Native calculator file names"""
-        return self.__output_filenames
-
-    @output_filenames.setter
-    def output_filenames(self, value):
-        self.set_output_filenames(value)
-
-    def set_output_filenames(self, value):
-        if isinstance(value, str):
-            self.__output_filenames = [value]
-        else:
-            self.__output_filenames = value
-
-    @property
-    def output_file_paths(self):
-        paths = []
-        for filename in self.output_filenames:
-            path = Path(self.base_dir) / filename
-            # Make sure the file directory exists
-            path.parent.mkdir(parents=True, exist_ok=True)
-            paths.append(str(path))
-        return paths
 
     def backengine(self):
         input_data0 = self.input[self.input_keys[0]]
@@ -103,6 +52,3 @@ class ArrayCalculator(BaseCalculator):
         output_data = ArrayData.from_dict(data_dict, key)
         self.output = DataCollection(output_data)
         return self.output
-
-    def saveH5(self, fname: str, openpmd: bool = True):
-        raise NotImplementedError
