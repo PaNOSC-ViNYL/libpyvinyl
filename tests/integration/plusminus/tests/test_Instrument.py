@@ -3,6 +3,7 @@ from libpyvinyl.Instrument import Instrument
 from plusminus.ArrayCalculators import ArrayCalculator
 from plusminus.NumberCalculators import PlusCalculator, MinusCalculator
 from plusminus.NumberData import NumberData
+import plusminus.ArrayData as AD
 from plusminus import DataCollection
 
 
@@ -28,8 +29,11 @@ def test_CalculationInstrument():
                                   output_keys=['array_result'])
 
     calculation_instrument = Instrument('calculation_instrument')
+    calculation_instrument.set_instrument_base_dir('./calculation_instrument')
     calculation_instrument.add_calculator(calculator1)
     calculation_instrument.add_calculator(calculator2)
     calculation_instrument.add_calculator(calculator3)
     calculation_instrument.run()
     print(calculator3.output.get_data())
+    calculator3.output.write('final_result.txt', AD.TXTFormat)
+    calculator3.output.write('final_result.h5', AD.H5Format)
