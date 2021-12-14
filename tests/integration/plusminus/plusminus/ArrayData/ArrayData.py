@@ -22,7 +22,7 @@ class ArrayData(BaseData):
     def supported_formats(self):
         format_dict = {}
         ### DataClass developer's job start
-        self.__add_ioformat(format_dict, TXTFormat)
-        self.__add_ioformat(format_dict, H5Format)
+        self._add_ioformat(format_dict, TXTFormat)
+        self._add_ioformat(format_dict, H5Format)
         ### DataClass developer's job end
         return format_dict

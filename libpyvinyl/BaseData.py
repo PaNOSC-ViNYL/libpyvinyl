@@ -171,6 +171,9 @@ class DataCollection():
         self.data_object_dict = {}
         self.add_data(*args)
 
+    def __len__(self):
+        return len(self.data_object_dict)
+
     def __getitem__(self, keys):
         if isinstance(keys, str):
             return self.get_data_object(keys)
