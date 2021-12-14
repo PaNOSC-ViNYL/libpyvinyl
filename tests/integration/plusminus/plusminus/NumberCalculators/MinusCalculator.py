@@ -26,6 +26,14 @@ class MinusCalculator(BaseCalculator):
         self.__output_keys = output_keys
         assert len(output_filenames) == 1
         self.__output_filenames = output_filenames
+        self.__init_output()
+
+    def __init_output(self):
+        output = DataCollection()
+        for key in self.output_keys:
+            output_data = NumberData(key)
+            output.add_data(output_data)
+        self.output = output
 
     def __init_parameters(self):
         parameters = CalculatorParameters()
@@ -99,8 +107,8 @@ class MinusCalculator(BaseCalculator):
         file_path = self.output_file_paths[0]
         np.savetxt(file_path, arr, fmt='%.3f')
         key = self.output_keys[0]
-        output_data = NumberData.from_file(file_path, TXTFormat, key)
-        self.output = DataCollection(output_data)
+        output_data = self.output[key]
+        output_data.set_file(file_path, TXTFormat, key)
         return self.output
 
     def saveH5(self, fname: str, openpmd: bool = True):

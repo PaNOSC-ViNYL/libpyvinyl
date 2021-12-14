@@ -82,6 +82,12 @@ class BaseData(AbstractBaseClass):
             out_string += '\n'
         print(out_string)
 
+    def set_file(self, filename: str, format_class, key, **kwargs):
+        self.__key = key
+        self.__filename = filename
+        self.__file_format_class = format_class
+        self.__file_format_kwargs = kwargs
+
     @classmethod
     def from_file(cls, filename: str, format_class, key, **kwargs):
         """Create the data class by the file in the `format`."""
@@ -89,6 +95,10 @@ class BaseData(AbstractBaseClass):
                    filename=filename,
                    file_format_class=format_class,
                    file_format_kwargs=kwargs)
+
+    def set_dict(self, data_dict, key):
+        self.__key = key
+        self.__data_dict = data_dict
 
     @classmethod
     def from_dict(cls, data_dict, key):
