@@ -23,6 +23,6 @@ jobs:
           cd tests
           pytest Test.py
       - name: Code formatting
-      	run: |
+        run: |
           black --check libpyvinyl/
           
