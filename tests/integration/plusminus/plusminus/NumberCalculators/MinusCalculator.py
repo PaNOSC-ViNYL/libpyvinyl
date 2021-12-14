@@ -20,7 +20,8 @@ class MinusCalculator(BaseCalculator):
         self.__input = input
         assert len(input_keys) == 2
         self.__input_keys = input_keys
-        self.__base_dir = 'MinusCalculator'
+        self.__base_dir = None
+        self.base_dir = 'MinusCalculator'
         assert len(output_keys) == 1
         self.__output_keys = output_keys
         assert len(output_filenames) == 1
@@ -50,6 +51,8 @@ class MinusCalculator(BaseCalculator):
         self.set_base_dir(value)
 
     def set_base_dir(self, value):
+        # Make sure the base_dir exists and set the base_dir.
+        Path(value).mkdir(parents=True, exist_ok=True)
         self.__base_dir = value
 
     @property
