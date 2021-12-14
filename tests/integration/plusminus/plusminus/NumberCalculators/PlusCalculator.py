@@ -1,3 +1,4 @@
+from pathlib import Path
 from libpyvinyl import BaseCalculator, CalculatorParameters
 from libpyvinyl.BaseData import DataCollection
 from plusminus.NumberData import NumberData
@@ -18,7 +19,8 @@ class PlusCalculator(BaseCalculator):
         self.__input = input
         assert len(input_keys) == 2
         self.__input_keys = input_keys
-        self.__base_dir = './'
+        self.__base_dir = None
+        self.base_dir = './PlusCalculator'
         assert len(output_keys) == 1
         self.__output_keys = output_keys
         assert len(output_filenames) == 0
@@ -47,7 +49,9 @@ class PlusCalculator(BaseCalculator):
     def base_dir(self, value):
         self.set_base_dir(value)
 
-    def set_base_dir(self, value):
+    def set_base_dir(self, value: str):
+        # Make sure the base_dir exists and set the base_dir.
+        Path(value).mkdir(parents=True, exist_ok=True)
         self.__base_dir = value
 
     @property
@@ -63,10 +67,30 @@ class PlusCalculator(BaseCalculator):
         """Native calculator file names"""
         return self.__output_filenames
 
+    @output_filenames.setter
+    def output_filenames(self, value):
+        self.set_output_filenames(value)
+
+    def set_output_filenames(self, value):
+        if isinstance(value, str):
+            self.__output_filenames = [value]
+        else:
+            self.__output_filenames = value
+
+    @property
+    def output_file_paths(self):
+        paths = []
+        for filename in self.output_filenames:
+            path = Path(self.base_dir) / filename
+            # Make sure the file directory exists
+            path.parent.mkdir(parents=True, exist_ok=True)
+            paths.append(str(path))
+        return paths
+
     def backengine(self):
         input_num0 = self.input[self.input_keys[0]].get_data()['number']
         input_num1 = self.input[self.input_keys[1]].get_data()['number']
-        output_num = input_num0 + input_num1
+        output_num = float(input_num0) + float(input_num1)
         if self.parameters['plus_times'].value > 1:
             for i in range(self.parameters['plus_times'].value - 1):
                 output_num += input_num1
