@@ -1,4 +1,4 @@
-import os
+from pathlib import Path
 import numpy as np
 from libpyvinyl import BaseCalculator, CalculatorParameters
 from libpyvinyl.BaseData import DataCollection
@@ -9,6 +9,7 @@ class MinusCalculator(BaseCalculator):
     def __init__(self,
                  name: str,
                  input: DataCollection,
+                 input_keys=['input1', 'input2'],
                  output_keys=['mius_result'],
                  output_filenames=['minus_result.txt'],
                  parameters=None):
@@ -17,9 +18,12 @@ class MinusCalculator(BaseCalculator):
             self.__init_parameters()
         self.__name = name
         self.__input = input
-        self.__request_data_source_keys = ['number1', 'number2']
-        self.__base_dir = './'
+        assert len(input_keys) == 2
+        self.__input_keys = input_keys
+        self.__base_dir = 'MinusCalculator'
+        assert len(output_keys) == 1
         self.__output_keys = output_keys
+        assert len(output_filenames) == 1
         self.__output_filenames = output_filenames
 
     def __init_parameters(self):
@@ -49,6 +53,10 @@ class MinusCalculator(BaseCalculator):
         self.__base_dir = value
 
     @property
+    def input_keys(self):
+        return self.__input_keys
+
+    @property
     def output_keys(self):
         return self.__output_keys
 
@@ -57,25 +65,40 @@ class MinusCalculator(BaseCalculator):
         """Native calculator file names"""
         return self.__output_filenames
 
+    @output_filenames.setter
+    def output_filenames(self, value):
+        self.set_output_filenames(value)
+
+    def set_output_filenames(self, value):
+        if isinstance(value, str):
+            self.__output_filenames = [value]
+        else:
+            self.__output_filenames = value
+
     @property
     def output_file_paths(self):
         paths = []
         for filename in self.output_filenames:
-            path = os.path.join(self.base_dir, filename)
-            paths.append(path)
+            path = Path(self.base_dir) / filename
+            # Make sure the file directory exists
+            path.parent.mkdir(parents=True, exist_ok=True)
+            paths.append(str(path))
         return paths
 
-    @property
-    def request_data_keys(self):
-        return self.__request_data_source_keys
-
     def backengine(self):
-        input_num0 = input[self.request_data_keys[0]].get_data()['number']
-        input_num1 = input[self.request_data_keys[1]].get_data()['number']
-        output_num = input_num0 - input_num1
+        input_num0 = self.input[self.input_keys[0]].get_data()['number']
+        input_num1 = self.input[self.input_keys[1]].get_data()['number']
+        output_num = float(input_num0) - float(input_num1)
+        if self.parameters['minus_times'].value > 1:
+            for i in range(self.parameters['minus_times'].value - 1):
+                output_num -= input_num1
         arr = np.array([output_num])
-        filename = self.output_filenames[0]
-        np.savetxt(filename, arr, fmt='%.3f')
-        output_data = NumberData.from_file(filename, TXTFormat)
+        file_path = self.output_file_paths[0]
+        np.savetxt(file_path, arr, fmt='%.3f')
+        key = self.output_keys[0]
+        output_data = NumberData.from_file(file_path, TXTFormat, key)
         self.output = DataCollection(output_data)
         return self.output
+
+    def saveH5(self, fname: str, openpmd: bool = True):
+        raise NotImplementedError
