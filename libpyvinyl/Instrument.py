@@ -3,13 +3,11 @@
 """
 
 from libpyvinyl.Parameters.Collections import InstrumentParameters
-from pathlib import Path
 
 
 class Instrument:
     """An Instrument class"""
-
-    def __init__(self, name, calculators=None):
+    def __init__(self, name, calculators=None, instrument_base_dir='./'):
         """An Instrument class
 
         :param name: The name of this instrument
@@ -17,12 +15,18 @@ class Instrument:
         :param calculators: A collection of Calculator objects.
         :type calculators: dict
         """
-        self.__name = name
-        self.__calculators = {}
+        self.__name = None
+        self.__instrument_base_dir = None
         self.__parameters = InstrumentParameters()
+
+        self.name = name
+
+        self.__calculators = {}
         if calculators is not None:
             for calculator in calculators:
                 self.add_calculator(calculator)
+
+        self.set_instrument_base_dir(instrument_base_dir)
 
     def add_master_parameter(self, name, links, **kwargs):
         self.parameters.add_master_parameter(name, links, **kwargs)
@@ -34,7 +38,12 @@ class Instrument:
 
     @name.setter
     def name(self, value: str):
-        self.__name = value
+        if isinstance(value, str):
+            self.__name = value
+        else:
+            raise TypeError(
+                f'Instrument: name is expecting a str rather than {type(value)}'
+            )
 
     @property
     def calculators(self):
@@ -53,18 +62,21 @@ class Instrument:
     def master(self):
         return self.parameters.master
 
-    def set_base_path(self, base: str):
-        """Set each calculator's output_path as 'base_path/calculator.name'.
+    def set_instrument_base_dir(self, base: str):
+        """Set each calculator's `instrument_base_dir` to '`base`. Each calculator's data file ouput directory
+        will be "`instrument_base_dir`/`calculator_base_dir`".
 
-        :param base: The base path to be set.
+        :param base: The base directory to be set.
         :type base: str
         """
-        self.base_path = base
-        basePath = Path(base)
-        for key in self.calculators:
-            outputPath = basePath / self.calculators[key].name
-            calculator = self.calculators[key]
-            calculator.output_path = str(outputPath)
+        if isinstance(base, str):
+            self.__instrument_base_dir = base
+            for calculator in self.calculators.values():
+                calculator.instrument_base_dir = self.__instrument_base_dir
+        else:
+            raise TypeError(
+                f'Instrument: instrument_base_dir is expecting a str rather than {type(base)}'
+            )
 
     def list_calculators(self):
         string = f"- Instrument: {self.name} -\n"
