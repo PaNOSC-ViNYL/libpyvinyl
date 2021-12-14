@@ -83,3 +83,7 @@ class Instrument:
     def remove_calculator(self, calculator_name):
         del self.__calculators[calculator_name]
         del self.__parameters[calculator_name]
+
+    def run(self):
+        for calculator in self.calculators.values():
+            calculator.backengine()

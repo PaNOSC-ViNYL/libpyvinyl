@@ -25,6 +25,14 @@ class PlusCalculator(BaseCalculator):
         self.__output_keys = output_keys
         assert len(output_filenames) == 0
         self.__output_filenames = output_filenames
+        self.__init_output()
+
+    def __init_output(self):
+        output = DataCollection()
+        for key in self.output_keys:
+            output_data = NumberData(key)
+            output.add_data(output_data)
+        self.output = output
 
     def __init_parameters(self):
         parameters = CalculatorParameters()
@@ -62,6 +70,16 @@ class PlusCalculator(BaseCalculator):
     def output_keys(self):
         return self.__output_keys
 
+    @output_keys.setter
+    def output_keys(self, value):
+        self.set_output_keys(value)
+
+    def set_output_keys(self, value):
+        if isinstance(value, str):
+            self.__output_keys = [value]
+        else:
+            self.__output_keys = value
+
     @property
     def output_filenames(self):
         """Native calculator file names"""
@@ -96,8 +114,8 @@ class PlusCalculator(BaseCalculator):
                 output_num += input_num1
         data_dict = {'number': output_num}
         key = self.output_keys[0]
-        output_data = NumberData.from_dict(data_dict, key)
-        self.output = DataCollection(output_data)
+        output_data = self.output[key]
+        output_data.set_dict(data_dict, key)
         return self.output
 
     def saveH5(self, fname: str, openpmd: bool = True):
