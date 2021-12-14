@@ -161,16 +161,39 @@ class DataCollection():
         self.data_object_dict = {}
         self.add_data(*args)
 
-    def __getitem__(self, *keys):
-        subset = []
-        for key in keys:
-            subset.append(self.data_object_dict[key])
-        return DataCollection(*subset)
+    def __getitem__(self, keys):
+        if isinstance(keys, str):
+            return self.get_data_object(keys)
+        elif isinstance(keys, list):
+            subset = []
+            for key in keys:
+                subset.append(self.get_data_object(key))
+            return DataCollection(*subset)
 
     def add_data(self, *args):
         """Add data objects to the data colletion"""
         for data in args:
             self.data_object_dict[data.key] = data
+
+    def get_data(self):
+        """When there is only one item in the DataCollection"""
+        if len(self.data_object_dict) == 1:
+            for obj in self.data_object_dict.values():
+                return obj.get_data()
+        else:
+            raise RuntimeError(
+                f"More than 1 data object in this DataCollection: {self.data_object_dict.keys()}.\nPick one of them to get_data()"
+            )
+
+    def write(self, filename: str, format_class, key=None, **kwargs):
+        """When there is only one item in the DataCollection"""
+        if len(self.data_object_dict) == 1:
+            for obj in self.data_object_dict.values():
+                return obj.write(filename, format_class, key, **kwargs)
+        else:
+            raise RuntimeError(
+                f"More than 1 data object in this DataCollection: {self.data_object_dict.keys()}.\nPick one of them to write()"
+            )
 
     def get_data_object(self, key):
         return self.data_object_dict[key]
