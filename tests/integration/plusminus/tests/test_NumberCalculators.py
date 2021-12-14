@@ -46,9 +46,6 @@ def test_MinusCalculator():
     print(file_output)
 
 
-# def test_Instrument():
-
-
 def test_DataCollection_multiple():
     """PlusCalculator test function"""
 
