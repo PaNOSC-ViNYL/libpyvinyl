@@ -43,11 +43,6 @@ is_travisCI = ("TRAVIS_BUILD_DIR" in list(
 def suite():
     suites = [
         unittest.makeSuite(BaseCalculatorTest, 'test'),
-        unittest.makeSuite(DetectorTest, 'test'),
-        unittest.makeSuite(RadiationSampleInteractorTest, 'test'),
-        unittest.makeSuite(BeamlinePropagatorTest, 'test'),
-        unittest.makeSuite(BeamlinePropagatorParametersTest, 'test'),
-        unittest.makeSuite(SignalGeneratorTest, 'test'),
         unittest.makeSuite(Test_Parameter, 'test'),
         unittest.makeSuite(Test_Parameters, 'test'),
         unittest.makeSuite(Test_Instruments, 'test'),
