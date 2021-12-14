@@ -132,7 +132,6 @@ class Parameter(AbstractBaseClass):
             elif vtype is float:
                 self.__value_type = Quantity
             else:
-                print("Vtype: ", vtype)
                 self.__value_type = vtype
 
         else:  # type(value) != self.__value_type:
