@@ -44,5 +44,5 @@ class PlusCalculator(BaseCalculator):
         data_dict = {'number': output_num}
         key = self.output_keys[0]
         output_data = self.output[key]
-        output_data.set_dict(data_dict, key)
+        output_data.set_dict(data_dict)
         return self.output

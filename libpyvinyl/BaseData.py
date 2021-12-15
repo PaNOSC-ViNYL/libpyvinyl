@@ -82,8 +82,7 @@ class BaseData(AbstractBaseClass):
             out_string += '\n'
         print(out_string)
 
-    def set_file(self, filename: str, format_class, key, **kwargs):
-        self.__key = key
+    def set_file(self, filename: str, format_class, **kwargs):
         self.__filename = filename
         self.__file_format_class = format_class
         self.__file_format_kwargs = kwargs
@@ -96,8 +95,7 @@ class BaseData(AbstractBaseClass):
                    file_format_class=format_class,
                    file_format_kwargs=kwargs)
 
-    def set_dict(self, data_dict, key):
-        self.__key = key
+    def set_dict(self, data_dict):
         self.__data_dict = data_dict
 
     @classmethod
@@ -127,10 +125,11 @@ class BaseData(AbstractBaseClass):
             print(
                 f"Will still write the data into the file {filename} in format {format_class}"
             )
-        # The default behaviour is to read the data into a dict and write it to a file.
-        return format_class.write(self, filename, key, **kwargs)
+            return format_class.write(self, filename, key, **kwargs)
+        else:
+            return format_class.write(self, filename, key, **kwargs)
 
-    def get_dict_data(self):
+    def __get_dict_data(self):
         # python object to python object
         if self.__data_dict is not None:
             data_to_return = self.__expected_data.copy()
@@ -139,7 +138,7 @@ class BaseData(AbstractBaseClass):
                 data_to_return[key] = self.__data_dict[key]
             return data_to_return
 
-    def get_file_data(self):
+    def __get_file_data(self):
         # file to python object
         if self.__filename is not None:
             data_to_return = self.__expected_data.copy()
@@ -154,9 +153,9 @@ class BaseData(AbstractBaseClass):
         """Return the data in a dictionary"""
         # From either a file or a python object to a python object
         if self.__data_dict is not None:
-            return self.get_dict_data()
+            return self.__get_dict_data()
         elif self.__filename is not None:
-            return self.get_file_data()
+            return self.__get_file_data()
 
     def __repr__(self):
         """Returns strings of Data objets info"""
