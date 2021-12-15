@@ -55,7 +55,7 @@ class BaseData(AbstractBaseClass):
         format_dict = {}
         # Add the suppoted format classes when creating a concrete class.
         # See the example at xx
-        self.__add_ioformat(format_dict, FormatClass)
+        self._add_ioformat(format_dict, FormatClass)
         return format_dict
 
     @classmethod
@@ -213,7 +213,7 @@ class DataCollection():
 
     def to_list(self):
         """Export a list of the data objects in the data colletion"""
-        return [self.data_object_dict[key] for key in self.data_dict.keys()]
+        return [value for value in self.data_object_dict.values()]
 
     def __repr__(self):
         """Returns strings of Data objets info"""
