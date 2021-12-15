@@ -11,7 +11,6 @@ class BaseCalculator(AbstractBaseClass):
     def __init__(self,
                  name: str,
                  input: Union[DataCollection, list, BaseData],
-                 input_keys: Union[list, str],
                  output_keys: Union[list, str],
                  output_data_types: list,
                  output_filenames: Union[list, str],
@@ -32,7 +31,6 @@ class BaseCalculator(AbstractBaseClass):
 
         self.name = name
         self.input = input
-        self.input_keys = input_keys
         self.output_keys = output_keys
         self.output_data_types = output_data_types
         self.output_filenames = output_filenames
@@ -229,6 +227,7 @@ class BaseCalculator(AbstractBaseClass):
 
     @abstractmethod
     def backengine(self):
+        Path(self.base_dir).mkdir(parents=True, exist_ok=True)
         input_num0 = self.input[self.input_keys[0]].get_data()['number']
         input_num1 = self.input[self.input_keys[1]].get_data()['number']
         output_num = float(input_num0) + float(input_num1)

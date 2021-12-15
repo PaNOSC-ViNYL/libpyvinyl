@@ -29,7 +29,7 @@ class H5Format(BaseFormat):
         """Read the data from the file with the `filename` to a dictionary. The dictionary will
         be used by its corresponding data class."""
         with h5py.File(filename, 'r') as h5:
-            array = h5['array']
+            array = h5['array'][()]
         data_dict = {'array': array}
         return data_dict
 
