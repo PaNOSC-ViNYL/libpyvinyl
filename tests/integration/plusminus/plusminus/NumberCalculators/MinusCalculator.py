@@ -47,5 +47,5 @@ class MinusCalculator(BaseCalculator):
         np.savetxt(file_path, arr, fmt='%.3f')
         key = self.output_keys[0]
         output_data = self.output[key]
-        output_data.set_file(file_path, TXTFormat, key)
+        output_data.set_file(file_path, TXTFormat)
         return self.output
