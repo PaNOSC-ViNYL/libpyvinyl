@@ -40,5 +40,9 @@ class H5Format(BaseFormat):
         number = data_dict['number']
         with h5py.File(filename, 'w') as h5:
             h5['number'] = number
-        if key is not None:
+        if key is None:
+            original_key = object.key
+            key = original_key + '_to_H5Format'
+            return object.from_file(filename, cls, key)
+        else:
             return object.from_file(filename, cls, key)
