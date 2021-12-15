@@ -38,5 +38,9 @@ class TXTFormat(BaseFormat):
         data_dict = object.get_data()
         arr = data_dict['array']
         np.savetxt(filename, arr, fmt='%.3f')
-        if key is not None:
+        if key is None:
+            original_key = object.key
+            key = original_key + '_to_TXTFormat'
+            return object.from_file(filename, cls, key)
+        else:
             return object.from_file(filename, cls, key)
