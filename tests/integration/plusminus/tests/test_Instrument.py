@@ -25,7 +25,6 @@ def test_CalculationInstrument():
                                       calculator2.output['minus_result'])
     calculator3 = ArrayCalculator('array',
                                   input_collection,
-                                  input_keys=['plus_result', 'minus_result'],
                                   output_keys=['array_result'])
 
     calculation_instrument = Instrument('calculation_instrument')

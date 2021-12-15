@@ -1,4 +1,5 @@
 from typing import Union
+from pathlib import Path
 import numpy as np
 from libpyvinyl import CalculatorParameters
 from libpyvinyl.BaseData import DataCollection
@@ -10,7 +11,6 @@ class MinusCalculator(BaseCalculator):
     def __init__(self,
                  name: str,
                  input: Union[DataCollection, list, NumberData],
-                 input_keys: Union[list, str] = ['input1', 'input2'],
                  output_keys: Union[list, str] = ['minus_result'],
                  output_data_types=[NumberData],
                  output_filenames: Union[list, str] = ['minus_result.txt'],
@@ -20,7 +20,6 @@ class MinusCalculator(BaseCalculator):
         """A python object calculator example"""
         super().__init__(name,
                          input,
-                         input_keys,
                          output_keys,
                          output_data_types=output_data_types,
                          output_filenames=output_filenames,
@@ -36,8 +35,9 @@ class MinusCalculator(BaseCalculator):
         self.parameters = parameters
 
     def backengine(self):
-        input_num0 = self.input[self.input_keys[0]].get_data()['number']
-        input_num1 = self.input[self.input_keys[1]].get_data()['number']
+        Path(self.base_dir).mkdir(parents=True, exist_ok=True)
+        input_num0 = self.input.to_list()[0].get_data()['number']
+        input_num1 = self.input.to_list()[1].get_data()['number']
         output_num = float(input_num0) - float(input_num1)
         if self.parameters['minus_times'].value > 1:
             for i in range(self.parameters['minus_times'].value - 1):
