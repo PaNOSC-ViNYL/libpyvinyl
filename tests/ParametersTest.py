@@ -21,6 +21,67 @@ class Test_Parameter(unittest.TestCase):
         assert par.unit == str(Unit("cm"))
         self.assertEqual(par.comment, "comment string")
 
+    def test_units_assignment(self):
+        par = Parameter("test", unit="kg")
+        assert par.unit == Unit("kg")
+        par.unit = "cm"
+        assert par.unit == Unit("cm")
+        par.unit = "meter"
+        assert par.unit == Unit("m")
+        assert par.unit == str(Unit("m"))
+        assert par.unit == "meter"
+        par.unit = "nounit"
+        assert par.unit == "nounit"
+
+    def test_check_value_type(self):
+        par = Parameter("test")
+        v = 1
+        par._Parameter__check_compatibility(v)
+        par._Parameter__set_value_type(v)
+        assert par._Parameter__value_type == int
+
+        v = 1.0
+        par._Parameter__check_compatibility(v)
+        par._Parameter__set_value_type(v)
+        assert par._Parameter__value_type == Quantity
+
+        v = "string"
+        with pytest.raises(TypeError):
+            par._Parameter__check_compatibility(v)
+        par._Parameter__set_value_type(v)
+        assert par._Parameter__value_type == str
+
+        v = True
+        par = Parameter("test")
+        par._Parameter__set_value_type("string")
+        assert par._Parameter__value_type == str
+        with pytest.raises(TypeError):
+            par._Parameter__check_compatibility(v)
+
+        par = Parameter("test")
+        par._Parameter__set_value_type(True)
+        assert par._Parameter__value_type == bool
+
+        v = ["ciao", True]
+        par = Parameter("test")
+        with pytest.raises(TypeError):
+            par._Parameter__check_compatibility(v)
+        par._Parameter__set_value_type([False, True])
+
+        v = {"ciao": True, "bye": "string"}
+        par = Parameter("test")
+        with pytest.raises(NotImplementedError):
+            par._Parameter__check_compatibility(v)
+        v = {"ciao": True, "bye": False}
+        with pytest.raises(NotImplementedError):
+            par._Parameter__check_compatibility(v)
+
+        v = numpy.random.uniform(0, 1, 10)
+        par = Parameter("test")
+        par._Parameter__check_compatibility(v)
+        par._Parameter__set_value_type(v)
+        assert par._Parameter__value_type == Quantity
+
     # no conditions
     def test_parameter_no_legal_conditions(self):
         par = Parameter("test")
@@ -284,55 +345,53 @@ class Test_Parameter(unittest.TestCase):
         self.assertTrue(par.is_legal([3.1, 4.2, 4.4, 7]))
 
     def test_parameters_with_quantity(self):
-        """ Test if we can construct and use a Parameter instance passing  pint.Quantity and pint.Unit objects to the constructor and interval setter."""
+        """Test if we can construct and use a Parameter instance passing  pint.Quantity and pint.Unit objects to the constructor and interval setter."""
 
         # Define the base unit of my parameter object.
-        meter = Unit('meter')
+        meter = Unit("meter")
         self.assertIsInstance(meter, Unit)
 
         minimum_undulator_length = 10.0 * meter
-        undulator_length = Parameter('undulator_length', meter)
+        undulator_length = Parameter("undulator_length", meter)
 
         self.assertIsInstance(undulator_length, Parameter)
-        self.assertEqual(undulator_length.unit, Unit('meter'))
+        self.assertEqual(undulator_length.unit, Unit("meter"))
 
-        undulator_length.add_interval(min_value=minimum_undulator_length,
-                                      max_value=numpy.inf*meter,
-                                      intervals_are_legal=True
+        undulator_length.add_interval(
+            min_value=minimum_undulator_length,
+            max_value=numpy.inf * meter,
+            intervals_are_legal=True,
         )
-
 
         self.assertTrue(undulator_length.is_legal(10.1 * meter))
         self.assertFalse(undulator_length.is_legal(9.0 * meter))
-        self.assertTrue(undulator_length.is_legal(5.5e4 * Unit('centimeter')))
+        self.assertTrue(undulator_length.is_legal(5.5e4 * Unit("centimeter")))
 
     def test_parameters_with_quantity_powers(self):
-        """ Test if we can construct and use a Parameter instance passing  pint.Quantity and pint.Unit objects to the constructor and interval setter. Use different powers of 10 in parameter initialization and value assignment."""
+        """Test if we can construct and use a Parameter instance passing  pint.Quantity and pint.Unit objects to the constructor and interval setter. Use different powers of 10 in parameter initialization and value assignment."""
 
         # Define the base unit of my parameter object.
-        meter = Unit('meter')
-        centimeter = Unit('centimeter')
+        meter = Unit("meter")
+        centimeter = Unit("centimeter")
         self.assertIsInstance(meter, Unit)
 
         minimum_undulator_length = 10.0 * meter
-        undulator_length = Parameter('undulator_length', centimeter)
+        undulator_length = Parameter("undulator_length", centimeter)
 
         self.assertIsInstance(undulator_length, Parameter)
-        self.assertEqual(undulator_length.unit, Unit('centimeter'))
+        self.assertEqual(undulator_length.unit, Unit("centimeter"))
 
-        undulator_length.add_interval(min_value=minimum_undulator_length,
-                                      max_value=numpy.inf*meter,
-                                      intervals_are_legal=True
+        undulator_length.add_interval(
+            min_value=minimum_undulator_length,
+            max_value=numpy.inf * meter,
+            intervals_are_legal=True,
         )
 
         print(undulator_length)
 
-
         self.assertTrue(undulator_length.is_legal(10.1 * meter))
         self.assertFalse(undulator_length.is_legal(9.0 * centimeter))
-        self.assertTrue(undulator_length.is_legal(5.5e4 * Unit('centimeter')))
-
-
+        self.assertTrue(undulator_length.is_legal(5.5e4 * Unit("centimeter")))
 
 
 class Test_Parameters(unittest.TestCase):
@@ -526,6 +585,7 @@ class Test_Instruments(unittest.TestCase):
         self.assertIn("absorption", master_params.keys())
         self.assertEqual(master_value, master_params["absorption"].value)
         self.assertEqual(self.instr_parameters.master["absorption"].links, links)
+
 
 if __name__ == "__main__":
     unittest.main()
