@@ -1,6 +1,6 @@
 # Created by Mads Bertelsen and modified by Juncheng E
 # Further modified by Shervin Nourbakhsh
-from typing import Union
+from typing import Union, Any
 
 import math
 from libpyvinyl.AbstractBaseClass import AbstractBaseClass
@@ -10,6 +10,7 @@ from libpyvinyl.AbstractBaseClass import AbstractBaseClass
 
 from pint.unit import Unit
 from pint.quantity import Quantity
+import pint.errors
 
 
 class Parameter(AbstractBaseClass):
@@ -60,6 +61,7 @@ class Parameter(AbstractBaseClass):
          - unit: str
          - comment: str
          - ...
+        This class method is mainly used to allow dumping and loading the class from json
         """
         if not "name" in param_dict:
             raise KeyError(
@@ -87,8 +89,16 @@ class Parameter(AbstractBaseClass):
 
     @unit.setter
     def unit(self, uni):
-        # check if it is a valid unit, otherwise just store the string! FIXME
-        self.__unit = Unit(uni)
+        """
+        Assignement of the units
+
+        A pint.Unit is used if the string is recognized as a valid unit in the registry.
+        It is stored as a string otherwise.
+        """
+        try:
+            self.__unit = Unit(uni)
+        except pint.errors.UndefinedUnitError:
+            self.__unit = uni
 
     @property
     def value_no_conversion(self):
@@ -104,40 +114,113 @@ class Parameter(AbstractBaseClass):
         else:
             return self.__value
 
-    def _to_quantity(self, value: any) -> Union[Quantity, type(value)]:
+    @classmethod
+    # self is not needed...
+    def __is_type_compatible(self, t1: type, t2: Union[None, type]) -> bool:
         """
-        Returns pint.Quantity if value can be interpreted as a physical quantity,
-        returns value otherwise.
+        Check type compatibility
 
-        Integers are interpreted as physical quantities only if a unit is defined.
-        This is to avoid interpreting booleans as quantities.
-        pint.Quantity raises an error if a True or False value are given
+        :param t1: first type
+        :type t1: type
+
+        :param t2: second type
+        :type t2: type
+
+        :return: bool
+
+        True if t1 and t2 are of the same type or if one is int and the other float
+        False otherwise
+        """
+        if t1 == type(None) or t2 == type(None):
+            return True
+        if t1 == None or t2 == None:
+            return True
+
+        # promote any int or float to pint.Quantity
+        if t1 == float or t1 == int:
+            t1 = Quantity
+        if t2 == float or t2 == int:
+            t2 = Quantity
+
+        if "quantity" in str(t1):
+            t1 = Quantity
+        if "quantity" in str(t2):
+            t2 = Quantity
+
+        if t1 == t2:
+            return True
+
+        return False
+
+    def __to_quantity(self, value: Any) -> Union[Quantity, Any]:
+        """
+        Converts value into a pint.Quantity if this Parameter is defined to be a Quantity.
+        It returns value unaltered otherwise.
         """
 
-        a = value
-        if self.__value_type == Quantity and type(value) != Quantity:
-            a = Quantity(value, self.__unit)
+        if self.__value_type == Quantity and not isinstance(value, Quantity):
+            return Quantity(value, self.__unit)
 
-        return a
+        return value
 
-    def __set_value_type(self, value):
+    def __set_value_type(self, value: Any) -> None:
         """
-        Sets the type for the parameter, done only the first time.
-        Then it will raise an exception if the type is not coherent to what is declared.
+        Sets the type for the parameter.
+        It should always be preceded by a __check_compatibility to avoid chaning the type for the Parameter
+
+        :param value: a value that might be assigned as Parameter value or in an interval or option
+        :type value: any type
+
+        It will raise an exception if the type is not coherent to what previously is declared.
         """
+        if (
+            hasattr(value, "__iter__")
+            and not isinstance(value, str)
+            and not isinstance(value, Quantity)
+        ):
+            value = value[0]
+
+        # if an integer has units, then it is a quantity -> promotion
+        if isinstance(value, int) and self.__unit != "":
+            self.__value_type = Quantity
+        # if value is a float, than can be used as a quantity -> promotion
+        elif isinstance(value, float):
+            self.__value_type = Quantity
+        else:  # cannot be treated as a quantity
+            self.__value_type = type(value)
+
+    def __check_compatibility(self, value: Any) -> None:
+        """
+        Raises an error if this parameter and the given value are not of the same type or compatible
+        :param value: a value that might be assigned as Parameter value or in an interval or option
+        :type value: any type
+
+        It will raise an exception if the type is not coherent to what previously is declared.
+        """
+
         vtype = type(value)
-        if self.__is_type_compatible(vtype, self.__value_type):
-            if vtype is int and self.__unit != "":
-                self.__value_type = Quantity
-            elif vtype is float:
-                self.__value_type = Quantity
-            else:
-                self.__value_type = vtype
+        assert vtype != None
+        v = value
+        # First case: value is a list, it might be good to double check
+        # that all the members are of the same type
+        if isinstance(value, list):
+            vtype = type(value[0])
+            for v in value:
+                if not self.__is_type_compatible(vtype, type(v)):
+                    raise TypeError(
+                        "Iterable object passed as value for the parameter, but it is made of inomogeneous types: ",
+                        vtype,
+                        type(v),
+                    )
+        elif isinstance(value, dict):
+            raise NotImplementedError("Dictionaries are not accepted")
 
-        else:  # type(value) != self.__value_type:
+        # check that the value is compatible with what previously defined
+        if not self.__is_type_compatible(vtype, self.__value_type):
             raise TypeError(
-                "New value of type %s is different from %s previously defined"
-                % (type(value), self.__value_type)
+                "New value of type {} is different from {} previously defined".format(
+                    type(value), self.__value_type
+                )
             )
 
     @value.setter
@@ -150,8 +233,9 @@ class Parameter(AbstractBaseClass):
         :type value: str | boolean | int | float | object | pint.Quantity
         If value is a float, it is internally converted to a pint.Quantity
         """
+        self.__check_compatibility(value)
         self.__set_value_type(value)
-        value = self._to_quantity(value)
+        value = self.__to_quantity(value)
 
         if self.is_legal(value):
             self.__value = value
@@ -179,8 +263,10 @@ class Parameter(AbstractBaseClass):
         if max_value is None:
             max_value = math.inf
 
-        self.__set_value_type(min_value)
-        self.__set_value_type(max_value)
+        self.__check_compatibility(min_value)
+        self.__check_compatibility(max_value)
+
+        self.__set_value_type(min_value)  # it could have been max_value
 
         if self.__intervals_are_legal is None:
             self.__intervals_are_legal = intervals_are_legal
@@ -198,7 +284,7 @@ class Parameter(AbstractBaseClass):
                 raise ValueError("Parameter", "interval", "multiple validities")
 
         self.__intervals.append(
-            [self._to_quantity(min_value), self._to_quantity(max_value)]
+            [self.__to_quantity(min_value), self.__to_quantity(max_value)]
         )
 
         # if the interval has been added after assignement of the value of the parameter,
@@ -227,13 +313,14 @@ class Parameter(AbstractBaseClass):
                 # should it throw an expection?
                 raise ValueError("Parameter", "options", "multiple validities")
 
+        self.__check_compatibility(option)
+        self.__set_value_type(option)  # it could have been max_value
+
         if isinstance(option, list):
             for op in option:
-                self.__set_value_type(op)
-                self.__options.append(self._to_quantity(op))
+                self.__options.append(self.__to_quantity(op))
         else:
-            self.__set_value_type(option)
-            self.__options.append(self._to_quantity(option))
+            self.__options.append(self.__to_quantity(option))
 
         # if the option has been added after assignement of the value of the parameter,
         # the latter should be checked
@@ -244,47 +331,6 @@ class Parameter(AbstractBaseClass):
                     + str(self.value)
                     + " is now illegal based on the newly added option"
                 )
-
-    @classmethod
-    def __is_type_compatible(self, t1: type, t2: type) -> bool:  # self is not needed...
-        """
-        Check type compatiblity
-
-        :param t1: first type
-        :type t1: type
-
-        :param t2: second type
-        :type t2: type
-
-        :return: bool
-
-        True if t1 and t2 are of the same type or if one is int and the other float
-        False otherwise
-        """
-        if t1 == type(None) or t2 == type(None):
-            return True
-        if t1 == None or t2 == None:
-            return True
-
-        # promote any float to pint.Quantity
-        if t1 == float:
-            t1 = Quantity
-        if t2 == float:
-            t2 = Quantity
-
-        if "quantity" in str(t1):
-            t1 = Quantity
-        if "quantity" in str(t2):
-            t2 = Quantity
-
-        if t1 == t2:
-            return True
-
-        # consider int always compatible with Quantities
-        if (t1 == int and t2 == Quantity) or (t1 == Quantity and t2 == int):
-            return True
-
-        return False
 
     def is_legal(self, values=None):
         """
@@ -306,7 +352,7 @@ class Parameter(AbstractBaseClass):
             if self.__is_type_compatible(type(values), self.__value_type) is False:
                 return False
 
-            value = self._to_quantity(values)
+            value = self.__to_quantity(values)
 
             # obvious, if no conditions are defined, the value is always legal
             if len(self.__options) == 0 and len(self.__intervals) == 0:
@@ -365,10 +411,10 @@ class Parameter(AbstractBaseClass):
         """
         returns string with one line description of parameter
         """
-        if self.__unit is None:
+        if self.__unit is None or self.__unit == Unit(""):
             unit_string = ""
         else:
-            unit_string = "[" + str(self.__unit) + "]"
+            unit_string = "[" + str(self.__unit) + "] "
 
         if self.value_no_conversion is None:
             string = self.name.ljust(20)
