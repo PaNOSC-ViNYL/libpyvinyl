@@ -4,9 +4,9 @@ from libpyvinyl.AbstractBaseClass import AbstractBaseClass
 
 
 class BaseData(AbstractBaseClass):
-    # It represents a python object
-    """The abstract wrapper data class. It's designed in a way so that its inheritance is an API of a
-    kind of data (e.g. wavefront, sample, and diffraction) rather than that of a certain data format."""
+    """ The abstract data class. Inheriting classes represent simulation input and/or output
+    data and provide a harmonized user interface to simulation data of various kinds rather than a data format.
+    Their purpose is to provide a harmonized user interface to common data operations such as reading/writing from/to disk."""
     def __init__(self,
                  key,
                  expected_data,
@@ -14,30 +14,121 @@ class BaseData(AbstractBaseClass):
                  filename=None,
                  file_format_class=None,
                  file_format_kwargs=None):
-        self.__key = key
-        self.__expected_data = expected_data
+        self.__key = None
+        self.__expected_data = None
+        self.__data_dict = None
+        self.__filename = None
+        self.__file_format_class = None
+        self.__file_format_kwargs = None
 
+        self.key = key
+        self.expected_data = expected_data
         # This will be always be None if the data class is mapped to a file
-        self.__data_dict = data_dict
+        self.data_dict = data_dict
         # These will be always be None if the data class is mapped to a python data dict object
-        self.__filename = filename
-        self.__file_format_class = file_format_class
-        self.__file_format_kwargs = file_format_kwargs
+        self.filename = filename
+        self.file_format_class = file_format_class
+        self.file_format_kwargs = file_format_kwargs
+
+        self.__check_consistensy()
 
     @property
     def key(self):
         """The key of the class instance for calculator usage"""
         return self.__key
 
+    @key.setter
+    def key(self, value):
+        if isinstance(value, str):
+            self.__key = value
+        else:
+            raise TypeError(
+                f"Data Class: key should be a str instead of {type(value)}")
+
+    @property
+    def expected_data(self):
+        """The expected_data of the class instance for calculator usage"""
+        return self.__expected_data
+
+    @expected_data.setter
+    def expected_data(self, value):
+        if isinstance(value, dict):
+            self.__expected_data = value
+        else:
+            raise TypeError(
+                f"Data Class: expected_data should be a dict instead of {type(value)}"
+            )
+
+    @property
+    def data_dict(self):
+        """The data_dict of the class instance for calculator usage"""
+        return self.__data_dict
+
+    @data_dict.setter
+    def data_dict(self, value):
+        if isinstance(value, dict):
+            self.__data_dict = value
+        else:
+            raise TypeError(
+                f"Data Class: data_dict should be a dict instead of {type(value)}"
+            )
+
+    @property
+    def filename(self):
+        """The filename of the class instance for calculator usage"""
+        return self.__filename
+
+    @filename.setter
+    def filename(self, value):
+        if isinstance(value, str):
+            self.__filename = value
+        else:
+            raise TypeError(
+                f"Data Class: filename should be a str instead of {type(value)}"
+            )
+
+    @property
+    def file_format_class(self):
+        """The file_format_class of the class instance for calculator usage"""
+        return self.__file_format_class
+
+    @file_format_class.setter
+    def file_format_class(self, value):
+        if isinstance(value, str):
+            self.__file_format_class = value
+        else:
+            raise TypeError(
+                f"Data Class: file_format_class should be a str instead of {type(value)}"
+            )
+
+    @property
+    def file_format_class(self):
+        """The file_format_class of the class instance for calculator usage"""
+        return self.__file_format_class
+
+    @file_format_class.setter
+    def file_format_class(self, value):
+        if isinstance(value, str):
+            self.__file_format_class = value
+        else:
+            raise TypeError(
+                f"Data Class: file_format_class should be a str instead of {type(value)}"
+            )
+
     @property
     def mapping_type(self):
+        """mapping_type returns if this data class is a file mapping or python class mapping."""
+        return self.__check_mapping_type()
+
+    def __check_mapping_type(self):
+        """Check the mapping_type of this class."""
         if self.__data_dict is not None:
-            return 'Python Dictionary'
+            return type(self.__data_dict)
         elif self.__filename is not None:
             return 'Data file: {}'.format(self.__filename)
         else:
             raise TypeError(
-                'Niether self.__data_dict or self.__filename was found.')
+                'Neither self.__data_dict or self.__filename was found.')
 
     @staticmethod
     def _add_ioformat(format_dict, format_class):
@@ -81,6 +172,20 @@ class BaseData(AbstractBaseClass):
                 out_string += 'Extra writing keywords: {}\n'.format(kwargs)
             out_string += '\n'
         print(out_string)
+
+    def __check_consistensy(self):
+        if all([self.filename, self.file_format_class, self.file_format_kwargs]):
+            if self.data_dict is not None:
+                raise RuntimeError("self.data_dict and self.filename can not both be set for one data class.")
+            else:
+                pass
+        elif self.filename is None:
+            if self.data_dict is None:
+                raise RuntimeError("Neither self.data_dict or self.filename was found.")
+            else:
+                pass
+        else:
+            raise RuntimeError("self.filename, self.file_format_class, self.file_format_kwargs are not consistent.")
 
     def set_file(self, filename: str, format_class, **kwargs):
         self.__filename = filename
