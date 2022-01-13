@@ -176,7 +176,7 @@ class BaseData(AbstractBaseClass):
     def __check_consistensy(self):
         if all([self.filename, self.file_format_class, self.file_format_kwargs]):
             if self.data_dict is not None:
-                raise RuntimeError("self.data_dict and self.filename can not both be set for one data class.")
+                raise RuntimeError("self.data_dict and self.filename can not be set for one data class at the same time.")
             else:
                 pass
         elif self.filename is None:
