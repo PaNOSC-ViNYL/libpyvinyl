@@ -152,7 +152,7 @@ class BaseData(AbstractBaseClass):
     @abstractmethod
     def supported_formats(self):
         format_dict = {}
-        # Add the suppoted format classes when creating a concrete class.
+        # Add the supported format classes when creating a concrete class.
         # See the example at xx
         self._add_ioformat(format_dict, FormatClass)
         return format_dict
@@ -234,7 +234,7 @@ class BaseData(AbstractBaseClass):
             return self.__file_format_class.convert(self.__filename, filename,
                                                     format_class, key,
                                                     **kwargs)
-        # If it's a file mapping and would like to write in the same fileformat of the
+        # If it's a file mapping and would like to write in the same file format of the
         # mapping, it will let the user know that a file containing the data in the same format already existed.
         elif format_class == self.__file_format_class:
             print(
