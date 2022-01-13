@@ -8,15 +8,17 @@ from libpyvinyl.Parameters import CalculatorParameters
 
 
 class BaseCalculator(AbstractBaseClass):
-    def __init__(self,
-                 name: str,
-                 input: Union[DataCollection, list, BaseData],
-                 output_keys: Union[list, str],
-                 output_data_types: list,
-                 output_filenames: Union[list, str],
-                 instrument_base_dir='./',
-                 calculator_base_dir='BaseCalculator',
-                 parameters: CalculatorParameters = None):
+    def __init__(
+        self,
+        name: str,
+        input: Union[DataCollection, list, BaseData],
+        output_keys: Union[list, str],
+        output_data_types: list,
+        output_filenames: Union[list, str],
+        instrument_base_dir="./",
+        calculator_base_dir="BaseCalculator",
+        parameters: CalculatorParameters = None,
+    ):
         """A python object calculator example"""
         # Initialize properties
         self.__name = None
@@ -228,13 +230,13 @@ class BaseCalculator(AbstractBaseClass):
     @abstractmethod
     def backengine(self):
         Path(self.base_dir).mkdir(parents=True, exist_ok=True)
-        input_num0 = self.input[self.input_keys[0]].get_data()['number']
-        input_num1 = self.input[self.input_keys[1]].get_data()['number']
+        input_num0 = self.input[self.input_keys[0]].get_data()["number"]
+        input_num1 = self.input[self.input_keys[1]].get_data()["number"]
         output_num = float(input_num0) + float(input_num1)
-        if self.parameters['plus_times'].value > 1:
-            for i in range(self.parameters['plus_times'].value - 1):
+        if self.parameters["plus_times"].value > 1:
+            for i in range(self.parameters["plus_times"].value - 1):
                 output_num += input_num1
-        data_dict = {'number': output_num}
+        data_dict = {"number": output_num}
         key = self.output_keys[0]
         output_data = NumberData.from_dict(data_dict, key)
         self.output = DataCollection(output_data)
