@@ -1,5 +1,5 @@
 """ :module BaseData: Module hosts the BaseData class."""
-from abc import abstractmethod
+from abc import abstractmethod, ABCMeta
 from libpyvinyl.AbstractBaseClass import AbstractBaseClass
 
 
@@ -68,9 +68,11 @@ class BaseData(AbstractBaseClass):
     def data_dict(self, value):
         if isinstance(value, dict):
             self.__data_dict = value
+        elif value is None:
+            self.__data_dict = None
         else:
             raise TypeError(
-                f"Data Class: data_dict should be a dict instead of {type(value)}"
+                f"Data Class: data_dict should be None or a dict instead of {type(value)}"
             )
 
     @property
@@ -82,9 +84,11 @@ class BaseData(AbstractBaseClass):
     def filename(self, value):
         if isinstance(value, str):
             self.__filename = value
+        elif value is None:
+            self.__filename = None
         else:
             raise TypeError(
-                f"Data Class: filename should be a str instead of {type(value)}"
+                f"Data Class: filename should be None or a str instead of {type(value)}"
             )
 
     @property
@@ -94,25 +98,29 @@ class BaseData(AbstractBaseClass):
 
     @file_format_class.setter
     def file_format_class(self, value):
-        if isinstance(value, str):
+        if isinstance(value, ABCMeta):
             self.__file_format_class = value
+        elif value is None:
+            self.__file_format_class = None
         else:
             raise TypeError(
-                f"Data Class: file_format_class should be a str instead of {type(value)}"
+                f"Data Class: file_format_class should be None or a class (not a class instance) instead of {type(value)}"
             )
 
     @property
-    def file_format_class(self):
+    def file_format_kwargs(self):
         """The file_format_class of the class instance for calculator usage"""
-        return self.__file_format_class
+        return self.__file_format_kwargs
 
-    @file_format_class.setter
-    def file_format_class(self, value):
-        if isinstance(value, str):
-            self.__file_format_class = value
+    @file_format_kwargs.setter
+    def file_format_kwargs(self, value):
+        if isinstance(value, dict):
+            self.__file_format_kwargs = value
+        elif value is None:
+            self.__file_format_kwargs = None
         else:
             raise TypeError(
-                f"Data Class: file_format_class should be a str instead of {type(value)}"
+                f"Data Class: file_format_kwargs should be None or a dict instead of {type(value)}"
             )
 
     @property
@@ -123,7 +131,7 @@ class BaseData(AbstractBaseClass):
     def __check_mapping_type(self):
         """Check the mapping_type of this class."""
         if self.__data_dict is not None:
-            return type(self.__data_dict)
+            return 'dict'
         elif self.__filename is not None:
             return 'Data file: {}'.format(self.__filename)
         else:
@@ -174,18 +182,23 @@ class BaseData(AbstractBaseClass):
         print(out_string)
 
     def __check_consistensy(self):
-        if all([self.filename, self.file_format_class, self.file_format_kwargs]):
+        # If all of the file-related parameters are set:
+        if all([self.filename, self.file_format_class]):
+            # If the data_dict is also set:
             if self.data_dict is not None:
-                raise RuntimeError("self.data_dict and self.filename can not be set for one data class at the same time.")
+                raise RuntimeError(
+                    "self.data_dict and self.filename can not be set for one data class at the same time."
+                )
             else:
                 pass
-        elif self.filename is None:
-            if self.data_dict is None:
-                raise RuntimeError("Neither self.data_dict or self.filename was found.")
-            else:
-                pass
+        # If any one of the file-related parameters is None:
+        elif self.filename is None and self.file_format_class is None and self.file_format_kwargs is None:
+            pass
+        # If some of the file-related parameters is None and some is not None:
         else:
-            raise RuntimeError("self.filename, self.file_format_class, self.file_format_kwargs are not consistent.")
+            raise RuntimeError(
+                "self.filename, self.file_format_class, self.file_format_kwargs are not consistent."
+            )
 
     def set_file(self, filename: str, format_class, **kwargs):
         self.__filename = filename
@@ -210,12 +223,12 @@ class BaseData(AbstractBaseClass):
 
     def write(self, filename: str, format_class, key=None, **kwargs):
         # From either a file or a python object to a file
-        # The behaviour related to a file will always be handled by
+        # The behavior related to a file will always be handled by
         # the format class.
         """Save the data with the `filename` in the `format`."""
         # If it's a python dictionary mapping, write with the specified format_class
         # directly.
-        if self.mapping_type == 'Python Dictionary':
+        if self.mapping_type == 'dict':
             return format_class.write(self, filename, key, **kwargs)
         elif format_class in self.__file_format_class.direct_convert_formats():
             return self.__file_format_class.convert(self.__filename, filename,
@@ -262,10 +275,10 @@ class BaseData(AbstractBaseClass):
         elif self.__filename is not None:
             return self.__get_file_data()
 
-    def __repr__(self):
-        """Returns strings of Data objets info"""
-        string = ''
-        string += self.key + ': ' + self.mapping_type + '\n'
+    def __str__(self):
+        """Returns strings of Data objects info"""
+        string = f'key: {self.key}\n'
+        string += f'mapping type: {self.mapping_type}\n'
         return string
 
 
@@ -316,12 +329,13 @@ class DataCollection():
         return self.data_object_dict[key]
 
     def to_list(self):
-        """Export a list of the data objects in the data colletion"""
+        """Export a list of the data objects in the data collection"""
         return [value for value in self.data_object_dict.values()]
 
-    def __repr__(self):
-        """Returns strings of Data objets info"""
-        string = ''
+    def __str__(self):
+        """Returns strings of Data objects info"""
+        string = 'Data collection:\n'
+        string = 'key - mapping_type\n\n'
         for data_object in self.data_object_dict.values():
-            string += str(data_object)
+            string += f'{data_object.key} - {data_object.mapping_type}\n'
         return string
