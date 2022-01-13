@@ -1,19 +1,38 @@
 """ :module BaseData: Module hosts the BaseData class."""
+from typing import Union
 from abc import abstractmethod, ABCMeta
 from libpyvinyl.AbstractBaseClass import AbstractBaseClass
 
 
 class BaseData(AbstractBaseClass):
-    """ The abstract data class. Inheriting classes represent simulation input and/or output
+    """The abstract data class. Inheriting classes represent simulation input and/or output
     data and provide a harmonized user interface to simulation data of various kinds rather than a data format.
-    Their purpose is to provide a harmonized user interface to common data operations such as reading/writing from/to disk."""
-    def __init__(self,
-                 key,
-                 expected_data,
-                 data_dict=None,
-                 filename=None,
-                 file_format_class=None,
-                 file_format_kwargs=None):
+    Their purpose is to provide a harmonized user interface to common data operations such as reading/writing from/to disk.
+
+    :param key: The key to identify the Data Object.
+    :type key: str
+    :param expected_data: A placeholder dict for expected data. The keys of this dict are expected to be found during the execution of `get_data()`.
+    The value for each key can be `None`.
+    :type expected_data: dict
+    :param data_dict: The dict to map by this DataClass. It has to be `None` if a file mapping was already set, defaults to None.
+    :type data_dict: dict, optional
+    :param filename: The filename of the file to map by this DataClass. It has to be `None` if a dict mapping was already set, defaults to None.
+    :type filename: str, optional
+    :param file_format_class: The FormatClass to map the file by this DataClass, It has to be `None` if a dict mapping was already set, defaults to None
+    :type file_format_class: class, optional
+    :param file_format_kwargs: The kwargs needed to map the file, defaults to None.
+    :type file_format_kwargs: dict, optional
+    """
+
+    def __init__(
+        self,
+        key: str,
+        expected_data: dict,
+        data_dict: dict = None,
+        filename: str = None,
+        file_format_class=None,
+        file_format_kwargs: dict = None,
+    ):
         self.__key = None
         self.__expected_data = None
         self.__data_dict = None
@@ -22,6 +41,7 @@ class BaseData(AbstractBaseClass):
         self.__file_format_kwargs = None
 
         self.key = key
+        # Expected_data is checked when `self.get_data()`
         self.expected_data = expected_data
         # This will be always be None if the data class is mapped to a file
         self.data_dict = data_dict
@@ -42,8 +62,7 @@ class BaseData(AbstractBaseClass):
         if isinstance(value, str):
             self.__key = value
         else:
-            raise TypeError(
-                f"Data Class: key should be a str instead of {type(value)}")
+            raise TypeError(f"Data Class: key should be a str, not {type(value)}")
 
     @property
     def expected_data(self):
@@ -56,7 +75,7 @@ class BaseData(AbstractBaseClass):
             self.__expected_data = value
         else:
             raise TypeError(
-                f"Data Class: expected_data should be a dict instead of {type(value)}"
+                f"Data Class: expected_data should be a dict, not {type(value)}"
             )
 
     @property
@@ -72,12 +91,34 @@ class BaseData(AbstractBaseClass):
             self.__data_dict = None
         else:
             raise TypeError(
-                f"Data Class: data_dict should be None or a dict instead of {type(value)}"
+                f"Data Class: data_dict should be None or a dict, not {type(value)}"
             )
+        self.__check_consistensy()
+
+    def set_dict(self, data_dict: dict):
+        """Set a mapping dict for this DataClass.
+
+        :param data_dict: The data dict to map
+        :type data_dict: dict
+        """
+        self.data_dict = data_dict
+
+    def set_file(self, filename: str, format_class, **kwargs):
+        """Set a mapping file for this DataClass.
+
+        :param filename: The filename of the file to map.
+        :type filename: str
+        :param format_class: The FormatClass to map the file
+        :type format_class: class
+        """
+        self.filename = filename
+        self.file_format_class = format_class
+        self.file_format_kwargs = kwargs
+        self.__check_consistensy()
 
     @property
     def filename(self):
-        """The filename of the class instance for calculator usage"""
+        """The filename of the file to map by this DataClass."""
         return self.__filename
 
     @filename.setter
@@ -88,12 +129,12 @@ class BaseData(AbstractBaseClass):
             self.__filename = None
         else:
             raise TypeError(
-                f"Data Class: filename should be None or a str instead of {type(value)}"
+                f"Data Class: filename should be None or a str, not {type(value)}"
             )
 
     @property
     def file_format_class(self):
-        """The file_format_class of the class instance for calculator usage"""
+        """The FormatClass to map the file by this DataClass"""
         return self.__file_format_class
 
     @file_format_class.setter
@@ -104,12 +145,12 @@ class BaseData(AbstractBaseClass):
             self.__file_format_class = None
         else:
             raise TypeError(
-                f"Data Class: file_format_class should be None or a class (not a class instance) instead of {type(value)}"
+                f"Data Class: format_class should be None or a format class, not {type(value)}"
             )
 
     @property
     def file_format_kwargs(self):
-        """The file_format_class of the class instance for calculator usage"""
+        """The kwargs needed to map the file"""
         return self.__file_format_kwargs
 
     @file_format_kwargs.setter
@@ -120,29 +161,43 @@ class BaseData(AbstractBaseClass):
             self.__file_format_kwargs = None
         else:
             raise TypeError(
-                f"Data Class: file_format_kwargs should be None or a dict instead of {type(value)}"
+                f"Data Class: file_format_kwargs should be None or a dict, not {type(value)}"
             )
 
     @property
     def mapping_type(self):
-        """mapping_type returns if this data class is a file mapping or python class mapping."""
+        """If this data class is a file mapping or python dict mapping."""
         return self.__check_mapping_type()
 
     def __check_mapping_type(self):
         """Check the mapping_type of this class."""
-        if self.__data_dict is not None:
-            return 'dict'
-        elif self.__filename is not None:
-            return 'Data file: {}'.format(self.__filename)
+        if self.data_dict is not None:
+            return dict
+        elif self.filename is not None:
+            return self.file_format_class
         else:
-            raise TypeError(
-                'Neither self.__data_dict or self.__filename was found.')
+            raise TypeError("Neither self.__data_dict or self.__filename was found.")
+
+    @property
+    def mapping_content(self):
+        """Returns an overview of the keys of the mapped dict or the filename of the mapped file"""
+        if self.mapping_type == dict:
+            return self.data_dict.keys()
+        else:
+            return self.filename
 
     @staticmethod
     def _add_ioformat(format_dict, format_class):
+        """Register an ioformat to a `format_dict` listing the formats supported by this DataClass.
+
+        :param format_dict: The dict listing the supported formats.
+        :type format_dict: dict
+        :param format_class: The FormatClass to add.
+        :type format_class: class
+        """
         register = format_class.format_register()
         for key, val in register.items():
-            if key == 'key':
+            if key == "key":
                 this_format = val
                 format_dict[val] = {}
             else:
@@ -153,32 +208,32 @@ class BaseData(AbstractBaseClass):
     def supported_formats(self):
         format_dict = {}
         # Add the supported format classes when creating a concrete class.
-        # See the example at xx
+        # See the example at `tests/BaseDataTest.py`
         self._add_ioformat(format_dict, FormatClass)
         return format_dict
 
     @classmethod
     def list_formats(self):
         """Print supported formats"""
-        out_string = ''
+        out_string = ""
         supported_formats = self.supported_formats()
         for key in supported_formats:
             dicts = supported_formats[key]
-            out_string += f'Key: {key}\n'
-            out_string += 'Description: {}\n'.format(dicts['description'])
-            ext = dicts['ext']
-            if ext != '':
-                out_string += 'File extension: {}\n'.format(ext)
-            format_class = dicts['format_class']
-            if format_class != '':
-                out_string += 'Format class: {}\n'.format(format_class)
-            kwargs = dicts['read_kwargs']
-            if kwargs != ['']:
-                out_string += 'Extra reading keywords: {}\n'.format(kwargs)
-            kwargs = dicts['write_kwargs']
-            if kwargs != ['']:
-                out_string += 'Extra writing keywords: {}\n'.format(kwargs)
-            out_string += '\n'
+            format_class = dicts["format_class"]
+            if format_class != "":
+                out_string += "Format class: {}\n".format(format_class)
+            out_string += f"Key: {key}\n"
+            out_string += "Description: {}\n".format(dicts["description"])
+            ext = dicts["ext"]
+            if ext != "":
+                out_string += "File extension: {}\n".format(ext)
+            kwargs = dicts["read_kwargs"]
+            if kwargs != [""]:
+                out_string += "Extra reading keywords: {}\n".format(kwargs)
+            kwargs = dicts["write_kwargs"]
+            if kwargs != [""]:
+                out_string += "Extra writing keywords: {}\n".format(kwargs)
+            out_string += "\n"
         print(out_string)
 
     def __check_consistensy(self):
@@ -192,7 +247,11 @@ class BaseData(AbstractBaseClass):
             else:
                 pass
         # If any one of the file-related parameters is None:
-        elif self.filename is None and self.file_format_class is None and self.file_format_kwargs is None:
+        elif (
+            self.filename is None
+            and self.file_format_class is None
+            and self.file_format_kwargs is None
+        ):
             pass
         # If some of the file-related parameters is None and some is not None:
         else:
@@ -200,40 +259,65 @@ class BaseData(AbstractBaseClass):
                 "self.filename, self.file_format_class, self.file_format_kwargs are not consistent."
             )
 
-    def set_file(self, filename: str, format_class, **kwargs):
-        self.__filename = filename
-        self.__file_format_class = format_class
-        self.__file_format_kwargs = kwargs
+    @classmethod
+    def from_file(cls, filename: str, format_class, key: dict, **kwargs):
+        """Create a Data Object mapping a file.
+
+        :param filename: The filename of the file to map by this DataClass. It has to be `None` if a dict mapping was already set, defaults to None.
+        :type filename: str, optional
+        :param file_format_class: The FormatClass to map the file by this DataClass, It has to be `None` if a dict mapping was already set, defaults to None
+        :type file_format_class: class, optional
+        :param file_format_kwargs: The kwargs needed to map the file, defaults to None.
+        :type file_format_kwargs: dict, optional
+        :param key: The key to identify the Data Object.
+        :type key: str
+
+        :return: A Data Object
+        :rtype: BaseData
+        """
+        return cls(
+            key,
+            filename=filename,
+            file_format_class=format_class,
+            file_format_kwargs=kwargs,
+        )
 
     @classmethod
-    def from_file(cls, filename: str, format_class, key, **kwargs):
-        """Create the data class by the file in the `format`."""
-        return cls(key,
-                   filename=filename,
-                   file_format_class=format_class,
-                   file_format_kwargs=kwargs)
+    def from_dict(cls, data_dict: dict, key: str):
+        """Create a Data Object mapping a data dict.
 
-    def set_dict(self, data_dict):
-        self.__data_dict = data_dict
-
-    @classmethod
-    def from_dict(cls, data_dict, key):
-        """Create the data class by a python dictionary."""
+        :param data_dict: The dict to map by this DataClass. It has to be `None` if a file mapping was already set, defaults to None.
+        :type data_dict: dict
+        :param key: The key to identify the Data Object.
+        :type key: str
+        :return: A Data Object
+        :rtype: BaseData
+        """
         return cls(key, data_dict=data_dict)
 
-    def write(self, filename: str, format_class, key=None, **kwargs):
-        # From either a file or a python object to a file
-        # The behavior related to a file will always be handled by
-        # the format class.
-        """Save the data with the `filename` in the `format`."""
-        # If it's a python dictionary mapping, write with the specified format_class
-        # directly.
-        if self.mapping_type == 'dict':
+    def write(self, filename: str, format_class, key: str = None, **kwargs):
+        """Write the data mapped by the Data Object into a file and return a Data Object
+        mapping the file. It converts either a file or a python object to a file
+        The behavior related to a file will always be handled by the format class.
+        If it's a python dictionary mapping, write with the specified format_class
+        directly.
+
+        :param filename: The filename of the file to be written.
+        :type filename: str
+        :param file_format_class: The FormatClass to write the file.
+        :type file_format_class: class
+        :param key: The identification key of the new Data Object. When it's `None`, a new key will
+        be generated with a suffix added to the previous identification key by the FormatClass. Defaults to None.
+        :type key: str, optional
+        :return: A Data Object
+        :rtype: BaseData
+        """
+        if self.mapping_type == dict:
             return format_class.write(self, filename, key, **kwargs)
         elif format_class in self.__file_format_class.direct_convert_formats():
-            return self.__file_format_class.convert(self.__filename, filename,
-                                                    format_class, key,
-                                                    **kwargs)
+            return self.__file_format_class.convert(
+                self.__filename, filename, format_class, key, **kwargs
+            )
         # If it's a file mapping and would like to write in the same file format of the
         # mapping, it will let the user know that a file containing the data in the same format already existed.
         elif format_class == self.__file_format_class:
@@ -248,24 +332,38 @@ class BaseData(AbstractBaseClass):
             return format_class.write(self, filename, key, **kwargs)
 
     def __get_dict_data(self):
-        # python object to python object
+        """Get the data dict from a dict mapping"""
         if self.__data_dict is not None:
             data_to_return = self.__expected_data.copy()
             # It will automatically check the data needed to be extracted.
             for key in data_to_return.keys():
-                data_to_return[key] = self.__data_dict[key]
+                try:
+                    data_to_return[key] = self.__data_dict[key]
+                except KeyError:
+                    raise KeyError(
+                        f"Expected data dict key '{key}' is not found."
+                    ) from None
             return data_to_return
+        else:
+            raise RuntimeError(
+                "__get_dict_data() should not be called when self.__data_dict is None"
+            )
 
     def __get_file_data(self):
-        # file to python object
+        """Get the data dict from a file mapping"""
         if self.__filename is not None:
             data_to_return = self.__expected_data.copy()
             data_to_read = self.__file_format_class.read(
-                self.__filename, **self.__file_format_kwargs)
+                self.__filename, **self.__file_format_kwargs
+            )
             # It will automatically check the data needed to be extracted.
             for key in data_to_return.keys():
                 data_to_return[key] = data_to_read[key]
             return data_to_return
+        else:
+            raise RuntimeError(
+                "__get_file_data() should not be called when self.__filename is None"
+            )
 
     def get_data(self):
         """Return the data in a dictionary"""
@@ -277,13 +375,15 @@ class BaseData(AbstractBaseClass):
 
     def __str__(self):
         """Returns strings of Data objects info"""
-        string = f'key: {self.key}\n'
-        string += f'mapping type: {self.mapping_type}\n'
+        string = f"key = {self.key}\n"
+        string += f"mapping = {self.mapping_type}: {self.mapping_content}"
         return string
 
 
 # DataCollection class
-class DataCollection():
+class DataCollection:
+    """A collection of Data Objects"""
+
     def __init__(self, *args):
         self.data_object_dict = {}
         self.add_data(*args)
@@ -303,39 +403,75 @@ class DataCollection():
     def add_data(self, *args):
         """Add data objects to the data colletion"""
         for data in args:
+            assert isinstance(data, BaseData)
             self.data_object_dict[data.key] = data
 
     def get_data(self):
-        """When there is only one item in the DataCollection"""
+        """Get the data of the data object(s).
+        When there is only one item in the DataCollection, it returns the data dict,
+        When there are more then one items, it returns a dictionary of the data dicts"""
         if len(self.data_object_dict) == 1:
-            for obj in self.data_object_dict.values():
-                return obj.get_data()
+            return next(iter(self.data_object_dict.values())).get_data()
         else:
-            raise RuntimeError(
-                f"More than 1 data object in this DataCollection: {self.data_object_dict.keys()}.\nPick one of them to get_data()"
-            )
+            data_dicts = {}
+            for key, obj in self.data_object_dict.items():
+                data_dicts[key] = obj.get_data()
+            return data_dicts
 
-    def write(self, filename: str, format_class, key=None, **kwargs):
-        """When there is only one item in the DataCollection"""
+    def write(
+        self,
+        filename: Union[str, dict],
+        format_class,
+        key: Union[str, dict] = None,
+        **kwargs,
+    ):
+        """Write the data object(s) to the file(s).
+        When there is only one item in the DataCollection, it returns the data object mapping the file which was wirttern,
+        When there are more then one items, it returns a dictionary of the data objects.
+
+        :param filename: The name(s) of the file(s) to write. When there are multiple items, they are expected in
+        a dict where the keys corresponding to the data in this collection.
+        :type filename: str or dict
+        :param format_class: The format class of the file(s). When there are multiple items, they are expected in
+        a dict where the keys corresponding to the data in this collection.
+        :type format_class: class or dict
+        :param key: The key(s) of the data object(s) mapping the written file(s), defaults to None.
+        :type key: str or dict, optional
+        :return: A data object or a dict of data objects.
+        :rtype: DataClass or dict
+        """
+
         if len(self.data_object_dict) == 1:
-            for obj in self.data_object_dict.values():
-                return obj.write(filename, format_class, key, **kwargs)
+            obj = next(iter(self.data_object_dict.values()))
+            return obj.write(filename, format_class, key, **kwargs)
         else:
-            raise RuntimeError(
-                f"More than 1 data object in this DataCollection: {self.data_object_dict.keys()}.\nPick one of them to write()"
-            )
+            assert isinstance(key, dict)
+            data_dicts = {}
+            for col_key, obj in self.data_object_dict.items():
+                written_data = obj.write(
+                    filename[col_key], format_class[col_key], key[col_key], **kwargs
+                )
+                data_dicts[written_data.key] = written_data
+            return data_dicts
 
-    def get_data_object(self, key):
+    def get_data_object(self, key: str):
+        """Get one data object by its key
+
+        :param key: The key of the data object to get.
+        :type key: str
+        :return: A data object
+        :rtype: DataClass
+        """
         return self.data_object_dict[key]
 
     def to_list(self):
-        """Export a list of the data objects in the data collection"""
+        """Return a list of the data objects in the data collection"""
         return [value for value in self.data_object_dict.values()]
 
     def __str__(self):
-        """Returns strings of Data objects info"""
-        string = 'Data collection:\n'
-        string = 'key - mapping_type\n\n'
+        """Returns strings of aata objects info"""
+        string = "Data collection:\n"
+        string += "key - mapping\n\n"
         for data_object in self.data_object_dict.values():
-            string += f'{data_object.key} - {data_object.mapping_type}\n'
+            string += f"{data_object.key} - {data_object.mapping_type}: {data_object.mapping_content}\n"
         return string
