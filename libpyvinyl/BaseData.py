@@ -4,16 +4,19 @@ from libpyvinyl.AbstractBaseClass import AbstractBaseClass
 
 
 class BaseData(AbstractBaseClass):
-    """ The abstract data class. Inheriting classes represent simulation input and/or output
+    """The abstract data class. Inheriting classes represent simulation input and/or output
     data and provide a harmonized user interface to simulation data of various kinds rather than a data format.
     Their purpose is to provide a harmonized user interface to common data operations such as reading/writing from/to disk."""
-    def __init__(self,
-                 key,
-                 expected_data,
-                 data_dict=None,
-                 filename=None,
-                 file_format_class=None,
-                 file_format_kwargs=None):
+
+    def __init__(
+        self,
+        key,
+        expected_data,
+        data_dict=None,
+        filename=None,
+        file_format_class=None,
+        file_format_kwargs=None,
+    ):
         self.__key = None
         self.__expected_data = None
         self.__data_dict = None
@@ -22,6 +25,7 @@ class BaseData(AbstractBaseClass):
         self.__file_format_kwargs = None
 
         self.key = key
+        # Expected_data is checked when `self.get_data()`
         self.expected_data = expected_data
         # This will be always be None if the data class is mapped to a file
         self.data_dict = data_dict
@@ -42,8 +46,7 @@ class BaseData(AbstractBaseClass):
         if isinstance(value, str):
             self.__key = value
         else:
-            raise TypeError(
-                f"Data Class: key should be a str instead of {type(value)}")
+            raise TypeError(f"Data Class: key should be a str, not {type(value)}")
 
     @property
     def expected_data(self):
@@ -56,7 +59,7 @@ class BaseData(AbstractBaseClass):
             self.__expected_data = value
         else:
             raise TypeError(
-                f"Data Class: expected_data should be a dict instead of {type(value)}"
+                f"Data Class: expected_data should be a dict, not {type(value)}"
             )
 
     @property
@@ -72,8 +75,16 @@ class BaseData(AbstractBaseClass):
             self.__data_dict = None
         else:
             raise TypeError(
-                f"Data Class: data_dict should be None or a dict instead of {type(value)}"
+                f"Data Class: data_dict should be None or a dict, not {type(value)}"
             )
+
+    def set_dict(self, data_dict):
+        self.data_dict = data_dict
+
+    def set_file(self, filename: str, format_class, **kwargs):
+        self.filename = filename
+        self.file_format_class = format_class
+        self.file_format_kwargs = kwargs
 
     @property
     def filename(self):
@@ -88,7 +99,7 @@ class BaseData(AbstractBaseClass):
             self.__filename = None
         else:
             raise TypeError(
-                f"Data Class: filename should be None or a str instead of {type(value)}"
+                f"Data Class: filename should be None or a str, not {type(value)}"
             )
 
     @property
@@ -104,7 +115,7 @@ class BaseData(AbstractBaseClass):
             self.__file_format_class = None
         else:
             raise TypeError(
-                f"Data Class: file_format_class should be None or a class (not a class instance) instead of {type(value)}"
+                f"Data Class: format_class should be None or a format class, not {type(value)}"
             )
 
     @property
@@ -120,29 +131,36 @@ class BaseData(AbstractBaseClass):
             self.__file_format_kwargs = None
         else:
             raise TypeError(
-                f"Data Class: file_format_kwargs should be None or a dict instead of {type(value)}"
+                f"Data Class: file_format_kwargs should be None or a dict, not {type(value)}"
             )
 
     @property
     def mapping_type(self):
-        """mapping_type returns if this data class is a file mapping or python class mapping."""
+        """mapping_type returns if this data class is a file mapping or python dict mapping."""
         return self.__check_mapping_type()
 
     def __check_mapping_type(self):
         """Check the mapping_type of this class."""
-        if self.__data_dict is not None:
-            return 'dict'
+        if self.data_dict is not None:
+            return dict
         elif self.__filename is not None:
-            return 'Data file: {}'.format(self.__filename)
+            return self.file_format_class
         else:
-            raise TypeError(
-                'Neither self.__data_dict or self.__filename was found.')
+            raise TypeError("Neither self.__data_dict or self.__filename was found.")
+
+    @property
+    def mapping_content(self):
+        """Returns an overview of the keys of the mapped dict or the filename of the mapped file"""
+        if self.mapping_type == dict:
+            return self.data_dict.keys()
+        else:
+            return self.filename
 
     @staticmethod
     def _add_ioformat(format_dict, format_class):
         register = format_class.format_register()
         for key, val in register.items():
-            if key == 'key':
+            if key == "key":
                 this_format = val
                 format_dict[val] = {}
             else:
@@ -160,25 +178,25 @@ class BaseData(AbstractBaseClass):
     @classmethod
     def list_formats(self):
         """Print supported formats"""
-        out_string = ''
+        out_string = ""
         supported_formats = self.supported_formats()
         for key in supported_formats:
             dicts = supported_formats[key]
-            out_string += f'Key: {key}\n'
-            out_string += 'Description: {}\n'.format(dicts['description'])
-            ext = dicts['ext']
-            if ext != '':
-                out_string += 'File extension: {}\n'.format(ext)
-            format_class = dicts['format_class']
-            if format_class != '':
-                out_string += 'Format class: {}\n'.format(format_class)
-            kwargs = dicts['read_kwargs']
-            if kwargs != ['']:
-                out_string += 'Extra reading keywords: {}\n'.format(kwargs)
-            kwargs = dicts['write_kwargs']
-            if kwargs != ['']:
-                out_string += 'Extra writing keywords: {}\n'.format(kwargs)
-            out_string += '\n'
+            out_string += f"Key: {key}\n"
+            out_string += "Description: {}\n".format(dicts["description"])
+            ext = dicts["ext"]
+            if ext != "":
+                out_string += "File extension: {}\n".format(ext)
+            format_class = dicts["format_class"]
+            if format_class != "":
+                out_string += "Format class: {}\n".format(format_class)
+            kwargs = dicts["read_kwargs"]
+            if kwargs != [""]:
+                out_string += "Extra reading keywords: {}\n".format(kwargs)
+            kwargs = dicts["write_kwargs"]
+            if kwargs != [""]:
+                out_string += "Extra writing keywords: {}\n".format(kwargs)
+            out_string += "\n"
         print(out_string)
 
     def __check_consistensy(self):
@@ -192,7 +210,11 @@ class BaseData(AbstractBaseClass):
             else:
                 pass
         # If any one of the file-related parameters is None:
-        elif self.filename is None and self.file_format_class is None and self.file_format_kwargs is None:
+        elif (
+            self.filename is None
+            and self.file_format_class is None
+            and self.file_format_kwargs is None
+        ):
             pass
         # If some of the file-related parameters is None and some is not None:
         else:
@@ -200,21 +222,15 @@ class BaseData(AbstractBaseClass):
                 "self.filename, self.file_format_class, self.file_format_kwargs are not consistent."
             )
 
-    def set_file(self, filename: str, format_class, **kwargs):
-        self.__filename = filename
-        self.__file_format_class = format_class
-        self.__file_format_kwargs = kwargs
-
     @classmethod
     def from_file(cls, filename: str, format_class, key, **kwargs):
         """Create the data class by the file in the `format`."""
-        return cls(key,
-                   filename=filename,
-                   file_format_class=format_class,
-                   file_format_kwargs=kwargs)
-
-    def set_dict(self, data_dict):
-        self.__data_dict = data_dict
+        return cls(
+            key,
+            filename=filename,
+            file_format_class=format_class,
+            file_format_kwargs=kwargs,
+        )
 
     @classmethod
     def from_dict(cls, data_dict, key):
@@ -228,12 +244,12 @@ class BaseData(AbstractBaseClass):
         """Save the data with the `filename` in the `format`."""
         # If it's a python dictionary mapping, write with the specified format_class
         # directly.
-        if self.mapping_type == 'dict':
+        if self.mapping_type == dict:
             return format_class.write(self, filename, key, **kwargs)
         elif format_class in self.__file_format_class.direct_convert_formats():
-            return self.__file_format_class.convert(self.__filename, filename,
-                                                    format_class, key,
-                                                    **kwargs)
+            return self.__file_format_class.convert(
+                self.__filename, filename, format_class, key, **kwargs
+            )
         # If it's a file mapping and would like to write in the same file format of the
         # mapping, it will let the user know that a file containing the data in the same format already existed.
         elif format_class == self.__file_format_class:
@@ -253,7 +269,12 @@ class BaseData(AbstractBaseClass):
             data_to_return = self.__expected_data.copy()
             # It will automatically check the data needed to be extracted.
             for key in data_to_return.keys():
-                data_to_return[key] = self.__data_dict[key]
+                try:
+                    data_to_return[key] = self.__data_dict[key]
+                except KeyError:
+                    raise KeyError(
+                        f"Expected data dict key '{key}' is not found."
+                    ) from None
             return data_to_return
 
     def __get_file_data(self):
@@ -261,7 +282,8 @@ class BaseData(AbstractBaseClass):
         if self.__filename is not None:
             data_to_return = self.__expected_data.copy()
             data_to_read = self.__file_format_class.read(
-                self.__filename, **self.__file_format_kwargs)
+                self.__filename, **self.__file_format_kwargs
+            )
             # It will automatically check the data needed to be extracted.
             for key in data_to_return.keys():
                 data_to_return[key] = data_to_read[key]
@@ -277,13 +299,13 @@ class BaseData(AbstractBaseClass):
 
     def __str__(self):
         """Returns strings of Data objects info"""
-        string = f'key: {self.key}\n'
-        string += f'mapping type: {self.mapping_type}\n'
+        string = f"key = {self.key}\n"
+        string += f"mapping = {self.mapping_type}: {self.mapping_content}"
         return string
 
 
 # DataCollection class
-class DataCollection():
+class DataCollection:
     def __init__(self, *args):
         self.data_object_dict = {}
         self.add_data(*args)
@@ -334,8 +356,8 @@ class DataCollection():
 
     def __str__(self):
         """Returns strings of Data objects info"""
-        string = 'Data collection:\n'
-        string = 'key - mapping_type\n\n'
+        string = "Data collection:\n"
+        string = "key - mapping_type\n\n"
         for data_object in self.data_object_dict.values():
-            string += f'{data_object.key} - {data_object.mapping_type}\n'
+            string += f"{data_object.key} - {data_object.mapping_type}\n"
         return string

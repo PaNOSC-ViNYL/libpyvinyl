@@ -1,7 +1,8 @@
-from libpyvinyl.BaseData import BaseData, DataCollection
-from libpyvinyl.BaseFormat import BaseFormat
+import pytest
 import numpy as np
 import h5py
+from libpyvinyl.BaseData import BaseData
+from libpyvinyl.BaseFormat import BaseFormat
 
 
 class NumberData(BaseData):
@@ -128,5 +129,140 @@ class H5Format(BaseFormat):
             return object.from_file(filename, cls, key)
 
 
+@pytest.fixture()
+def txt_file(tmp_path_factory):
+    fn_path = tmp_path_factory.mktemp("test_data") / "test.txt"
+    txt_file = str(fn_path)
+    with open(txt_file, "w") as f:
+        f.write("4")
+    return txt_file
+
+
+# Data class section
 def test_create_empty_data_instance():
-    number_data = NumberData()
+    """Test creating an empty data instance"""
+    with pytest.raises(TypeError):
+        number_data = NumberData()
+    test_data = NumberData(key="test_data")
+    assert isinstance(test_data, NumberData)
+
+
+def test_create_data_with_set_dict():
+    """Test set dict after in an empty data instance"""
+    test_data = NumberData(key="test_data")
+    my_dict = {"number": 4}
+    test_data.set_dict(my_dict)
+    assert test_data.get_data()["number"] == 4
+
+
+def test_create_data_with_set_file(txt_file):
+    """Test set file after in an empty data instance"""
+    test_data = NumberData(key="test_data")
+    test_data.set_file(txt_file, TXTFormat)
+    assert test_data.get_data()["number"] == 4
+
+
+def test_create_data_with_set_file_wrong_param(txt_file):
+    """Test set file after in an empty data instance with wrong `format_class` param"""
+    test_data = NumberData(key="test_data")
+    with pytest.raises(TypeError):
+        test_data.set_file(txt_file, "txt")
+
+
+def test_create_data_with_set_file_wrong_format(txt_file):
+    """Test set file after in an empty data instance with wrong `format_class`"""
+    test_data = NumberData(key="test_data")
+    test_data.set_file(txt_file, H5Format)
+    with pytest.raises(OSError):
+        test_data.get_data()
+
+
+def test_create_data_with_file():
+    """Test set dict after in  an empty data instance"""
+    test_data = NumberData(key="test_data")
+    assert isinstance(test_data, NumberData)
+    my_dict = {"number": 4}
+    test_data.set_dict(my_dict)
+    assert test_data.get_data()["number"] == 4
+
+
+def test_create_data_from_dict():
+    """Test creating a data instance from a dict"""
+    my_dict = {"number": 4}
+    test_data = NumberData.from_dict(my_dict, "test_data")
+
+
+def test_check_key_from_dict():
+    """Test checking expected data key from dict"""
+    my_dict = {"number": 4}
+    test_data = NumberData.from_dict(my_dict, "test_data")
+    test_data.get_data()
+    my_dict = {"numberr": 4}
+    test_data = NumberData.from_dict(my_dict, "test_data")
+    with pytest.raises(KeyError):
+        test_data.get_data()
+
+
+def test_create_data_from_file_wrong_param(txt_file):
+    """Test creating a data instance from a file in a wrong file format type"""
+    with pytest.raises(TypeError):
+        test_data = NumberData.from_file(txt_file, "txt", "test_data")
+
+
+def test_create_data_from_TXTFormat(txt_file):
+    """Test creating a data instance from a file in TXTFormat"""
+    test_data = NumberData.from_file(txt_file, TXTFormat, "test_data")
+    assert test_data.get_data()["number"] == 4
+
+
+def test_create_data_from_wrong_format(txt_file):
+    """Test creating a data instance from a file in TXTFormat"""
+    test_data = NumberData.from_file(txt_file, H5Format, "test_data")
+    with pytest.raises(OSError):
+        test_data.get_data()
+
+
+def test_save_dict_data_in_TXTFormat(tmpdir):
+    """Test saving a dict data in TXTFormat"""
+    my_dict = {"number": 4}
+    test_data = NumberData.from_dict(my_dict, "test_data")
+    fn = str(tmpdir / "test.txt")
+    test_data.write(fn, TXTFormat)
+    read_data = NumberData.from_file(fn, TXTFormat, "read_data")
+    assert read_data.get_data()["number"] == 4
+
+
+def test_save_dict_data_in_TXTFormat_return_data_object(tmpdir):
+    """Test saving a dict data in TXTFormat returning data object with default key"""
+    my_dict = {"number": 4}
+    test_data = NumberData.from_dict(my_dict, "test_data")
+    fn = str(tmpdir / "test.txt")
+    return_data = test_data.write(fn, TXTFormat)
+    assert return_data.get_data()["number"] == 4
+    assert return_data.key == "test_data_to_TXTFormat"
+
+
+def test_save_dict_data_in_TXTFormat_return_data_object_key(tmpdir):
+    """Test saving a dict data in TXTFormat returning data object with custom key"""
+    my_dict = {"number": 4}
+    test_data = NumberData.from_dict(my_dict, "test_data")
+    print(test_data)
+    # assert False
+    fn = str(tmpdir / "test.txt")
+    return_data = test_data.write(fn, TXTFormat, "custom")
+    assert return_data.get_data()["number"] == 4
+    assert return_data.key == "custom"
+
+
+def test_save_file_data_in_another_format(txt_file, tmpdir):
+    """Test saving a TXTFormat data in H5Format"""
+    test_data = NumberData.from_file(txt_file, TXTFormat, "test_data")
+    print(test_data)
+    fn = str(tmpdir / "test.h5")
+    return_data = test_data.write(fn, H5Format)
+    print(return_data)
+    # assert False
+
+#TODO:
+# test_list_formats
+# test_collections
