@@ -1,1 +1,1 @@
-from .ArrayCalculator  import ArrayCalculator
+from .ArrayCalculator import ArrayCalculator
