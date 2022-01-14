@@ -33,8 +33,8 @@ class NumberData(BaseData):
     def supported_formats(self):
         format_dict = {}
         ### DataClass developer's job start
-        self._add_ioformat(format_dict, TXTFormat.TXTFormat)
-        self._add_ioformat(format_dict, H5Format.H5Format)
+        self._add_ioformat(format_dict, TXTFormat)
+        self._add_ioformat(format_dict, H5Format)
         ### DataClass developer's job end
         return format_dict
 
@@ -139,6 +139,14 @@ def txt_file(tmp_path_factory):
 
 
 # Data class section
+def test_list_formats(capsys):
+    """Test listing registered format classes"""
+    NumberData.list_formats()
+    captured = capsys.readouterr()
+    assert "Key: TXT" in captured.out
+    assert "Key: H5" in captured.out
+
+
 def test_create_empty_data_instance():
     """Test creating an empty data instance"""
     with pytest.raises(TypeError):
@@ -264,5 +272,4 @@ def test_save_file_data_in_another_format(txt_file, tmpdir):
     # assert False
 
 #TODO:
-# test_list_formats
 # test_collections
