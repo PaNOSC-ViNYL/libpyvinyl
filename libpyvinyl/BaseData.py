@@ -465,7 +465,7 @@ class DataCollection:
         return self.data_object_dict[key]
 
     def to_list(self):
-        """Export a list of the data objects in the data collection"""
+        """Return a list of the data objects in the data collection"""
         return [value for value in self.data_object_dict.values()]
 
     def __str__(self):
