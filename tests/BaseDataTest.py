@@ -339,8 +339,8 @@ def test_DataCollection_two_data_write(txt_file, tmpdir):
 def test_DataCollection_add_data(txt_file):
     """Test adding data to a DataCollection instance"""
     my_dict = {"number": 5}
-    test_data_txt = NumberData.from_file(txt_file, TXTFormat, "test_txt")
     test_data_dict = NumberData.from_dict(my_dict, "test_dict")
+    test_data_txt = NumberData.from_file(txt_file, TXTFormat, "test_txt")
     collection = DataCollection()
     collection.add_data(test_data_dict, test_data_txt)
     print(collection)
@@ -351,3 +351,14 @@ def test_DataCollection_add_wrong_data_type():
     collection = DataCollection()
     with pytest.raises(AssertionError):
         collection.add_data(0)
+
+
+def test_DataCollection_to_list(txt_file):
+    """Test returning a DataCollection as a list"""
+    my_dict = {"number": 5}
+    test_data_dict = NumberData.from_dict(my_dict, "test_dict")
+    test_data_txt = NumberData.from_file(txt_file, TXTFormat, "test_txt")
+    collection = DataCollection(test_data_dict, test_data_txt)
+    my_list = collection.to_list()
+    assert my_list[0].get_data()['number'] == 5
+    assert my_list[1].get_data()['number'] == 4
