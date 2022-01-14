@@ -182,14 +182,14 @@ class BaseData(AbstractBaseClass):
         supported_formats = self.supported_formats()
         for key in supported_formats:
             dicts = supported_formats[key]
+            format_class = dicts["format_class"]
+            if format_class != "":
+                out_string += "Format class: {}\n".format(format_class)
             out_string += f"Key: {key}\n"
             out_string += "Description: {}\n".format(dicts["description"])
             ext = dicts["ext"]
             if ext != "":
                 out_string += "File extension: {}\n".format(ext)
-            format_class = dicts["format_class"]
-            if format_class != "":
-                out_string += "Format class: {}\n".format(format_class)
             kwargs = dicts["read_kwargs"]
             if kwargs != [""]:
                 out_string += "Extra reading keywords: {}\n".format(kwargs)
