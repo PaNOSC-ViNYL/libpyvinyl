@@ -276,6 +276,8 @@ class BaseData(AbstractBaseClass):
                         f"Expected data dict key '{key}' is not found."
                     ) from None
             return data_to_return
+        else:
+            raise RuntimeError("__get_dict_data() should not be called when self.__data_dict is None")
 
     def __get_file_data(self):
         # file to python object
@@ -288,6 +290,8 @@ class BaseData(AbstractBaseClass):
             for key in data_to_return.keys():
                 data_to_return[key] = data_to_read[key]
             return data_to_return
+        else:
+            raise RuntimeError("__get_file_data() should not be called when self.__filename is None")
 
     def get_data(self):
         """Return the data in a dictionary"""
