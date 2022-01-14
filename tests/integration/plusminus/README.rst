@@ -16,7 +16,7 @@ PlusMinus
 
 
 
-An example of a small platform implementing libpynyl
+An example of a small platform implementing libpyvinyl.
 
 
 * Free software: MIT license
