@@ -143,7 +143,7 @@ class BaseData(AbstractBaseClass):
         """Check the mapping_type of this class."""
         if self.data_dict is not None:
             return dict
-        elif self.__filename is not None:
+        elif self.filename is not None:
             return self.file_format_class
         else:
             raise TypeError("Neither self.__data_dict or self.__filename was found.")
