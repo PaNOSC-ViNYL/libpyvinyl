@@ -7,7 +7,7 @@ import plusminus.ArrayData as AD
 from plusminus import DataCollection
 
 
-def test_CalculationInstrument():
+def test_CalculationInstrument(tmpdir):
     """PlusCalculator test function, the native output of MinusCalculator is a python dictionary"""
 
     input1 = NumberData.from_dict({"number": 1}, "input1")
@@ -27,11 +27,12 @@ def test_CalculationInstrument():
     )
 
     calculation_instrument = Instrument("calculation_instrument")
-    calculation_instrument.set_instrument_base_dir("./calculation_instrument")
+    instrument_path = tmpdir / "calculation_instrument"
     calculation_instrument.add_calculator(calculator1)
     calculation_instrument.add_calculator(calculator2)
     calculation_instrument.add_calculator(calculator3)
+    calculation_instrument.set_instrument_base_dir(str(instrument_path))
     calculation_instrument.run()
     print(calculator3.output.get_data())
-    calculator3.output.write("final_result.txt", AD.TXTFormat)
-    calculator3.output.write("final_result.h5", AD.H5Format)
+    calculator3.output.write(str(tmpdir / "final_result.txt"), AD.TXTFormat)
+    calculator3.output.write(str(tmpdir / "final_result.h5"), AD.H5Format)
