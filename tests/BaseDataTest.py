@@ -1,7 +1,7 @@
 import pytest
 import numpy as np
 import h5py
-from libpyvinyl.BaseData import BaseData
+from libpyvinyl.BaseData import BaseData, DataCollection
 from libpyvinyl.BaseFormat import BaseFormat
 
 
@@ -170,6 +170,15 @@ def test_create_data_with_set_file(txt_file):
     assert test_data.get_data()["number"] == 4
 
 
+def test_create_data_with_set_file_inconsistensy(txt_file):
+    """Test set dict and file for one data object: expecting an error"""
+    test_data = NumberData(key="test_data")
+    my_dict = {"number": 4}
+    test_data.set_dict(my_dict)
+    with pytest.raises(RuntimeError):
+        test_data.set_file(txt_file, TXTFormat)
+
+
 def test_create_data_with_set_file_wrong_param(txt_file):
     """Test set file after in an empty data instance with wrong `format_class` param"""
     test_data = NumberData(key="test_data")
@@ -271,5 +280,74 @@ def test_save_file_data_in_another_format(txt_file, tmpdir):
     print(return_data)
     # assert False
 
-#TODO:
-# test_collections
+
+# Data collection section
+def test_DataCollection_instance():
+    """Test creating a DataCollection instance"""
+    collection = DataCollection()
+    assert isinstance(collection, DataCollection)
+
+
+def test_DataCollection_one_data(txt_file):
+    """Test a DataCollection instance with one dataset"""
+    test_data = NumberData.from_file(txt_file, TXTFormat, "test_data")
+    collection = DataCollection(test_data)
+    data_in_collection = collection["test_data"]
+    assert collection.get_data() == data_in_collection.get_data()
+
+
+def test_DataCollection_one_data_write(txt_file, tmpdir):
+    """Test a DataCollection instance with one dataset"""
+    test_data = NumberData.from_file(txt_file, TXTFormat, "test_data")
+    collection = DataCollection(test_data)
+    fn = str(tmpdir / "data.h5")
+    written_data = collection.write(fn, H5Format)
+    assert written_data.mapping_type == H5Format
+    assert written_data.get_data()["number"] == 4
+
+
+def test_DataCollection_two_data(txt_file):
+    """Test creating a DataCollection instance with two datasets"""
+    my_dict = {"number": 5}
+    test_data_txt = NumberData.from_file(txt_file, TXTFormat, "test_txt")
+    test_data_dict = NumberData.from_dict(my_dict, "test_dict")
+    collection = DataCollection(test_data_txt, test_data_dict)
+    assert collection["test_dict"].get_data()["number"] == 5
+    assert collection["test_txt"].get_data()["number"] == 4
+    value_collection = collection.get_data()
+    assert value_collection["test_dict"]["number"] == 5
+    assert value_collection["test_txt"]["number"] == 4
+
+
+def test_DataCollection_two_data_write(txt_file, tmpdir):
+    """Test writing a DataCollection instance with two datasets"""
+    my_dict = {"number": 5}
+    test_data_txt = NumberData.from_file(txt_file, TXTFormat, "test_txt")
+    test_data_dict = NumberData.from_dict(my_dict, "test_dict")
+    collection = DataCollection(test_data_txt, test_data_dict)
+    fn_txt = str(tmpdir / "data_new.txt")
+    fn_h5 = str(tmpdir / "data_new.h5")
+    filenames = {"test_txt": fn_h5, "test_dict": fn_txt}
+    format_classes = {"test_txt": H5Format, "test_dict": TXTFormat}
+    keys = {"test_txt": None, "test_dict": None}
+    written_collection = collection.write(filenames, format_classes, keys)
+    # Create a new data collection from the collection dict
+    new_collection = DataCollection(*written_collection.values())
+    assert new_collection["test_dict_to_TXTFormat"].get_data()["number"] == 5
+
+
+def test_DataCollection_add_data(txt_file):
+    """Test adding data to a DataCollection instance"""
+    my_dict = {"number": 5}
+    test_data_txt = NumberData.from_file(txt_file, TXTFormat, "test_txt")
+    test_data_dict = NumberData.from_dict(my_dict, "test_dict")
+    collection = DataCollection()
+    collection.add_data(test_data_dict, test_data_txt)
+    print(collection)
+
+
+def test_DataCollection_add_wrong_data_type():
+    """Test adding data in wrong type to a DataCollection instance"""
+    collection = DataCollection()
+    with pytest.raises(AssertionError):
+        collection.add_data(0)
