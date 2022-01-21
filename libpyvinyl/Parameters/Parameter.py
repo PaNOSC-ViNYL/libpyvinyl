@@ -90,7 +90,7 @@ class Parameter(AbstractBaseClass):
     @unit.setter
     def unit(self, uni):
         """
-        Assignement of the units
+        Assignment of the units
 
         A pint.Unit is used if the string is recognized as a valid unit in the registry.
         It is stored as a string otherwise.
@@ -114,9 +114,8 @@ class Parameter(AbstractBaseClass):
         else:
             return self.__value
 
-    @classmethod
-    # self is not needed...
-    def __is_type_compatible(self, t1: type, t2: Union[None, type]) -> bool:
+    @staticmethod
+    def __is_type_compatible(t1: type, t2: Union[None, type]) -> bool:
         """
         Check type compatibility
 
@@ -208,7 +207,7 @@ class Parameter(AbstractBaseClass):
             for v in value:
                 if not self.__is_type_compatible(vtype, type(v)):
                     raise TypeError(
-                        "Iterable object passed as value for the parameter, but it is made of inomogeneous types: ",
+                        "Iterable object passed as value for the parameter, but it is made of inhomogeneous types: ",
                         vtype,
                         type(v),
                     )
