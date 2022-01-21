@@ -1,7 +1,7 @@
 from setuptools import setup, find_packages
 import sys
 
-with open("requirements.txt") as requirements_file:
+with open("requirements/prod.txt") as requirements_file:
     require = requirements_file.read()
     requirements = require.split()
 
