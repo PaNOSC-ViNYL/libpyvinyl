@@ -63,7 +63,7 @@ class Parameter(AbstractBaseClass):
          - ...
         This class method is mainly used to allow dumping and loading the class from json
         """
-        if not "name" in param_dict:
+        if "name" not in param_dict:
             raise KeyError(
                 "name is a mandatory element of the dictionary, but has not been found"
             )
