@@ -6,8 +6,9 @@ from libpyvinyl.Parameters.Collections import InstrumentParameters
 from pathlib import Path
 
 
-class Instrument():
+class Instrument:
     """An Instrument class"""
+
     def __init__(self, name, calculators=None):
         """An Instrument class
 
@@ -44,7 +45,7 @@ class Instrument():
 
     @property
     def parameters(self):
-        """The parameter collection of each calculator in the instrument. These parameters are links to the 
+        """The parameter collection of each calculator in the instrument. These parameters are links to the
         exact parameters of each calculator."""
         return self.__parameters
 
