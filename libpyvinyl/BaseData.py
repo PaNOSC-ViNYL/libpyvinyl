@@ -314,13 +314,13 @@ class BaseData(AbstractBaseClass):
         """
         if self.mapping_type == dict:
             return format_class.write(self, filename, key, **kwargs)
-        elif format_class in self.__file_format_class.direct_convert_formats():
-            return self.__file_format_class.convert(
-                self.__filename, filename, format_class, key, **kwargs
+        elif format_class in self.file_format_class.direct_convert_formats():
+            return self.file_format_class.convert(
+                self, filename, format_class, key, **kwargs
             )
         # If it's a file mapping and would like to write in the same file format of the
         # mapping, it will let the user know that a file containing the data in the same format already existed.
-        elif format_class == self.__file_format_class:
+        elif format_class == self.file_format_class:
             print(
                 f"Hint: This data already existed in the file {self.__filename} in format {self.__file_format_class}. `cp {self.__filename} {filename}` could be faster."
             )
