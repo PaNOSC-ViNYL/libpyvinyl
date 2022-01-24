@@ -54,13 +54,6 @@ class TXTFormat(BaseFormat):
             key, desciption, file_extension, read_kwargs, write_kwargs
         )
 
-    @staticmethod
-    def direct_convert_formats():
-        # Assume the format can be converted directly to the formats supported by these classes:
-        # AFormat, BFormat
-        # Redefine this `direct_convert_formats` for a concrete format class
-        return []
-
     @classmethod
     def read(cls, filename: str) -> dict:
         """Read the data from the file with the `filename` to a dictionary. The dictionary will
@@ -82,6 +75,42 @@ class TXTFormat(BaseFormat):
         else:
             return object.from_file(filename, cls, key)
 
+    @staticmethod
+    def direct_convert_formats():
+        # Assume the format can be converted directly to the formats supported by these classes:
+        # AFormat, BFormat
+        # Redefine this `direct_convert_formats` for a concrete format class
+        return [H5Format]
+
+    @classmethod
+    def convert(
+        cls, obj: NumberData, output: str, output_format_class: str, key=None, **kwargs
+    ):
+        """Direct convert method, if the default converting would be too slow or not suitable for the output_format"""
+        if output_format_class is H5Format:
+            cls.convert_to_H5Format(obj.filename, output)
+        else:
+            raise TypeError(
+                "Direct converting to format {} is not supported".format(
+                    output_format_class
+                )
+            )
+        # Set the key of the returned object
+        if key is None:
+            original_key = obj.key
+            key = original_key + "_from_TXTFormat"
+            return obj.from_file(output, output_format_class, key)
+        else:
+            return obj.from_file(output, output_format_class, key)
+
+    @classmethod
+    def convert_to_H5Format(cls, input: str, output: str):
+        """The engine of convert method."""
+        print("Directly converting TXTFormat to H5Format")
+        number = float(np.loadtxt(input))
+        with h5py.File(output, "w") as h5:
+            h5["number"] = number
+
 
 class H5Format(BaseFormat):
     def __init__(self) -> None:
@@ -97,13 +126,6 @@ class H5Format(BaseFormat):
         return self._create_format_register(
             key, desciption, file_extension, read_kwargs, write_kwargs
         )
-
-    @staticmethod
-    def direct_convert_formats():
-        # Assume the format can be converted directly to the formats supported by these classes:
-        # AFormat, BFormat
-        # Redefine this `direct_convert_formats` for a concrete format class
-        return []
 
     @classmethod
     def read(cls, filename: str) -> dict:
@@ -127,6 +149,13 @@ class H5Format(BaseFormat):
             return object.from_file(filename, cls, key)
         else:
             return object.from_file(filename, cls, key)
+
+    @staticmethod
+    def direct_convert_formats():
+        # Assume the format can be converted directly to the formats supported by these classes:
+        # AFormat, BFormat
+        # Redefine this `direct_convert_formats` for a concrete format class
+        return []
 
 
 @pytest.fixture()
@@ -271,13 +300,36 @@ def test_save_dict_data_in_TXTFormat_return_data_object_key(tmpdir):
     assert return_data.key == "custom"
 
 
-def test_save_file_data_in_another_format(txt_file, tmpdir):
-    """Test saving a TXTFormat data in H5Format"""
+def test_save_file_data_in_another_format_direct(txt_file, tmpdir, capsys):
+    """Test directly converting a TXTFormat data to H5Format"""
     test_data = NumberData.from_file(txt_file, TXTFormat, "test_data")
-    print(test_data)
+    # print(test_data)
     fn = str(tmpdir / "test.h5")
     return_data = test_data.write(fn, H5Format)
+    captured = capsys.readouterr()
+    assert "Directly converting TXTFormat to H5Format" in captured.out
+    assert return_data.get_data()["number"] == 4
+    assert return_data.key == "test_data_from_TXTFormat"
+    return_data = test_data.write(fn, H5Format, "txt2h5")
+    assert return_data.key == "txt2h5"
+    # print(return_data)
+    # assert False
+
+
+def test_save_file_data_in_another_format_indirect(tmpdir):
+    """Test directly converting a TXTFormat data to H5Format"""
+    my_dict = {"number": 4}
+    test_data = NumberData.from_dict(my_dict, "test_data")
+    fn = str(tmpdir / "test.h5")
+    h5_data = test_data.write(fn, H5Format, "test_data")
+    fn = str(tmpdir / "test.txt")
+    return_data = h5_data.write(fn, TXTFormat)
     print(return_data)
+    assert return_data.get_data()["number"] == 4
+    assert return_data.key == "test_data_to_TXTFormat"
+    return_data = test_data.write(fn, H5Format, "txt2h5")
+    assert return_data.key == "txt2h5"
+    # print(return_data)
     # assert False
 
 
@@ -360,5 +412,5 @@ def test_DataCollection_to_list(txt_file):
     test_data_txt = NumberData.from_file(txt_file, TXTFormat, "test_txt")
     collection = DataCollection(test_data_dict, test_data_txt)
     my_list = collection.to_list()
-    assert my_list[0].get_data()['number'] == 5
-    assert my_list[1].get_data()['number'] == 4
+    assert my_list[0].get_data()["number"] == 5
+    assert my_list[1].get_data()["number"] == 4
