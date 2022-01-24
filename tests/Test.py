@@ -28,10 +28,6 @@ import unittest
 import os, sys
 
 from BaseCalculatorTest import BaseCalculatorTest
-from DetectorTest import DetectorTest
-from RadiationSampleInteractorTest import RadiationSampleInteractorTest
-from BeamlinePropagatorTest import BeamlinePropagatorTest, BeamlinePropagatorParametersTest
-from SignalGeneratorTest import SignalGeneratorTest
 from ParametersTest import Test_Parameter, Test_Parameters, Test_Instruments
 from InstrumentTest import InstrumentTest
 
