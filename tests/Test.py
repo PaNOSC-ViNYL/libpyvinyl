@@ -30,28 +30,33 @@ import os, sys
 from BaseCalculatorTest import BaseCalculatorTest
 from DetectorTest import DetectorTest
 from RadiationSampleInteractorTest import RadiationSampleInteractorTest
-from BeamlinePropagatorTest import BeamlinePropagatorTest, BeamlinePropagatorParametersTest
+from BeamlinePropagatorTest import (
+    BeamlinePropagatorTest,
+    BeamlinePropagatorParametersTest,
+)
 from SignalGeneratorTest import SignalGeneratorTest
 from ParametersTest import Test_Parameter, Test_Parameters, Test_Instruments
 from InstrumentTest import InstrumentTest
 
+
 # Are we running on CI server?
-is_travisCI = ("TRAVIS_BUILD_DIR" in list(
-    os.environ.keys())) and (os.environ["TRAVIS_BUILD_DIR"] != "")
+is_travisCI = ("TRAVIS_BUILD_DIR" in list(os.environ.keys())) and (
+    os.environ["TRAVIS_BUILD_DIR"] != ""
+)
 
 
 def suite():
     suites = [
-        unittest.makeSuite(BaseCalculatorTest, 'test'),
-        unittest.makeSuite(DetectorTest, 'test'),
-        unittest.makeSuite(RadiationSampleInteractorTest, 'test'),
-        unittest.makeSuite(BeamlinePropagatorTest, 'test'),
-        unittest.makeSuite(BeamlinePropagatorParametersTest, 'test'),
-        unittest.makeSuite(SignalGeneratorTest, 'test'),
-        unittest.makeSuite(Test_Parameter, 'test'),
-        unittest.makeSuite(Test_Parameters, 'test'),
-        unittest.makeSuite(Test_Instruments, 'test'),
-        unittest.makeSuite(InstrumentTest, 'test'),
+        unittest.makeSuite(BaseCalculatorTest, "test"),
+        unittest.makeSuite(DetectorTest, "test"),
+        unittest.makeSuite(RadiationSampleInteractorTest, "test"),
+        unittest.makeSuite(BeamlinePropagatorTest, "test"),
+        unittest.makeSuite(BeamlinePropagatorParametersTest, "test"),
+        unittest.makeSuite(SignalGeneratorTest, "test"),
+        unittest.makeSuite(Test_Parameter, "test"),
+        unittest.makeSuite(Test_Parameters, "test"),
+        unittest.makeSuite(Test_Instruments, "test"),
+        unittest.makeSuite(InstrumentTest, "test"),
     ]
 
     return unittest.TestSuite(suites)
@@ -63,7 +68,7 @@ if __name__ == "__main__":
     result = unittest.TextTestRunner(verbosity=2).run(suite())
 
     if result.wasSuccessful():
-        print('---> OK <---')
+        print("---> OK <---")
         sys.exit(0)
 
     sys.exit(1)

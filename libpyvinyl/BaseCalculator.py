@@ -33,11 +33,11 @@ import dill
 import h5py
 import sys
 import logging
-import numpy
 import os
 
-logging.basicConfig(format='%(asctime)s %(levelname)s:%(message)s',
-                    level=logging.WARNING)
+logging.basicConfig(
+    format="%(asctime)s %(levelname)s:%(message)s", level=logging.WARNING
+)
 
 
 class BaseCalculator(AbstractBaseClass):
@@ -54,6 +54,7 @@ class BaseCalculator(AbstractBaseClass):
     backengine as all other ViNyL Calculators.
 
     """
+
     @abstractmethod
     def __init__(self, name: str, parameters=None, dumpfile=None, **kwargs):
         """
@@ -109,8 +110,7 @@ class BaseCalculator(AbstractBaseClass):
         if isinstance(parameters, (type(None), CalculatorParameters)):
             self.parameters = parameters
         else:
-            raise TypeError(
-                "parameters should be in CalculatorParameters type.")
+            raise TypeError("parameters should be in CalculatorParameters type.")
 
         # Must load after setting paramters to avoid being overrode by empty parameters.
         if dumpfile is not None:
@@ -120,7 +120,7 @@ class BaseCalculator(AbstractBaseClass):
             self.output_path = kwargs["output_path"]
 
     def __call__(self, parameters=None, **kwargs):
-        """ The copy constructor
+        """The copy constructor
 
         :param parameters: The parameters for the new calculator.
         :type  parameters: CalculatorParameters
@@ -147,12 +147,11 @@ class BaseCalculator(AbstractBaseClass):
 
         """
 
-        with open(dumpfile, 'rb') as fhandle:
+        with open(dumpfile, "rb") as fhandle:
             try:
                 tmp = dill.load(fhandle)
             except:
-                raise IOError(
-                    "Cannot load calculator from {}.".format(dumpfile))
+                raise IOError("Cannot load calculator from {}.".format(dumpfile))
 
         self.__dict__ = copy.deepcopy(tmp.__dict__)
 
@@ -160,7 +159,7 @@ class BaseCalculator(AbstractBaseClass):
 
     @property
     def parameters(self):
-        """ The parameters of this calculator. """
+        """The parameters of this calculator."""
 
         return self.__parameters
 
@@ -169,8 +168,10 @@ class BaseCalculator(AbstractBaseClass):
 
         if not isinstance(val, (type(None), CalculatorParameters)):
             raise TypeError(
-                """Passed argument 'parameters' has wrong type. Expected CalculatorParameters, found {}."""
-                .format(type(val)))
+                """Passed argument 'parameters' has wrong type. Expected CalculatorParameters, found {}.""".format(
+                    type(val)
+                )
+            )
 
         self.__parameters = val
 
@@ -210,7 +211,7 @@ class BaseCalculator(AbstractBaseClass):
 
     @abstractmethod
     def saveH5(self, fname: str, openpmd: bool = True):
-        """ Save the simulation data to hdf5 file.
+        """Save the simulation data to hdf5 file.
 
         :param fname: The filename (path) of the file to write the data to.
         :type  fname: str
@@ -268,41 +269,6 @@ class BaseCalculator(AbstractBaseClass):
         """
 
         self.__data = data
-
-
-# Mocks for testing. Have to be here to work around bug in dill that does not
-# like classes to be defined outside of __main__.
-class SpecializedCalculator(BaseCalculator):
-    def __init__(self, name, parameters=None, dumpfile=None, **kwargs):
-
-        super().__init__(name, parameters, dumpfile, **kwargs)
-
-    def setParams(self, photon_energy: float = 10, pulse_energy: float = 1e-3):
-        if not isinstance(self.parameters, CalculatorParameters):
-            self.parameters = CalculatorParameters()
-        self.parameters.new_parameter("photon_energy",
-                                      unit="eV",
-                                      comment="Photon energy")
-        self.parameters['photon_energy'].value = photon_energy
-
-        self.parameters.new_parameter("pulse_energy",
-                                      unit="joule",
-                                      comment="Pulse energy")
-        self.parameters['pulse_energy'].value = pulse_energy
-
-    def backengine(self):
-        self._BaseCalculator__data = numpy.random.normal(
-            loc=self.parameters['photon_energy'].value,
-            scale=0.001 * self.parameters['photon_energy'].value,
-            size=(100, ))
-
-        return 0
-
-    def saveH5(self, openpmd=False):
-        with h5py.File(self.output_path, "w") as h5:
-            ds = h5.create_dataset("/data", data=self.data)
-
-            h5.close()
 
 
 # This project has received funding from the European Union's Horizon 2020 research and innovation programme under grant agreement No. 823852.

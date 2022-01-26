@@ -25,6 +25,7 @@ abstract classes.
 ####################################################################################
 from abc import ABCMeta, abstractmethod
 
+
 class AbstractBaseClass(object, metaclass=ABCMeta):
     """
     :class AbstractBaseClass: Base class of libpyvinyl
@@ -33,4 +34,3 @@ class AbstractBaseClass(object, metaclass=ABCMeta):
     @abstractmethod
     def __init__(self):
         pass
-

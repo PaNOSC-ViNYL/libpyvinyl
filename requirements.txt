@@ -1,7 +1,1 @@
-pint
-dill
-numpy
-scipy
-jsons
-h5py
-json_tricks
+-r requirements/prod.txt

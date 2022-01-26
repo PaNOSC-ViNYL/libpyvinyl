@@ -16,12 +16,13 @@ jobs:
       - name: Install dependencies
         run: |
           python -m pip install --upgrade pip
-          pip install -r requirements.txt
-          pip install pytest
+          pip install -r requirements/dev.txt
           pip install .
       - name: unit testing
         run: |
           cd tests
           pytest Test.py
-
+      - name: Code formatting
+        run: |
+          black --check libpyvinyl/
           
