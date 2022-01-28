@@ -50,15 +50,15 @@ class BaseData(AbstractBaseClass):
         self.file_format_class = file_format_class
         self.file_format_kwargs = file_format_kwargs
 
-        self.__check_consistensy()
+        self.__check_consistency()
 
     @property
-    def key(self):
+    def key(self) -> str:
         """The key of the class instance for calculator usage"""
         return self.__key
 
     @key.setter
-    def key(self, value):
+    def key(self, value: str):
         if isinstance(value, str):
             self.__key = value
         else:
@@ -93,7 +93,7 @@ class BaseData(AbstractBaseClass):
             raise TypeError(
                 f"Data Class: data_dict should be None or a dict, not {type(value)}"
             )
-        self.__check_consistensy()
+        self.__check_consistency()
 
     def set_dict(self, data_dict: dict):
         """Set a mapping dict for this DataClass.
@@ -114,7 +114,7 @@ class BaseData(AbstractBaseClass):
         self.filename = filename
         self.file_format_class = format_class
         self.file_format_kwargs = kwargs
-        self.__check_consistensy()
+        self.__check_consistency()
 
     @property
     def filename(self):
@@ -222,7 +222,7 @@ class BaseData(AbstractBaseClass):
             format_class = dicts["format_class"]
             if format_class != "":
                 out_string += "Format class: {}\n".format(format_class)
-            out_string += f"Key: {key}\n"
+            out_string += "Key: {}\n".format(key)
             out_string += "Description: {}\n".format(dicts["description"])
             ext = dicts["ext"]
             if ext != "":
@@ -236,7 +236,7 @@ class BaseData(AbstractBaseClass):
             out_string += "\n"
         print(out_string)
 
-    def __check_consistensy(self):
+    def __check_consistency(self):
         # If all of the file-related parameters are set:
         if all([self.filename, self.file_format_class]):
             # If the data_dict is also set:
@@ -475,3 +475,4 @@ class DataCollection:
         for data_object in self.data_object_dict.values():
             string += f"{data_object.key} - {data_object.mapping_type}: {data_object.mapping_content}\n"
         return string
+

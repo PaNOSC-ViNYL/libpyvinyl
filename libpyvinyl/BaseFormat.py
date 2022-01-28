@@ -56,14 +56,18 @@ class BaseFormat(AbstractBaseClass):
 
     @classmethod
     @abstractmethod
-    def write(self, object: BaseData, filename: str, key: str, **kwargs):
+    def write(cls, object: BaseData, filename: str, key: str, **kwargs):
         """Save the data with the `filename`."""
         # Example codes. Redefine this function in a concrete class.
-        obj_key = key
-        with h5py.File(filename, "w") as h5:
-            for key, val in object.get_data().items():
-                h5[key] = val
-        return object.from_file(filename, BaseData, obj_key)
+        data_dict = object.get_data()
+        arr = np.array([data_dict["number"]])
+        np.savetxt(filename, arr, fmt="%.3f")
+        if key is None:
+            original_key = object.key
+            key = original_key + "_to_TXTFormat"
+            return object.from_file(filename, cls, key)
+        else:
+            return object.from_file(filename, cls, key)
 
     @staticmethod
     @abstractmethod
