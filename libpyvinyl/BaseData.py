@@ -1,5 +1,5 @@
 """ :module BaseData: Module hosts the BaseData class."""
-from typing import Union
+from typing import Union, Optional
 from abc import abstractmethod, ABCMeta
 from libpyvinyl.AbstractBaseClass import AbstractBaseClass
 
@@ -28,10 +28,10 @@ class BaseData(AbstractBaseClass):
         self,
         key: str,
         expected_data: dict,
-        data_dict: dict = None,
-        filename: str = None,
+        data_dict: Optional[dict] = None,
+        filename: Optional[str] = None,
         file_format_class=None,
-        file_format_kwargs: dict = None,
+        file_format_kwargs: Optional[dict] = None,
     ):
         self.__key = None
         self.__expected_data = None
