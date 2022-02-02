@@ -42,6 +42,4 @@ class TXTFormat(BaseFormat):
         if key is None:
             original_key = object.key
             key = original_key + "_to_TXTFormat"
-            return object.from_file(filename, cls, key)
-        else:
-            return object.from_file(filename, cls, key)
+        return object.from_file(filename, cls, key)
