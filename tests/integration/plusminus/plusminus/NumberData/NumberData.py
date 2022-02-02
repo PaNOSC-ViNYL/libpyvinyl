@@ -12,8 +12,9 @@ class NumberData(BaseData):
         file_format_kwargs=None,
     ):
 
-        ### DataClass developer's job start
         expected_data = {}
+
+        ### DataClass developer's job start
         expected_data["number"] = None
         ### DataClass developer's job end
 

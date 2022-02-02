@@ -13,7 +13,7 @@ class BaseFormat(AbstractBaseClass):
     @classmethod
     @abstractmethod
     def format_register(self):
-        # Redefine this `format_register` method for a concrete format class.
+        # Override this `format_register` method in a concrete format class.
         key = "Base"
         desciption = "Base data format"
         file_extension = "base"
@@ -47,7 +47,7 @@ class BaseFormat(AbstractBaseClass):
     def read(self, filename: str, **kwargs) -> dict:
         """Read the data from the file with the `filename` to a dictionary. The dictionary will
         be used by its corresponding data class."""
-        # Example codes. Redefine this function in a concrete class.
+        # Example codes. Override this function in a concrete class.
         data_dict = {}
         with h5py.File(filename, "r") as h5:
             for key, val in h5.items():
@@ -58,7 +58,7 @@ class BaseFormat(AbstractBaseClass):
     @abstractmethod
     def write(cls, object: BaseData, filename: str, key: str, **kwargs):
         """Save the data with the `filename`."""
-        # Example codes. Redefine this function in a concrete class.
+        # Example codes. Override this function in a concrete class.
         data_dict = object.get_data()
         arr = np.array([data_dict["number"]])
         np.savetxt(filename, arr, fmt="%.3f")
@@ -74,7 +74,7 @@ class BaseFormat(AbstractBaseClass):
     def direct_convert_formats():
         # Assume the format can be converted directly to the formats supported by these classes:
         # AFormat, BFormat
-        # Redefine this `direct_convert_formats` for a concrete format class
+        # Override this `direct_convert_formats` in a concrete format class
         return [Aformat, BFormat]
 
     @classmethod
@@ -97,9 +97,7 @@ class BaseFormat(AbstractBaseClass):
         if key is None:
             original_key = obj.key
             key = original_key + "_from_BaseFormat"
-            return obj.from_file(output, output_format_class, key)
-        else:
-            return obj.from_file(output, output_format_class, key)
+        return obj.from_file(output, output_format_class, key)
 
     # Example convert_to_AFormat()
     # @classmethod
