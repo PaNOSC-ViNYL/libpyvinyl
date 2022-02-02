@@ -44,6 +44,4 @@ class H5Format(BaseFormat):
         if key is None:
             original_key = object.key
             key = original_key + "_to_H5Format"
-            return object.from_file(filename, cls, key)
-        else:
-            return object.from_file(filename, cls, key)
+        return object.from_file(filename, cls, key)
