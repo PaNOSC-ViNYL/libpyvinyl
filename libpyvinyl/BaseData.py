@@ -220,7 +220,7 @@ class BaseData(AbstractBaseClass):
         for key in supported_formats:
             dicts = supported_formats[key]
             format_class = dicts["format_class"]
-            if format_class != "":
+            if format_class:
                 out_string += "Format class: {}\n".format(format_class)
             out_string += "Key: {}\n".format(key)
             out_string += "Description: {}\n".format(dicts["description"])
@@ -469,10 +469,9 @@ class DataCollection:
         return [value for value in self.data_object_dict.values()]
 
     def __str__(self):
-        """Returns strings of aata objects info"""
+        """Returns strings of the data object info"""
         string = "Data collection:\n"
         string += "key - mapping\n\n"
         for data_object in self.data_object_dict.values():
             string += f"{data_object.key} - {data_object.mapping_type}: {data_object.mapping_content}\n"
         return string
-
