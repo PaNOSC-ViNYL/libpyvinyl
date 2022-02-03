@@ -1,14 +1,14 @@
 """
-:module BaseCalculator: Module hosting the BaseCalculator and Parameters classes.
+:module BaseCalculator: Module hosting the BaseCalculator class.
 
 """
 
 ####################################################################################
 #                                                                                  #
-# This file is part of libpyvinyl - The APIs for Virtual Neutron and x-raY            #
+# This file is part of libpyvinyl - The APIs for Virtual Neutron and x-raY         #
 # Laboratory.                                                                      #
 #                                                                                  #
-# Copyright (C) 2020  Carsten Fortmann-Grote                                       #
+# Copyright (C) 2021  Carsten Fortmann-Grote, Juncheng                             #
 #                                                                                  #
 # This program is free software: you can redistribute it and/or modify it under    #
 # the terms of the GNU Lesser General Public License as published by the Free      #
@@ -61,13 +61,19 @@ class BaseCalculator(AbstractBaseClass):
     `test/integration/plusminus`
 
     """
-    def __init__(self, name: str, input: Union[DataCollection, list, BaseData],
+
+    def __init__(
+        self,
+        name: str,
+        input: Union[DataCollection, list, BaseData],
         output_keys: Union[list, str],
-        output_data_classes: list,
-        output_filenames: Union[list, str] = None,
-        instrument_base_dir="./",
-        calculator_base_dir="BaseCalculator",
-        parameters=None, dumpfile:str=None):
+        output_data_types: list,
+        output_filenames: Union[list, str, None] = None,
+        instrument_base_dir: str = "./",
+        calculator_base_dir: str = "BaseCalculator",
+        parameters: CalculatorParameters = None,
+        dumpfile: str = None,
+    ):
         """
 
         :param name: The name of this calculator.
@@ -81,9 +87,9 @@ class BaseCalculator(AbstractBaseClass):
         a single str.
         :type output_keys: list or str
 
-        :param output_data_classes: The data class(es) of each output. It's a list of the
+        :param output_data_types: The data type(s), i.e., classes, of each output. It's a list of the
         data classes or a single data class. The available data classes are based on `BaseData`.
-        :type output_data_classes: list or DataClass
+        :type output_data_types: list or DataClass
 
         :param output_filenames: The name(s) of the output file(s). It can be a str of a filename or
         a list of filenames. If the mapping is dict mapping, the name is `None`. Defaults to None.
@@ -138,30 +144,30 @@ class BaseCalculator(AbstractBaseClass):
         ```
 
         """
+        # Initialize the variables
         self.__name = None
         self.__instrument_base_dir = None
         self.__calculator_base_dir = None
         self.__input = None
-        self.__input_keys = None
         self.__output_keys = None
-        self.__output_data_classes = None
+        self.__output_data_types = None
         self.__output_filenames = None
         self.__parameters = None
 
         self.name = name
         self.input = input
         self.output_keys = output_keys
-        self.output_data_types = output_data_classes
+        self.output_data_types = output_data_types
         self.output_filenames = output_filenames
         self.instrument_base_dir = instrument_base_dir
         self.calculator_base_dir = calculator_base_dir
         self.parameters = parameters
-    
+
         # Create output data objects according to the output_data_classes
         self.__init_output()
 
     @property
-    def name(self):
+    def name(self) -> str:
         return self.__name
 
     @name.setter
@@ -174,11 +180,15 @@ class BaseCalculator(AbstractBaseClass):
             )
 
     @property
-    def parameters(self):
+    def parameters(self) -> CalculatorParameters:
         return self.__parameters
 
     @parameters.setter
-    def parameters(self, value):
+    def parameters(self, value: CalculatorParameters):
+        self.set_parameters(value)
+
+    def set_parameters(self, value: CalculatorParameters):
+        """Set the calculator parameters"""
         if isinstance(value, CalculatorParameters):
             self.__parameters = value
         elif value is None:
@@ -189,7 +199,41 @@ class BaseCalculator(AbstractBaseClass):
             )
 
     @property
-    def input(self):
+    def instrument_base_dir(self) -> str:
+        return self.__instrument_base_dir
+
+    @instrument_base_dir.setter
+    def instrument_base_dir(self, value):
+        self.set_instrument_base_dir(value)
+
+    def set_instrument_base_dir(self, value: str):
+        """Set the instrument base directory"""
+        if isinstance(value, str):
+            self.__instrument_base_dir = [value]
+        else:
+            raise TypeError(
+                f"Calculator: `instrument_base_dir` is expected to be a str, not {type(value)}"
+            )
+
+    @property
+    def calculator_base_dir(self) -> str:
+        return self.__calculator_base_dir
+
+    @calculator_base_dir.setter
+    def calculator_base_dir(self, value):
+        self.set_calculator_base_dir(value)
+
+    def set_calculator_base_dir(self, value: str):
+        """Set the calculator base directory"""
+        if isinstance(value, BaseData):
+            self.__calculator_base_dir = [value]
+        else:
+            raise TypeError(
+                f"Calculator: `calculator_base_dir` is expected to be a str, not {type(value)}"
+            )
+
+    @property
+    def input(self) -> DataCollection:
         return self.__input
 
     @input.setter
@@ -197,6 +241,7 @@ class BaseCalculator(AbstractBaseClass):
         self.set_input(value)
 
     def set_input(self, value: Union[DataCollection, list, BaseData]):
+        """Set the calculator input data. It can be a DataCollection, list or BaseData object."""
         if isinstance(value, DataCollection):
             self.__input = value
         elif isinstance(value, list):
@@ -205,31 +250,11 @@ class BaseCalculator(AbstractBaseClass):
             self.__input = DataCollection(value)
         else:
             raise TypeError(
-                f"Calculator: `input` can be a  DataCollection, list or BaseData object, and will be treated as a DataCollection, but not {type(value)}"
+                f"Calculator: `input` can be a DataCollection, list or BaseData object, and will be treated as a DataCollection. Your input type: {type(value)} is not accepted."
             )
 
     @property
-    def input_keys(self):
-        return self.__input_keys
-
-    @input_keys.setter
-    def input_keys(self, value):
-        self.set_input_keys(value)
-
-    def set_input_keys(self, value: Union[list, str]):
-        if isinstance(value, list):
-            for item in value:
-                assert type(item) is str
-            self.__input_keys = value
-        elif isinstance(value, str):
-            self.__input_keys = [value]
-        else:
-            raise TypeError(
-                f"Calculator: `input_keys` can be a list or a string, and will be treated as a list, but not {type(value)}"
-            )
-
-    @property
-    def output_keys(self):
+    def output_keys(self) -> list:
         return self.__output_keys
 
     @output_keys.setter
@@ -237,6 +262,7 @@ class BaseCalculator(AbstractBaseClass):
         self.set_output_keys(value)
 
     def set_output_keys(self, value: Union[list, str]):
+        """Set the calculator output keys. It can be a list of str or a single str."""
         if isinstance(value, list):
             for item in value:
                 assert type(item) is str
@@ -245,22 +271,78 @@ class BaseCalculator(AbstractBaseClass):
             self.__output_keys = [value]
         else:
             raise TypeError(
-                f"Calculator: `output_keys` can be a list or a string, and will be treated as a list, but not {type(value)}"
+                f"Calculator: `output_keys` can be a list or str, and will be treated as a list. Your input type: {type(value)} is not accepted."
             )
 
+    @property
+    def output_data_types(self) -> list:
+        return self.__output_data_types
 
-    #TODO: Add example codes
+    @output_data_types.setter
+    def output_data_types(self, value):
+        self.set_output_data_types(value)
+
+    def set_output_data_types(self, value: Union[list, BaseData]):
+        """Set the calculator output data type. It can be a list of DataClass or a single DataClass."""
+        if isinstance(value, list):
+            for item in value:
+                assert type(item) is BaseData
+            self.__output_data_types = value
+        elif isinstance(value, BaseData):
+            self.__output_data_types = [value]
+        else:
+            raise TypeError(
+                f"Calculator: `output_data_types` can be a list or a subclass of BaseData, and will be treated as a list. Your input type: {type(value)} is not accepted."
+            )
+
+    @property
+    def output_filenames(self) -> list:
+        return self.__output_filenames
+
+    @output_filenames.setter
+    def output_filenames(self, value):
+        self.set_output_filenames(value)
+
+    def set_output_filenames(self, value: Union[list, str, None]):
+        """Set the calculator output filenames. It can be a list of filenames or just a single str."""
+        if isinstance(value, list):
+            for item in value:
+                assert type(item) is str or type(None)
+            self.__output_filenames = value
+        elif isinstance(value, (BaseData, type(None))):
+            self.__output_filenames = [value]
+        else:
+            raise TypeError(
+                f"Calculator: `output_filenames` can be a list or just a str or None, and will be treated as a list. Your input type: {type(value)} is not accepted."
+            )
+
+    @property
+    def output(self):
+        """The output of this calculator"""
+        return self.__output
+
+    @property
+    def data(self):
+        """The alias of output. It's not recommened to use this varialble name due to it's Ambiguity."""
+        return self.__output
+
     @abstractmethod
     def init_parameters(self):
-        raise NotImplementedError
+        # This is just an example. Override this function in a concrete class.
+        parameters = CalculatorParameters()
+        times = parameters.new_parameter(
+            "plus_times", comment="How many times to do the plus"
+        )
+        times.value = 1
+        self.parameters = parameters
 
     def __init_output(self):
-        """Create output data objects according to the output_data_classes"""
+        """Create output data objects according to the output_data_types"""
         output = DataCollection()
         for i, key in enumerate(self.output_keys):
             output_data = self.output_data_types[i](key)
             output.add_data(output_data)
-        self.output = output
+        self.__output = output
 
     def __call__(self, parameters=None, **kwargs):
         """The copy constructor
@@ -302,36 +384,6 @@ class BaseCalculator(AbstractBaseClass):
 
         del tmp
 
-    @property
-    def parameters(self):
-        """The parameters of this calculator."""
-
-        return self.__parameters
-
-    @parameters.setter
-    def parameters(self, val):
-
-        if not isinstance(val, (type(None), CalculatorParameters)):
-            raise TypeError(
-                """Passed argument 'parameters' has wrong type. Expected CalculatorParameters, found {}.""".format(
-                    type(val)
-                )
-            )
-
-        self.__parameters = val
-
-    def set_parameters(self, args_as_dict=None, **kwargs):
-        """
-        Sets parameters contained in this calculator using dict or kwargs
-        """
-        if args_as_dict is not None:
-            parameter_dict = args_as_dict
-        else:
-            parameter_dict = kwargs
-
-        for key, parameter_value in parameter_dict.items():
-            self.parameters[key].value = parameter_value
-
     def dump(self, fname=None):
         """
         Dump class instance to file.
@@ -355,65 +407,7 @@ class BaseCalculator(AbstractBaseClass):
         return fname
 
     @abstractmethod
-    def saveH5(self, fname: str, openpmd: bool = True):
-        """Save the simulation data to hdf5 file.
-
-        :param fname: The filename (path) of the file to write the data to.
-        :type  fname: str
-
-        :param openpmd: Flag that controls whether the data is to be written in according to the openpmd metadata standard. Default is True.
-
-        """
-
-    @property
-    def data(self):
-        return self.__data
-
-    @data.setter
-    def data(self, val):
-        raise AttributeError("Attribute 'data' is read-only.")
-
-    @abstractmethod
     def backengine(self):
-        pass
-
-    @classmethod
-    def run_from_cli(cls):
-        """
-        Method to start calculator computations from command line.
-
-        :return: exit with status code
-
-        """
-        if len(sys.argv) == 2:
-            fname = sys.argv[1]
-            calculator = cls(fname)
-            status = calculator._run()
-            sys.exit(status)
-
-    def _run(self):
-        """
-        Method to do computations. By default starts backengine.
-
-        :return: status code.
-
-        """
-        result = self.backengine()
-
-        if result is None:
-            result = 0
-
-        return result
-
-    def _set_data(self, data):
-        """ """
-        """ Private method to store the data on the object.
-
-        :param data: The data to store.
-
-        """
-
-        self.__data = data
-
+        raise NotImplementedError
 
 # This project has received funding from the European Union's Horizon 2020 research and innovation programme under grant agreement No. 823852.
