@@ -34,8 +34,6 @@ from libpyvinyl.Parameters import CalculatorParameters
 from tempfile import mkstemp
 import copy
 import dill
-import h5py
-import sys
 import logging
 import os
 
@@ -72,18 +70,17 @@ class BaseCalculator(AbstractBaseClass):
         instrument_base_dir: str = "./",
         calculator_base_dir: str = "BaseCalculator",
         parameters: CalculatorParameters = None,
-        dumpfile: str = None,
     ):
         """
 
         :param name: The name of this calculator.
         :type name: str
 
-        :param name: The input of this caluclator. It can be a `DataCollection`,
+        :param name: The input of this calculator. It can be a `DataCollection`,
         a list of `DataCollection`s or a single Data Object.
         :type name: DataCollection, list or BaseData
 
-        :param output_keys: The key(s) of this caluclator's output data. It's a list of `str`s or
+        :param output_keys: The key(s) of this calculator's output data. It's a list of `str`s or
         a single str.
         :type output_keys: list or str
 
@@ -107,41 +104,6 @@ class BaseCalculator(AbstractBaseClass):
 
         :param parameters: The parameters for this calculator.
         :type  parameters: Parameters
-
-        :param dumpfile: If given, load a previously dumped (aka pickled) calculator.
-        :type dumpfile: str
-
-        :param kwargs: (key, value) pairs of further arguments to the calculator, e.g input_path, output_path.
-
-        If both 'parameters' and 'dumpfile' are given, the dumpfile is loaded
-        first. Passing a parameters object may be used to update some
-        parameters.
-
-        TODO:
-        Example:
-        ```
-        # Define a specialized calculator.
-        class MyCalculator(BaseCalculator):
-
-            def __init__(self, parameters=None, dumpfile=None, **kwargs):
-                super()__init__(parameters, dumpfile, **kwargs)
-
-            def backengine(self):
-                os.system("my_simulation_backengine_call")
-
-            def saveH5(self):
-                # Format output into openpmd hdf5 format.
-
-        class MyParameters(Parameters):
-            pass
-
-        my_calculator = MyCalculator(my_parameters)
-
-        my_calculator.backengine()
-
-        my_calculator.saveH5("my_sim_output.h5")
-        my_calculater.dump("my_calculator.dill")
-        ```
 
         """
         # Initialize the variables
@@ -225,7 +187,7 @@ class BaseCalculator(AbstractBaseClass):
 
     def set_calculator_base_dir(self, value: str):
         """Set the calculator base directory"""
-        if isinstance(value, BaseData):
+        if isinstance(value, str):
             self.__calculator_base_dir = [value]
         else:
             raise TypeError(
@@ -286,7 +248,7 @@ class BaseCalculator(AbstractBaseClass):
         """Set the calculator output data type. It can be a list of DataClass or a single DataClass."""
         if isinstance(value, list):
             for item in value:
-                assert type(item) is BaseData
+                assert issubclass(item, BaseData)
             self.__output_data_types = value
         elif isinstance(value, BaseData):
             self.__output_data_types = [value]
@@ -323,7 +285,7 @@ class BaseCalculator(AbstractBaseClass):
 
     @property
     def data(self):
-        """The alias of output. It's not recommened to use this varialble name due to it's Ambiguity."""
+        """The alias of output. It's not recommended to use this variable name due to it's ambiguity."""
         return self.__output
 
     @abstractmethod
@@ -360,15 +322,14 @@ class BaseCalculator(AbstractBaseClass):
 
         new.__dict__.update(kwargs)
 
-        if parameters is not None:
+        if parameters is None:
+            new.parameters = copy.deepcopy(new.parameters)
+        else:
             new.parameters = parameters
-
         return new
 
-    # TODO: modify to from dump
     @classmethod
-    def __load_from_dump(self, dumpfile):
-        """ """
+    def from_dump(cls, dumpfile: str):
         """
         Load a dill dump and initialize self's internals.
 
@@ -380,15 +341,17 @@ class BaseCalculator(AbstractBaseClass):
             except:
                 raise IOError("Cannot load calculator from {}.".format(dumpfile))
 
-        self.__dict__ = copy.deepcopy(tmp.__dict__)
+            if not isinstance(tmp, cls):
+                raise TypeError(f"The object in the file {dumpfile} is not a {cls}")
 
-        del tmp
+        return tmp
 
     def dump(self, fname=None):
         """
         Dump class instance to file.
 
         :param fname: Filename (path) of the file to write.
+        :type fname: str
 
         """
 
@@ -398,16 +361,14 @@ class BaseCalculator(AbstractBaseClass):
                 prefix=self.__class__.__name__[-1],
                 dir=os.getcwd(),
             )
-        try:
-            with open(fname, "wb") as file_handle:
-                dill.dump(self, file_handle)
-        except:
-            raise
+        with open(fname, "wb") as file_handle:
+            dill.dump(self, file_handle)
 
         return fname
 
     @abstractmethod
     def backengine(self):
         raise NotImplementedError
+
 
 # This project has received funding from the European Union's Horizon 2020 research and innovation programme under grant agreement No. 823852.
