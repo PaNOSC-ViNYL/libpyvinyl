@@ -275,13 +275,13 @@ class BaseCalculatorTest(unittest.TestCase):
         self.assertEqual(input_dict["input1"]["number"], 1)
         self.assertEqual(input_dict["input2"]["number"], 1)
 
-    # def test_output_file_paths(self):
-    #     calculator = self.__default_calculator
-    #     with self.assertRaises(ValueError):
-    #         calculator.output_file_paths
-    #     calculator.output_filenames = "bingo.txt"
-    #     self.assertEqual(calculator.output_file_paths[0], "PlusCalculator/bingo.txt")
-    #     self.__dirs_to_remove.append("PlusCalculator")
+    def test_output_file_paths(self):
+        calculator = self.__default_calculator
+        with self.assertRaises(ValueError):
+            calculator.output_file_paths
+        calculator.output_filenames = "bingo.txt"
+        self.assertEqual(calculator.output_file_paths[0], "PlusCalculator/bingo.txt")
+        self.__dirs_to_remove.append("PlusCalculator")
 
 
 if __name__ == "__main__":
