@@ -14,4 +14,6 @@ pip install --user pytest
 pip install -e ./
 cd tests
 pytest Test.py
+# For the integration test
+pytest ./
 ```
