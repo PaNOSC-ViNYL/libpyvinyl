@@ -25,7 +25,7 @@
 ####################################################################################
 
 from abc import abstractmethod
-from typing import Union
+from typing import Union, Optional
 from tempfile import mkstemp
 import copy
 import dill
@@ -337,9 +337,12 @@ class BaseCalculator(AbstractBaseClass):
 
     @classmethod
     def from_dump(cls, dumpfile: str):
-        """
-        Load a dill dump and initialize self's internals.
+        """Load a dill dump from a dumpfile.
 
+        :param dumpfile: The file name of the dumpfile.
+        :type dumpfile: str
+        :return: The calculator object restored from the dumpfile.
+        :rtype: CalcualtorClass
         """
 
         with open(dumpfile, "rb") as fhandle:
@@ -353,13 +356,15 @@ class BaseCalculator(AbstractBaseClass):
 
         return tmp
 
-    def dump(self, fname=None):
+    def dump(self, fname: Optional[str] = None) -> str:
         """
         Dump class instance to file.
 
         :param fname: Filename (path) of the file to write.
         :type fname: str
 
+        :return: The filename of the dumpfile
+        :rtype: str
         """
 
         if fname is None:
