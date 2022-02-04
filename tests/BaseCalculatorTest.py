@@ -85,7 +85,9 @@ class PlusCalculator(BaseCalculator):
         times = parameters.new_parameter(
             "plus_times", comment="How many times to do the plus"
         )
+        # Set defaults
         times.value = 1
+
         self.parameters = parameters
 
     def backengine(self):
@@ -163,7 +165,7 @@ class BaseCalculatorTest(unittest.TestCase):
         calculator_copy = self.__default_calculator()
         self.assertEqual(calculator_copy.parameters["plus_times"].value, 1)
         new_parameters = calculator_copy.parameters
-        new_parameters["plus_times"].value = 5
+        new_parameters["plus_times"] = 5
         self.assertEqual(new_parameters["plus_times"].value, 5)
         self.assertEqual(calculator_copy.parameters["plus_times"].value, 5)
 
@@ -173,6 +175,11 @@ class BaseCalculatorTest(unittest.TestCase):
         calculator_copy.parameters["plus_times"] = 10
         self.assertEqual(calculator_copy.parameters["plus_times"].value, 10)
         self.assertEqual(self.__default_calculator.parameters["plus_times"].value, 1)
+        calculator_copy.input["input1"] = NumberData.from_dict({"number": 5}, "input1")
+        self.assertEqual(calculator_copy.input["input1"].get_data()["number"], 5)
+        self.assertEqual(
+            self.__default_calculator.input["input1"].get_data()["number"], 1
+        )
 
         # Calculator pointer
         self.assertEqual(calculator_copy.parameters["plus_times"].value, 10)
@@ -210,6 +217,7 @@ class BaseCalculatorTest(unittest.TestCase):
 
         output = calculator.backengine()
         self.assertEqual(output.get_data()["number"], 2)
+        self.__dirs_to_remove.append("PlusCalculator")
 
         # dump
         dump = calculator.dump()
@@ -266,6 +274,14 @@ class BaseCalculatorTest(unittest.TestCase):
         input_dict = calculator.input.get_data()
         self.assertEqual(input_dict["input1"]["number"], 1)
         self.assertEqual(input_dict["input2"]["number"], 1)
+
+    # def test_output_file_paths(self):
+    #     calculator = self.__default_calculator
+    #     with self.assertRaises(ValueError):
+    #         calculator.output_file_paths
+    #     calculator.output_filenames = "bingo.txt"
+    #     self.assertEqual(calculator.output_file_paths[0], "PlusCalculator/bingo.txt")
+    #     self.__dirs_to_remove.append("PlusCalculator")
 
 
 if __name__ == "__main__":
