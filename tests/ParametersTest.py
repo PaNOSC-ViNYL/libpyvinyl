@@ -1,7 +1,9 @@
 import unittest
+import pytest
 import os
 import tempfile
-
+from pint.quantity import Quantity
+from pint.unit import Unit
 from libpyvinyl.Parameters import Parameter
 from libpyvinyl.Parameters import CalculatorParameters
 from libpyvinyl.Parameters import InstrumentParameters
@@ -15,13 +17,13 @@ class Test_Parameter(unittest.TestCase):
     def test_initialize_parameter_complex(self):
         par = Parameter("test", unit="cm", comment="comment string")
         self.assertEqual(par.name, "test")
-        self.assertEqual(par.unit, "cm")
+        assert par.unit == str(Unit("cm"))
         self.assertEqual(par.comment, "comment string")
 
     # no conditions
     def test_parameter_no_legal_conditions(self):
         par = Parameter("test")
-        self.assertTrue(par.is_legal(None))
+        self.assertTrue(par.is_legal(None))  # FIXME how is this supposed to work?
         self.assertTrue(par.is_legal(-999))
         self.assertTrue(par.is_legal(-1))
         self.assertTrue(par.is_legal(0))
@@ -57,18 +59,84 @@ class Test_Parameter(unittest.TestCase):
         self.assertTrue(par.is_legal(5.0))
         self.assertFalse(par.is_legal(10.0))
 
-    # case 1: only legal option
-    def test_parameter_legal_option(self):
+    def test_values_different_types(self):
         par = Parameter("test")
         par.add_option(9.8, True)
-        par.add_option(True, True)
-        par.add_option(["A", 38], True)
+        with pytest.raises(TypeError):
+            par.add_option(True, True)
+
+    # case 1: only legal option
+    def test_parameter_legal_option_float(self):
+        par = Parameter("test")
+        par.add_option(9.8, True)
 
         self.assertFalse(par.is_legal(10))
         self.assertTrue(par.is_legal(9.8))
+        self.assertFalse(par.is_legal(True))
+        self.assertFalse(par.is_legal("A"))
+        self.assertFalse(par.is_legal(38))
+
+    # case 1: only legal option
+    def test_parameter_legal_option_bool(self):
+        par = Parameter("test")
+        par.add_option(True, True)
+
+        self.assertFalse(par.is_legal(10))
+        self.assertFalse(par.is_legal(9.8))
         self.assertTrue(par.is_legal(True))
-        self.assertTrue(par.is_legal("A"))
+        self.assertFalse(par.is_legal("A"))
+        self.assertFalse(par.is_legal(38))
+
+    # case 1: only legal option
+    def test_parameter_legal_option_float_and_int(self):
+        par = Parameter("test")
+        par.add_option(9.8, True)
+        par.add_option(38, True)
+
+        self.assertFalse(par.is_legal(10))
+        self.assertTrue(par.is_legal(9.8))
+        self.assertFalse(par.is_legal(True))
+        self.assertFalse(par.is_legal("A"))
         self.assertTrue(par.is_legal(38))
+
+    # case 1: only legal option
+    def test_parameter_legal_option_int_and_float(self):
+        par = Parameter("test")
+        par.add_option(38, True)
+        par.add_option(9.8, True)
+
+        self.assertFalse(par.is_legal(10))
+        self.assertTrue(par.is_legal(9.8))
+        self.assertFalse(par.is_legal(True))
+        self.assertFalse(par.is_legal("A"))
+        self.assertTrue(par.is_legal(38))
+
+    # case 1: only legal option
+    def test_parameter_legal_option_fromlist(self):
+        par = Parameter("test")
+        par.add_option([9, 8, 38], True)
+
+        self.assertFalse(par.is_legal(10))
+        self.assertFalse(par.is_legal(9.8))
+        self.assertFalse(par.is_legal(True))
+        self.assertFalse(par.is_legal("A"))
+        self.assertTrue(par.is_legal(38))
+        self.assertTrue(par.is_legal(38.0))
+        self.assertTrue(par.is_legal(8))
+
+        # case 1: only legal option
+
+    def test_parameter_legal_option_string(self):
+        par = Parameter("test")
+        par.add_option(["B", "A"], True)
+
+        self.assertFalse(par.is_legal(10))
+        self.assertFalse(par.is_legal(9.8))
+        self.assertFalse(par.is_legal(True))
+        self.assertTrue(par.is_legal("A"))
+        self.assertTrue(par.is_legal("B"))
+        self.assertFalse(par.is_legal("C"))
+        self.assertFalse(par.is_legal(38))
 
     def test_parameter_multiple_options(self):
         par = Parameter("test")
@@ -118,7 +186,7 @@ class Test_Parameter(unittest.TestCase):
         self.assertFalse(par.is_legal(11.0))
 
     # case 4: illegal interval + legal option
-    def test_parameter_legal_interval_plus_illegal_option(self):
+    def test_parameter_illegal_interval_plus_legal_option(self):
         par = Parameter("test")
         par.add_interval(None, 8.5, False)  # minus infinite to 8.5
         par.add_option(5, True)
@@ -128,6 +196,23 @@ class Test_Parameter(unittest.TestCase):
         self.assertTrue(par.is_legal(5.0))
         self.assertTrue(par.is_legal(10.0))
         self.assertTrue(par.is_legal(11.0))
+
+    def test_parameter_value_type(self):
+        par = Parameter("test")
+        par.value = 4.0
+        assert par._Parameter__value_type == Quantity
+
+        par1 = Parameter("test")
+        par1.value = 4
+        assert par1._Parameter__value_type == int
+
+        par2 = Parameter("test", unit="meV")
+        par2.value = 4
+        assert par2._Parameter__value_type == Quantity
+
+        par3 = Parameter("test", unit="meV")
+        par3.add_interval(0, 1e6, True)
+        assert par3._Parameter__value_type == Quantity
 
     def test_parameter_set_value(self):
         par = Parameter("test")
@@ -140,6 +225,16 @@ class Test_Parameter(unittest.TestCase):
             par.value = 5.0  # Should throw an error and be ignored
 
         self.assertEqual(par.value, 4.0)
+
+    def test_add_interval_after_value(self):
+        par = Parameter("test")
+        par.value = 4.0
+        par.add_interval(3, 4.5, True)
+
+        par.clear_intervals()
+        par.value = 5.0
+        with self.assertRaises(ValueError):
+            par.add_interval(3, 4.5, True)
 
     def test_parameter_from_dict(self):
         par = Parameter("test")
@@ -158,17 +253,14 @@ class Test_Parameter(unittest.TestCase):
     def test_clear_intervals(self):  # FIXME
         par = Parameter("test")
         par.add_interval(3, 4.5, True)
-        self.assertEqual(par._intervals, [[3, 4.5]])
-        # par.add_illegal_interval(5, 10)
-        # self.assertEqual(par.illegal_intervals, [[5, 10]])
+        # self.assertEqual(par.__intervals, [[3, 4.5]]) #FIXME
+
         par.clear_intervals()
-        # self.assertEqual(par.legal_intervals, [])
-        # par.clear_illegal_intervals()
-        # self.assertEqual(par.illegal_intervals, [])
         par.add_option(9.7, True)
-        self.assertEqual(par._options, [9.7])
+        #        self.assertEqual(par.__options, [9.7])
         par.clear_options()
-        self.assertEqual(par._options, [])
+
+    #        self.assertEqual(par.__options, [])
 
     def test_print_line(self):
         par = Parameter("test")
@@ -226,19 +318,45 @@ class Test_Parameters(unittest.TestCase):
 
     def test_json(self):
         par1 = Parameter("test")
-        par1.value = 8
+        par1.value = 8.0
         par2 = Parameter("test2", unit="meV")
         par2.value = 10
 
         parameters = CalculatorParameters()
         parameters.add(par1)
         parameters.add(par2)
+
         with tempfile.TemporaryDirectory() as d:
             tmp_file = os.path.join(d, "test.json")
-            # tmp_file = 'test.json'
             parameters.to_json(tmp_file)
             params_json = CalculatorParameters.from_json(tmp_file)
             self.assertEqual(params_json["test2"].value, 10)
+            assert params_json["test2"].value_no_conversion == Quantity(10, "meV")
+            with pytest.raises(TypeError):
+                params_json["test2"].value = "A"
+
+    def test_json_with_objects(self):
+        par1 = Parameter("test")
+        par1.value = 8
+        par2 = Parameter("test2", unit="meV")
+        par2.value = 10
+        par3 = Parameter("test3", unit="meV")
+        par3.value = 3.14
+
+        parameters = CalculatorParameters()
+        parameters.add(par1)
+        parameters.add(par2)
+        parameters.add(par3)
+        with tempfile.TemporaryDirectory() as d:
+            tmp_file = os.path.join(d, "test.json")
+            tmp_file = "/tmp/test.json"
+            parameters.to_json(tmp_file)
+            params_json = CalculatorParameters.from_json(tmp_file)
+            self.assertEqual(params_json["test2"].value, 10)
+            print(params_json["test3"])
+            assert params_json["test3"].value == par3.value
+            assert params_json["test3"].value == 3.14
+            assert params_json["test3"].value_no_conversion == Quantity(3.14, "meV")
 
     def test_get_item(self):
         par1 = Parameter("test")
@@ -346,7 +464,6 @@ class Test_Instruments(unittest.TestCase):
         )
         self.instr_parameters.master["absorption"] = master_value
         temp_file = os.path.join(self.d.name, "test.json")
-        # temp_file = 'instrument.json'
         self.instr_parameters.to_json(temp_file)
         print(self.instr_parameters)
 

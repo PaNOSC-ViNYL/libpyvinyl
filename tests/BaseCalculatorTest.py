@@ -1,4 +1,5 @@
 import unittest
+import pytest
 import os
 import shutil
 import numpy
@@ -180,9 +181,9 @@ class BaseCalculatorTest(unittest.TestCase):
 
         # Load back parameters
         new_parameters = CalculatorParameters.from_json("my_parameters.json")
-        self.assertEqual(
-            new_parameters["photon_energy"].value,
-            calculator.parameters["photon_energy"].value,
+        assert (
+            new_parameters["photon_energy"].value
+            == calculator.parameters["photon_energy"].value
         )
 
         reloaded_calculator = SpecializedCalculator("derived", dumpfile=dumpfile)
