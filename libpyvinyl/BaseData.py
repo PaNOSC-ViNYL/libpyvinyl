@@ -391,6 +391,14 @@ class DataCollection:
     def __len__(self):
         return len(self.data_object_dict)
 
+    def __setitem__(self, key, value):
+        if key != value.key:
+            print(
+                f"Warning: the key '{key}' of this DataCollection will be replaced by the key '{value.key}' set in the input data."
+            )
+        del self.data_object_dict[key]
+        self.add_data(value)
+
     def __getitem__(self, keys):
         if isinstance(keys, str):
             return self.get_data_object(keys)
