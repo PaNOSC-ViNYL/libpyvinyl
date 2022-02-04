@@ -1,10 +1,9 @@
 from typing import Union
 from pathlib import Path
 import numpy as np
-from libpyvinyl import CalculatorParameters
 from libpyvinyl.BaseData import DataCollection
 from plusminus.NumberData import NumberData, TXTFormat
-from plusminus.BaseCalculator import BaseCalculator
+from libpyvinyl.BaseCalculator import BaseCalculator, CalculatorParameters
 
 
 class MinusCalculator(BaseCalculator):

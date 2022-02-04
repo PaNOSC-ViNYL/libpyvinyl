@@ -2,6 +2,7 @@ import unittest
 import os
 import shutil
 
+from BaseCalculatorTest import PlusCalculator, NumberData
 from libpyvinyl.Instrument import Instrument
 from SpecializedCalculator import SpecializedCalculator
 
@@ -14,11 +15,12 @@ class InstrumentTest(unittest.TestCase):
     @classmethod
     def setUpClass(cls):
         """Setting up the test class."""
-        calculator1 = SpecializedCalculator("test1")
-        calculator1.setParams()
+        input1 = NumberData.from_dict({"number": 1}, "input1")
+        input2 = NumberData.from_dict({"number": 1}, "input2")
+        calculator1 = PlusCalculator("test1", [input1, input2])
         cls.calculator1 = calculator1
-        calculator2 = SpecializedCalculator("test2")
-        calculator2.setParams(12, 0.002)
+        calculator2 = PlusCalculator("test2", [input1, input2])
+        calculator2.parameters["plus_times"] = 12
         cls.calculator2 = calculator2
 
     @classmethod
@@ -62,12 +64,8 @@ class InstrumentTest(unittest.TestCase):
         """Testing listing parameters"""
 
         my_instrument = Instrument("myInstrument")
-        calculator1 = SpecializedCalculator("test1")
-        calculator1.setParams()
-        calculator2 = SpecializedCalculator("test2")
-        calculator2.setParams(12, 0.002)
-        my_instrument.add_calculator(calculator1)
-        my_instrument.add_calculator(calculator2)
+        my_instrument.add_calculator(self.calculator1)
+        my_instrument.add_calculator(self.calculator2)
         my_instrument.list_parameters()
 
     def testRemoveCalculator(self):
@@ -84,8 +82,8 @@ class InstrumentTest(unittest.TestCase):
         """Testing edit calculator"""
         my_instrument = Instrument("myInstrument")
         my_instrument.add_calculator(self.calculator1)
-        my_instrument.parameters["test1"]["photon_energy"] = 15
-        energy1 = my_instrument.calculators["test1"].parameters["photon_energy"].value
+        my_instrument.parameters["test1"]["plus_times"] = 15
+        energy1 = my_instrument.calculators["test1"].parameters["plus_times"].value
         self.assertEqual(energy1, 15)
 
     def testAddMaster(self):
@@ -94,23 +92,27 @@ class InstrumentTest(unittest.TestCase):
         my_instrument = Instrument("myInstrument")
         my_instrument.add_calculator(self.calculator1)
         my_instrument.add_calculator(self.calculator2)
-        links = {"test1": "photon_energy", "test2": "photon_energy"}
-        my_instrument.add_master_parameter("photon_energy", links)
-        my_instrument.master["photon_energy"] = 10
-        energy1 = my_instrument.calculators["test1"].parameters["photon_energy"].value
-        energy2 = my_instrument.calculators["test2"].parameters["photon_energy"].value
-        self.assertEqual(energy1, 10)
-        self.assertEqual(energy2, 10)
+        links = {"test1": "plus_times", "test2": "plus_times"}
+        my_instrument.add_master_parameter("plus_times", links)
+        my_instrument.master["plus_times"] = 10
+        tims1 = my_instrument.calculators["test1"].parameters["plus_times"].value
+        tims2 = my_instrument.calculators["test2"].parameters["plus_times"].value
+        self.assertEqual(tims1, 10)
+        self.assertEqual(tims2, 10)
 
-    # def testSetBasePath(self):
-    #     """Testing setup base path for calculators"""
+    def testSetBasePath(self):
+        """Testing setup base path for calculators"""
 
-    #     my_instrument = Instrument("myInstrument")
-    #     my_instrument.add_calculator(self.calculator1)
-    #     my_instrument.add_calculator(self.calculator2)
-    #     my_instrument.set_base_path("test")
-    #     self.assertEqual(my_instrument.calculators["test1"].output_path, "test/test1")
-    #     self.assertEqual(my_instrument.calculators["test2"].output_path, "test/test2")
+        my_instrument = Instrument("myInstrument")
+        my_instrument.add_calculator(self.calculator1)
+        my_instrument.add_calculator(self.calculator2)
+        my_instrument.set_instrument_base_dir("test")
+        self.assertEqual(
+            my_instrument.calculators["test1"].base_dir, "test/PlusCalculator"
+        )
+        self.assertEqual(
+            my_instrument.calculators["test2"].base_dir, "test/PlusCalculator"
+        )
 
 
 if __name__ == "__main__":

@@ -126,8 +126,23 @@ class BaseCalculator(AbstractBaseClass):
         self.calculator_base_dir = calculator_base_dir
         self.parameters = parameters
 
+        self.__check_consistency()
         # Create output data objects according to the output_data_classes
         self.__init_output()
+
+    def __check_consistency(self):
+        """Check the consistency of the input parameters"""
+        if len(self.output_keys) != len(self.output_data_types):
+            raise ValueError(
+                f"len(output_keys) = {len(self.output_keys)} is not equal to len(output_data_types) = {len(self.output_keys)}"
+            )
+
+    def __check_output_filenames(self):
+        """Since output_filenames can be None for output in dict mapping, only check output_files when necessary"""
+        if len(self.output_data_types) != len(self.output_filenames):
+            raise ValueError(
+                f"len(output_filenames) = {len(self.output_filenames)} is not equal to len(output_data_types) = {len(self.output_keys)}"
+            )
 
     @property
     def name(self) -> str:
@@ -226,9 +241,22 @@ class BaseCalculator(AbstractBaseClass):
 
     @property
     def base_dir(self):
-        """The base path for the output files of this calculator"""
+        """The base path for the output files of this calculator in consideration of instrument_base_dir and calculator_base_dir"""
         base_dir = Path(self.instrument_base_dir) / self.calculator_base_dir
         return str(base_dir)
+
+    @property
+    def output_file_paths(self):
+        """The final output file paths considering base_dir"""
+        self.__check_output_filenames()
+        paths = []
+
+        for filename in self.output_filenames:
+            path = Path(self.base_dir) / filename
+            # Make sure the file directory exists
+            path.parent.mkdir(parents=True, exist_ok=True)
+            paths.append(str(path))
+        return paths
 
     def set_output_keys(self, value: Union[list, str]):
         """Set the calculator output keys. It can be a list of str or a single str."""
@@ -278,7 +306,7 @@ class BaseCalculator(AbstractBaseClass):
             for item in value:
                 assert type(item) is str or type(None)
             self.__output_filenames = value
-        elif isinstance(value, (BaseData, type(None))):
+        elif isinstance(value, (str, type(None))):
             self.__output_filenames = [value]
         else:
             raise TypeError(
