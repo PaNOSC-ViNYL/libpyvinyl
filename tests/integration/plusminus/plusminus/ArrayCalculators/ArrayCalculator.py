@@ -1,9 +1,8 @@
 from typing import Union
 from pathlib import Path
 import numpy as np
-from libpyvinyl import CalculatorParameters
 from libpyvinyl.BaseData import DataCollection
-from plusminus.BaseCalculator import BaseCalculator
+from libpyvinyl.BaseCalculator import BaseCalculator, CalculatorParameters
 from plusminus.NumberData import NumberData
 from plusminus.ArrayData import ArrayData
 
@@ -55,6 +54,6 @@ class ArrayCalculator(BaseCalculator):
         )
         data_dict = {"array": output_arr}
         key = self.output_keys[0]
-        output_data = ArrayData.from_dict(data_dict, key)
-        self.output = DataCollection(output_data)
+        output_data = self.output[key]
+        output_data.set_dict(data_dict)
         return self.output

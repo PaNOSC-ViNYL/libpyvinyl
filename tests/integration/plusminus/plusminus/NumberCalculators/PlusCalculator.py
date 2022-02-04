@@ -1,9 +1,8 @@
 from typing import Union
 from pathlib import Path
-from libpyvinyl import CalculatorParameters
 from libpyvinyl.BaseData import DataCollection
 from plusminus.NumberData import NumberData
-from plusminus.BaseCalculator import BaseCalculator
+from libpyvinyl.BaseCalculator import BaseCalculator, CalculatorParameters
 
 
 class PlusCalculator(BaseCalculator):
