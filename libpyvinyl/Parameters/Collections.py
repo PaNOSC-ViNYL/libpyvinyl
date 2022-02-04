@@ -5,6 +5,38 @@ from collections import OrderedDict
 
 from libpyvinyl.AbstractBaseClass import AbstractBaseClass
 from .Parameter import Parameter
+from pint.quantity import Quantity
+from pint.unit import Unit, UnitsContainer
+
+
+def quantity_encode(obj, primitives=False):
+    """
+    Function to encode pint.Quantity object in json
+    """
+    if isinstance(obj, Quantity):
+        return {"__quantity__": str(obj)}
+    elif isinstance(obj, Unit):
+        return str(obj)
+    elif isinstance(obj, UnitsContainer):
+        return ""
+    else:
+        return obj
+
+
+def quantity_decode(dct):
+    """
+    Function to decode pint.Quantity object from json
+    """
+    if "__quantity__" in dct:
+        a = dct["__quantity__"]
+        if "inf" in a:
+            return Quantity("inf", a.strip("inf"))
+        else:
+            return Quantity(dct["__quantity__"])
+    elif "__units__" in dct:
+        return dct["__units__"]
+    else:
+        return dct
 
 
 class CalculatorParameters(AbstractBaseClass):
@@ -132,7 +164,9 @@ class CalculatorParameters(AbstractBaseClass):
 
         """
         with open(fname, "r") as fp:
-            instance = cls.from_dict(json.load(fp))
+            instance = cls.from_dict(
+                json.load(fp, extra_obj_pairs_hooks=[quantity_decode]),
+            )
 
         return instance
 
@@ -155,6 +189,10 @@ class CalculatorParameters(AbstractBaseClass):
         params = {}
         for key in self.parameters:
             params[key] = self.parameters[key].__dict__
+            a = params[key]
+            if "_Parameter__value_type" in a:
+                del a["_Parameter__value_type"]
+
         return params
 
     def to_json(self, fname: str):
@@ -166,7 +204,13 @@ class CalculatorParameters(AbstractBaseClass):
 
         """
         with open(fname, "w") as fp:
-            json.dump(self.to_dict(), fp, indent=4, allow_nan=True)
+            json.dump(
+                self.to_dict(),
+                fp,
+                indent=4,
+                allow_nan=True,
+                extra_obj_encoders=[quantity_encode],
+            )
 
 
 class MasterParameter(Parameter):
@@ -250,7 +294,9 @@ class InstrumentParameters(AbstractBaseClass):
 
         """
         with open(fname, "r") as fp:
-            instance = cls.from_dict(json.load(fp))
+            instance = cls.from_dict(
+                json.load(fp, extra_obj_pairs_hooks=[quantity_decode])
+            )
 
         return instance
 
@@ -292,7 +338,13 @@ class InstrumentParameters(AbstractBaseClass):
 
         """
         with open(fname, "w") as fp:
-            json.dump(self.to_dict(), fp, indent=4, allow_nan=True)
+            json.dump(
+                self.to_dict(),
+                fp,
+                indent=4,
+                allow_nan=True,
+                extra_obj_encoders=[quantity_encode],
+            )
 
     def add(self, key, parameters):
         """
