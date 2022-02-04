@@ -26,16 +26,17 @@
 
 from abc import abstractmethod
 from typing import Union
-from libpyvinyl.AbstractBaseClass import AbstractBaseClass
-from libpyvinyl.BaseData import BaseData, DataCollection
-
-from libpyvinyl.Parameters import CalculatorParameters
-
 from tempfile import mkstemp
 import copy
 import dill
+from pathlib import Path
 import logging
 import os
+
+from libpyvinyl.AbstractBaseClass import AbstractBaseClass
+from libpyvinyl.BaseData import BaseData, DataCollection
+from libpyvinyl.Parameters import CalculatorParameters
+
 
 logging.basicConfig(
     format="%(asctime)s %(levelname)s:%(message)s", level=logging.WARNING
@@ -171,7 +172,7 @@ class BaseCalculator(AbstractBaseClass):
     def set_instrument_base_dir(self, value: str):
         """Set the instrument base directory"""
         if isinstance(value, str):
-            self.__instrument_base_dir = [value]
+            self.__instrument_base_dir = value
         else:
             raise TypeError(
                 f"Calculator: `instrument_base_dir` is expected to be a str, not {type(value)}"
@@ -188,7 +189,7 @@ class BaseCalculator(AbstractBaseClass):
     def set_calculator_base_dir(self, value: str):
         """Set the calculator base directory"""
         if isinstance(value, str):
-            self.__calculator_base_dir = [value]
+            self.__calculator_base_dir = value
         else:
             raise TypeError(
                 f"Calculator: `calculator_base_dir` is expected to be a str, not {type(value)}"
@@ -222,6 +223,12 @@ class BaseCalculator(AbstractBaseClass):
     @output_keys.setter
     def output_keys(self, value):
         self.set_output_keys(value)
+
+    @property
+    def base_dir(self):
+        """The base path for the output files of this calculator"""
+        base_dir = Path(self.instrument_base_dir) / self.calculator_base_dir
+        return str(base_dir)
 
     def set_output_keys(self, value: Union[list, str]):
         """Set the calculator output keys. It can be a list of str or a single str."""
