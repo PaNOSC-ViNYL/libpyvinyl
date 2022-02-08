@@ -210,11 +210,24 @@ class BaseCalculatorTest(unittest.TestCase):
         self.__files_to_remove.append(calculator.dump())
         self.__files_to_remove.append(calculator.dump("dump.dill"))
 
+    def test_pointer_calculator(self):
+        """Test parameters in a copied calculator"""
+
+        # calculator = self.__default_calculator.() is hardcopy
+        # calculator = self.__default_calculator is only pointer
+        calculator = self.__default_calculator
+        self.assertEqual(calculator.parameters["plus_times"].value, 1)
+        calculator.parameters["plus_times"] = 5
+        self.assertEqual(self.__default_calculator.parameters["plus_times"].value, 5)
+        calculator.parameters["plus_times"] = 1
+        self.assertEqual(self.__default_calculator.parameters["plus_times"].value, 1)
+
     def test_resurrect_from_dump(self):
         """Test loading from dumpfile."""
 
-        calculator = self.__default_calculator
+        calculator = self.__default_calculator()
 
+        self.assertEqual(calculator.parameters["plus_times"].value, 1)
         output = calculator.backengine()
         self.assertEqual(output.get_data()["number"], 2)
         self.__dirs_to_remove.append("PlusCalculator")
@@ -232,6 +245,7 @@ class BaseCalculatorTest(unittest.TestCase):
             self.__default_calculator.input.get_data(),
         )
 
+        calculator.parameters.to_dict()
         self.assertEqual(
             calculator.parameters.to_dict(),
             self.__default_calculator.parameters.to_dict(),
