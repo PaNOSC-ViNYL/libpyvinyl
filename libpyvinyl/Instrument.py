@@ -7,7 +7,8 @@ from libpyvinyl.Parameters.Collections import InstrumentParameters
 
 class Instrument:
     """An Instrument class"""
-    def __init__(self, name, calculators=None, instrument_base_dir='./'):
+
+    def __init__(self, name, calculators=None, instrument_base_dir="./"):
         """An Instrument class
 
         :param name: The name of this instrument
@@ -42,7 +43,7 @@ class Instrument:
             self.__name = value
         else:
             raise TypeError(
-                f'Instrument: name is expecting a str rather than {type(value)}'
+                f"Instrument: name is expecting a str rather than {type(value)}"
             )
 
     @property
@@ -75,7 +76,7 @@ class Instrument:
                 calculator.instrument_base_dir = self.__instrument_base_dir
         else:
             raise TypeError(
-                f'Instrument: instrument_base_dir is expecting a str rather than {type(base)}'
+                f"Instrument: instrument_base_dir is expecting a str rather than {type(base)}"
             )
 
     def list_calculators(self):
