@@ -4,7 +4,6 @@ import shutil
 
 from BaseCalculatorTest import PlusCalculator, NumberData
 from libpyvinyl.Instrument import Instrument
-from SpecializedCalculator import SpecializedCalculator
 
 
 class InstrumentTest(unittest.TestCase):
@@ -82,6 +81,7 @@ class InstrumentTest(unittest.TestCase):
         """Testing edit calculator"""
         my_instrument = Instrument("myInstrument")
         my_instrument.add_calculator(self.calculator1)
+        my_instrument.parameters["test1"]["plus_times"] = 10
         my_instrument.parameters["test1"]["plus_times"] = 15
         energy1 = my_instrument.calculators["test1"].parameters["plus_times"].value
         self.assertEqual(energy1, 15)
