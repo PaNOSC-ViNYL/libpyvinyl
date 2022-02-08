@@ -2,6 +2,7 @@
 
 import json_tricks as json
 from collections import OrderedDict
+import copy
 
 from libpyvinyl.AbstractBaseClass import AbstractBaseClass
 from .Parameter import Parameter
@@ -188,7 +189,8 @@ class CalculatorParameters(AbstractBaseClass):
     def to_dict(self):
         params = {}
         for key in self.parameters:
-            params[key] = self.parameters[key].__dict__
+            # Deepcopy to not modify the original parameters
+            params[key] = copy.deepcopy(self.parameters[key].__dict__)
             a = params[key]
             if "_Parameter__value_type" in a:
                 del a["_Parameter__value_type"]
