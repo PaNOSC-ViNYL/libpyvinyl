@@ -325,7 +325,7 @@ class BaseCalculator(AbstractBaseClass):
 
     @abstractmethod
     def init_parameters(self):
-        """ Virtual method to initialize all parameters. Must be implemented on the
+        """Virtual method to initialize all parameters. Must be implemented on the
         specialized class."""
 
         raise NotImplementedError
