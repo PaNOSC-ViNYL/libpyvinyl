@@ -12,16 +12,17 @@ While `Parameters` is a pure state engine, i.e. it's sole purpose is to encapsul
 the physical, numerical, and computational parameters of a simulation, the `BaseCalculator`
 exposes the interface to 
 
-- Configure a simulation (through the corresponding `Parameters` instance)
-- Launch the simulation run
-- Collect the simulation output data and make it queriable as a class attribute
-- Snapshoot a simulation by dumping the object to disk (using the `dill` library).
+- Configure a simulation.
+- Launch the simulation run.
+- Collect the simulation output data.
+- Construct a `Data` instance that represents the simulation output data.
+- Snapshoot a simulation by dumping the object to disk.
 - Reload a simulation run from disk and continue the run with optionally modified parameters.
 
-The `BaseCalculaton` is an abstract base class, it shall not be instantiated as such.
+The `BaseCalculator` is an abstract base class, it shall not be instantiated as such.
 The anticipated use is to inherit specialised `Calculators` from `BaseCalculator` and to
 implement the core functionality in the derived class. In particular, this is required
-for the methods responsible to launch a simulation (`run()`) .
+for the methods responsible to launch a simulation through the `backengine()` method.
 
 As an example, we demonstrate in an [accompanying notebook](https://github.com/PaNOSC-ViNYL/libpyvinyl/blob/master/doc/source/include/notebooks/example-01.ipynb)
 how to declare a derived `Calculator` and implement a `backengine` method. The example then
