@@ -30,6 +30,35 @@ how to declare a derived `Calculator` and implement a `backengine` method. The e
 shows how to run the simulation, store the results in a `hdf5` file, snapshot the simulation
 and reload the simulation into memory.
 
+## Problem statement
+Simulating physical processes is a widespread method to investigate *in-silico* complex systems that
+are inaccessible to analytical methods. The "Virtual Neutron and x-raY Laboratory" (ViNYL) 
+is an attempt to represent essential elements of neutron or x--ray photon beamline experiments through
+software that simulates the radiation passing from the source through beamlines, interacting with a sample and finally being registered in a detection device. In some cases, multipe simulations have be chained in a simulation pipeline, where each segment of the experiment is represented by a different piece
+of software. Driving such a complex simulation can be an enormous task due to the vast differences 
+with respect to parameter names, unit conventions, configuration syntax, i.e. the user interface. 
+
+The python package `libpyvinyl` provides a way to harmonizes the user interfaces of such simulation codes. It is an object oriented library; its classes define the user interface to simulation codes, simulation parameters, and simulation data. 
+
+For a given simulation code, e.g. propagation of neutron or photon beams through a beamline, a new class would have to be defined that derives from the `libpyvinyl` classes and implements the methods
+meant to configure a simulation, launch the simulation code, and retrieve the output data. Since the
+interplay between parametrization, execution, and IO is already taken care of at the level of `libpyvinyl`'s base classes, the effort to define a specialized interface for a new simulation code is rather minimal. This structure allows integrating simulation codes into simulation pipelines in the above sense.
+
+## Overview of base classes
+
+### BaseCalculator
+### CalculatorParameters
+### Parameter
+### BaseData
+### BaseFormat
+### Instrument
+
+## Example
+The subdirectory *test/integration/plusminus* contains a python package that illustrates how a specialized calculator (simulation interface class) can be defined by deriving from the appropriate `libpyvinyl` base classes.
+
+## Real world projects
+TODO
+
 ## Installation
 
 We recommend installation in a virtual environment, either `conda` or `pyenv`.
@@ -51,11 +80,19 @@ $> pip install libpyvinyl
 We provide a requirements file for developers in _requirements/dev.txt_.
 
 ```
-$> cd requirements
+$> cd requirements  
+```
+
+```
+$> conda install --file dev.txt
+```
+
+**or**
+
+```
 $> pip install -r dev.txt
 ```
 
-`conda install` is currently not supported.
 
 Then, install `libpyvinyl` into the same environment. The `-e` flag links the installed library to
 the source code in the repository, such that changes in the latter are immediately effective in the installed version.
@@ -68,9 +105,8 @@ $> pip install -e .
 ## Testing
 
 We recommend to run the unittests and integration tests.
-
 ```
-$> pytest tests
+pytest ./
 ```
 
 You should see a test report similar to this:
