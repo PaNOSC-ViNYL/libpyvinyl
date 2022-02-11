@@ -6,9 +6,6 @@ import math
 import numpy
 from libpyvinyl.AbstractBaseClass import AbstractBaseClass
 
-# importing units using the pint package from the __init__.py of this module
-# from . import ureg, Q_
-
 from pint.unit import Unit
 from pint.quantity import Quantity
 import pint.errors

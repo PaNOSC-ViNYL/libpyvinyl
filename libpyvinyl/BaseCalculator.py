@@ -45,8 +45,7 @@ logging.basicConfig(
 
 class BaseCalculator(AbstractBaseClass):
     """
-
-    :class BaseCalculator: Base class of all calculators.
+    Base class of all calculators. 
 
     This class is provides the libpyvinyl API. It defines all methods
     through which a user interacts with the simulation backengines.
@@ -56,7 +55,7 @@ class BaseCalculator(AbstractBaseClass):
     specialized Calculator has the same interface to the simulation
     backengine as all other ViNYL Calculators.
 
-    A Complete example including a instrument and calculators can be found in
+    A complete example including a instrument and calculators can be found in
     `test/integration/plusminus`
 
     """
