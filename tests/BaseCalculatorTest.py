@@ -71,7 +71,7 @@ class PlusCalculator(BaseCalculator):
         """A python object calculator example"""
         super().__init__(
             name,
-            input,
+             input,
             output_keys,
             output_data_types=output_data_types,
             output_filenames=output_filenames,
@@ -151,8 +151,6 @@ class BaseCalculatorTest(unittest.TestCase):
         """Testing the default construction of the class."""
 
         # Test positional arguments
-        # self.assertRaises(AttributeError, SpecializedCalculator)
-
         calculator = PlusCalculator("test", self.__default_input)
 
         self.assertIsInstance(calculator, PlusCalculator)
@@ -181,12 +179,12 @@ class BaseCalculatorTest(unittest.TestCase):
             self.__default_calculator.input["input1"].get_data()["number"], 1
         )
 
-        # Calculator pointer
+        # Calculator reference
         self.assertEqual(calculator_copy.parameters["plus_times"].value, 10)
-        calculator_pointer = calculator_copy
-        self.assertEqual(calculator_pointer.parameters["plus_times"].value, 10)
-        calculator_pointer.parameters["plus_times"] = 3
-        self.assertEqual(calculator_pointer.parameters["plus_times"].value, 3)
+        calculator_reference = calculator_copy
+        self.assertEqual(calculator_reference.parameters["plus_times"].value, 10)
+        calculator_reference.parameters["plus_times"] = 3
+        self.assertEqual(calculator_reference.parameters["plus_times"].value, 3)
         self.assertEqual(calculator_copy.parameters["plus_times"].value, 3)
 
         # New parameters can be set while caculator deepcopy
@@ -210,11 +208,9 @@ class BaseCalculatorTest(unittest.TestCase):
         self.__files_to_remove.append(calculator.dump())
         self.__files_to_remove.append(calculator.dump("dump.dill"))
 
-    def test_pointer_calculator(self):
+    def test_parameters_in_copied_calculator(self):
         """Test parameters in a copied calculator"""
 
-        # calculator = self.__default_calculator.() is hardcopy
-        # calculator = self.__default_calculator is only pointer
         calculator = self.__default_calculator
         self.assertEqual(calculator.parameters["plus_times"].value, 1)
         calculator.parameters["plus_times"] = 5
