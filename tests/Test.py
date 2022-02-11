@@ -25,16 +25,11 @@
 ####################################################################################
 
 import unittest
-import os, sys
+import sys
 
 from BaseCalculatorTest import BaseCalculatorTest
 from ParametersTest import Test_Parameter, Test_Parameters, Test_Instruments
 from InstrumentTest import InstrumentTest
-
-# Are we running on CI server?
-is_travisCI = ("TRAVIS_BUILD_DIR" in list(os.environ.keys())) and (
-    os.environ["TRAVIS_BUILD_DIR"] != ""
-)
 
 
 def suite():
@@ -59,3 +54,4 @@ if __name__ == "__main__":
         sys.exit(0)
 
     sys.exit(1)
+
