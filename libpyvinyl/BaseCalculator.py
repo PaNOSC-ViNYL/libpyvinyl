@@ -8,7 +8,7 @@
 # This file is part of libpyvinyl - The APIs for Virtual Neutron and x-raY         #
 # Laboratory.                                                                      #
 #                                                                                  #
-# Copyright (C) 2021  Carsten Fortmann-Grote, Juncheng                             #
+# Copyright (C) 2021  Carsten Fortmann-Grote, Juncheng E                           #
 #                                                                                  #
 # This program is free software: you can redistribute it and/or modify it under    #
 # the terms of the GNU Lesser General Public License as published by the Free      #
@@ -325,13 +325,10 @@ class BaseCalculator(AbstractBaseClass):
 
     @abstractmethod
     def init_parameters(self):
-        # This is just an example. Override this function in a concrete class.
-        parameters = CalculatorParameters()
-        times = parameters.new_parameter(
-            "plus_times", comment="How many times to do the plus"
-        )
-        times.value = 1
-        self.parameters = parameters
+        """ Virtual method to initialize all parameters. Must be implemented on the
+        specialized class."""
+
+        raise NotImplementedError
 
     def __init_output(self):
         """Create output data objects according to the output_data_types"""
