@@ -15,7 +15,7 @@
 import os
 import sys
 
-sys.path.insert(0,'../libpyvinyl')
+sys.path.insert(0,'../../libpyvinyl')
 import libpyvinyl
 import sphinx_rtd_theme
 
@@ -23,7 +23,7 @@ import sphinx_rtd_theme
 # -- Project information -----------------------------------------------------
 
 project = 'libpyvinyl'
-copyright = '2020-2021, Carsten Fortmann-Grote, Mads Bertelsen, Juncheng E, Shervin Nourbakhsh'
+copyright = '2020-2022, Carsten Fortmann-Grote, Mads Bertelsen, Juncheng E, Shervin Nourbakhsh'
 author = 'Carsten Fortmann-Grote, Mads Bertelsen, Juncheng E, Shervin Nourbakhsh'
 
 # The short X.Y version
@@ -52,6 +52,7 @@ extensions = [
     'sphinx_rtd_theme',
     'nbsphinx',
     'recommonmark',
+    'sphinx.ext.autosummary',
 ]
 
 # Add any paths that contain templates here, relative to this directory.

@@ -12,7 +12,7 @@ Welcome to libpyvinyl's documentation!
 
    Introduction <include/README.md>
    Example <include/notebooks/example-01>
-   Reference Manual <include/refman>
+   include/refman
 
 
 Indices and tables
