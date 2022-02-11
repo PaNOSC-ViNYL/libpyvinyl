@@ -287,8 +287,9 @@ class BaseCalculatorTest(unittest.TestCase):
 
     def test_output_file_paths(self):
         calculator = self.__default_calculator
-        with self.assertRaises(ValueError):
+        with self.assertRaises(ValueError) as exception:
             calculator.output_file_paths
+
         calculator.output_filenames = "bingo.txt"
         self.assertEqual(calculator.output_file_paths[0], "PlusCalculator/bingo.txt")
         self.__dirs_to_remove.append("PlusCalculator")
