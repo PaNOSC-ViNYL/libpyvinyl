@@ -11,7 +11,6 @@ from libpyvinyl.Parameters import CalculatorParameters
 from libpyvinyl.AbstractBaseClass import AbstractBaseClass
 
 
-
 class NumberData(BaseData):
     """Example dict mapping data"""
 
@@ -26,9 +25,9 @@ class NumberData(BaseData):
 
         expected_data = {}
 
-        ### DataClass developer's job start
+        # DataClass developer's job start
         expected_data["number"] = None
-        ### DataClass developer's job end
+        # DataClass developer's job end
 
         super().__init__(
             key,
@@ -54,6 +53,8 @@ class NumberData(BaseData):
 
 
 class PlusCalculator(BaseCalculator):
+    """ :class: Specialized calculator, calculates the sum of two datasets. """
+
     def __init__(
         self,
         name: str,
