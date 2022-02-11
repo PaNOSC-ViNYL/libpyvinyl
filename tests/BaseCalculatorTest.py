@@ -10,9 +10,6 @@ from libpyvinyl.BaseData import BaseData, DataCollection
 from libpyvinyl.Parameters import CalculatorParameters
 from libpyvinyl.AbstractBaseClass import AbstractBaseClass
 
-import logging
-
-logging.basicConfig(format="%(asctime)s %(levelname)s:%(message)s", level=logging.DEBUG)
 
 
 class NumberData(BaseData):
