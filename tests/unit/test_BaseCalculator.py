@@ -53,7 +53,7 @@ class NumberData(BaseData):
 
 
 class PlusCalculator(BaseCalculator):
-    """ :class: Specialized calculator, calculates the sum of two datasets. """
+    """:class: Specialized calculator, calculates the sum of two datasets."""
 
     def __init__(
         self,
@@ -69,7 +69,7 @@ class PlusCalculator(BaseCalculator):
         """A python object calculator example"""
         super().__init__(
             name,
-             input,
+            input,
             output_keys,
             output_data_types=output_data_types,
             output_filenames=output_filenames,
@@ -291,6 +291,13 @@ class BaseCalculatorTest(unittest.TestCase):
         calculator.output_filenames = "bingo.txt"
         self.assertEqual(calculator.output_file_paths[0], "PlusCalculator/bingo.txt")
         self.__dirs_to_remove.append("PlusCalculator")
+
+    def test_calculator_output_set_inconsistent(self):
+        input1 = NumberData.from_dict({"number": 1}, "input1")
+        with self.assertRaises(ValueError) as exception:
+            calculator = PlusCalculator(
+                "test", input1, output_keys=["result"], output_data_types=[]
+            )
 
 
 if __name__ == "__main__":

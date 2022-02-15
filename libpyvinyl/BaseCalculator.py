@@ -134,7 +134,7 @@ class BaseCalculator(AbstractBaseClass):
         """Check the consistency of the input parameters"""
         if len(self.output_keys) != len(self.output_data_types):
             raise ValueError(
-                f"len(output_keys) = {len(self.output_keys)} is not equal to len(output_data_types) = {len(self.output_keys)}"
+                f"len(output_keys) = {len(self.output_keys)} is not equal to len(output_data_types) = {len(self.output_data_types)}"
             )
 
     def __check_output_filenames(self):
