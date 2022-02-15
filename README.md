@@ -2,15 +2,16 @@
 
 [![Build Status](https://travis-ci.com/PaNOSC-ViNYL/libpyvinyl.svg?branch=master)](https://travis-ci.com/PaNOSC-ViNYL/libpyvinyl)
 [![Documentation Status](https://readthedocs.org/projects/libpyvinyl/badge/?version=latest)](https://libpyvinyl.readthedocs.io/en/latest/?badge=latest)
-      
+
 ## Summary
+
 The python package `libpyvinyl` exposes the high level API for simulation codes under
-the umbrella of the Virtual Neutron and x-raY Laboratory (ViNYL). 
+the umbrella of the Virtual Neutron and x-raY Laboratory (ViNYL).
 
 The fundamental class is the `BaseCalculator` and its sister class `Parameters`.
 While `Parameters` is a pure state engine, i.e. it's sole purpose is to encapsulate
 the physical, numerical, and computational parameters of a simulation, the `BaseCalculator`
-exposes the interface to 
+exposes the interface to
 
 - Configure a simulation.
 - Launch the simulation run.
@@ -26,61 +27,84 @@ for the methods responsible to launch a simulation through the `backengine()` me
 
 As an example, we demonstrate in an [accompanying notebook](https://github.com/PaNOSC-ViNYL/libpyvinyl/blob/master/doc/source/include/notebooks/example-01.ipynb)
 how to declare a derived `Calculator` and implement a `backengine` method. The example then
-shows how to run the simulation, store the results in a `hdf5` file, snapshot the simulation 
+shows how to run the simulation, store the results in a `hdf5` file, snapshot the simulation
 and reload the simulation into memory.
 
 ## Installation
+
 We recommend installation in a virtual environment, either `conda` or `pyenv`.
 
 ### Create a `conda` environment
+
 ```
 $> conda create -n libpyvinyl
 ```
 
-### Developers
-We provide a requirements file for developers in *requirements/dev.txt*.   
+### Common users
 
 ```
-$> cd requirements  
+$> pip install libpyvinyl
+```
+
+### Developers
+
+We provide a requirements file for developers in _requirements/dev.txt_.
+
+```
+$> cd requirements
 $> pip install -r dev.txt
 ```
 
 `conda install` is currently not supported.
 
 Then, install `libpyvinyl` into the same environment. The `-e` flag links the installed library to
-the source code in the repository, such that changes in the latter are immediately effective in the installed version.  
+the source code in the repository, such that changes in the latter are immediately effective in the installed version.
 
 ```
-$> cd ..  
+$> cd ..
 $> pip install -e .
 ```
 
 ## Testing
+
 We recommend to run the unittests and integration tests.
 
 ```
 $> pytest tests
 ```
 
-You should see a test report similar to this:  
-```  
-================ test session starts =====================  
-platform linux -- Python 3.9.2, pytest-7.0.0, pluggy-1.0.0  
-rootdir: libpyvinyl  
-plugins: pylama-7.4.3  
-collected 43 items                                                                                                     
-  
-tests/test_BaseData.py ...........................                                                             [ 62%]  
-tests/integration/plusminus/tests/test_ArrayCalculators.py .                                                   [ 65%]  
-tests/integration/plusminus/tests/test_Instrument.py .                                                         [ 67%]  
-tests/integration/plusminus/tests/test_NumberCalculators.py ...                                                [ 74%]  
-tests/integration/plusminus/tests/test_NumberData.py ...........                                               [100%]  
-  
-================ 43 passed in 0.77s=====================  
+You should see a test report similar to this:
+
+```
+=============================================================== test session starts ================================================================
+platform linux -- Python 3.8.10, pytest-6.2.4, py-1.10.0, pluggy-0.13.1
+rootdir: /home/juncheng/Projects/libpyvinyl
+collected 100 items
+
+integration/plusminus/tests/test_ArrayCalculators.py .                                                                                       [  1%]
+integration/plusminus/tests/test_Instrument.py .                                                                                             [  2%]
+integration/plusminus/tests/test_NumberCalculators.py ...                                                                                    [  5%]
+integration/plusminus/tests/test_NumberData.py ...........                                                                                   [ 16%]
+unit/test_BaseCalculator.py ..........                                                                                                       [ 26%]
+unit/test_BaseData.py ...........................                                                                                            [ 53%]
+unit/test_Instrument.py .......                                                                                                              [ 60%]
+unit/test_Parameters.py ........................................                                                                             [100%]
+
+=============================================================== 100 passed in 0.56s ================================================================
 ```
 
+You can also run unittests only:
+
+```
+pytest tests/unit
+```
+
+Or to run integration tests only:
+
+```
+pytest tests/integration
+```
 
 ## Acknowledgement
+
 This project has received funding from the European Union's Horizon 2020 research and innovation programme under grant agreement No. 823852.
-
-
