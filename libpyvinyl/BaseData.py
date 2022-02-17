@@ -331,19 +331,22 @@ class BaseData(AbstractBaseClass):
         else:
             return format_class.write(self, filename, key, **kwargs)
 
+    def __check_for_expected_data(self, data_to_read):
+        """Check if the `data_to_read` contains the data we have"""
+        for key in self.expected_data.keys():
+            try:
+                data_to_read[key]
+            except KeyError:
+                raise KeyError(
+                    f"Expected data dict key '{key}' is not found."
+                ) from None
+
     def __get_dict_data(self):
         """Get the data dict from a dict mapping"""
         if self.__data_dict is not None:
-            data_to_return = self.__expected_data.copy()
             # It will automatically check the data needed to be extracted.
-            for key in data_to_return.keys():
-                try:
-                    data_to_return[key] = self.__data_dict[key]
-                except KeyError:
-                    raise KeyError(
-                        f"Expected data dict key '{key}' is not found."
-                    ) from None
-            return data_to_return
+            self.__check_for_expected_data(self.__data_dict)
+            return self.data_dict
         else:
             raise RuntimeError(
                 "__get_dict_data() should not be called when self.__data_dict is None"
@@ -352,12 +355,13 @@ class BaseData(AbstractBaseClass):
     def __get_file_data(self):
         """Get the data dict from a file mapping"""
         if self.__filename is not None:
-            data_to_return = self.__expected_data.copy()
             data_to_read = self.__file_format_class.read(
                 self.__filename, **self.__file_format_kwargs
             )
             # It will automatically check the data needed to be extracted.
-            for key in data_to_return.keys():
+            self.__check_for_expected_data(data_to_read)
+            data_to_return = {}
+            for key in data_to_read.keys():
                 data_to_return[key] = data_to_read[key]
             return data_to_return
         else:
