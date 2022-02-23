@@ -8,7 +8,7 @@ with open("requirements/prod.txt") as requirements_file:
 setup(
     name="libpyvinyl",
     packages=find_packages(include=["libpyvinyl", "libpyvinyl.*"]),
-    version="0.0.2",
+    version="0.1.0",
     license="LGPLv3",
     description="The python API for photon and neutron simulation codes in the Photon and Neutron Open Science Cloud (PaNOSC).",
     author=[
