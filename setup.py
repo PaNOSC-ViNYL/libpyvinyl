@@ -11,10 +11,15 @@ setup(
     version="0.0.2",
     license="LGPLv3",
     description="The python API for photon and neutron simulation codes in the Photon and Neutron Open Science Cloud (PaNOSC).",
-    author="Carsten Fortmann-Grote",
-    author_email="carsten.grote@xfel.eu",
+    author=[
+        "Carsten Fortmann-Grote",
+        "Juncheng E",
+        "Mads Bertelsen",
+        "Shervin Nourbakhsh",
+    ],
+    author_email=["carsten.grote@xfel.eu", "juncheng.e@xfel.eu"],
     url="https://github.com/PaNOSC-ViNYL/libpyvinyl",
-    download_url="https://github.com/PaNOSC-ViNYL/libpyvinyl/archive/v0.0.1.tar.gz",
+    download_url="https://github.com/PaNOSC-ViNYL/libpyvinyl/archive/v0.1.0.tar.gz",
     keywords=["photons", "neutrons", "simulations"],
     install_requires=requirements,
     classifiers=[
