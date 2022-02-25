@@ -108,6 +108,13 @@ class Parameter(AbstractBaseClass):
         return self.__value
 
     @property
+    def pint_value(self):
+        """Returning the value as a pint object if available, an error otherwise"""
+        if not isinstance(self.__value, Quantity):
+            raise TypeError("The parameter value is not of pint.Quantity type")
+        return self.__value
+
+    @property
     def value(self):
         if isinstance(self.__value, Quantity):
             return self.__value.m_as(self.__unit)
