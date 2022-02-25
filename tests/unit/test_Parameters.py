@@ -367,6 +367,11 @@ class Test_Parameter(unittest.TestCase):
         self.assertFalse(undulator_length.is_legal(9.0 * meter))
         self.assertTrue(undulator_length.is_legal(5.5e4 * Unit("centimeter")))
 
+    def test_parameter_set_numpy_value(self):
+        par = Parameter("test", unit="eV")
+        par.value = 1e-4
+        par.value = numpy.log(10)
+
     def test_parameters_with_quantity_powers(self):
         """Test if we can construct and use a Parameter instance passing  pint.Quantity and pint.Unit objects to the constructor and interval setter. Use different powers of 10 in parameter initialization and value assignment."""
 
