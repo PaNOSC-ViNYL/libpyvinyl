@@ -141,7 +141,7 @@ class BaseCalculator(AbstractBaseClass):
         """Since output_filenames can be None for output in dict mapping, only check output_files when necessary"""
         if len(self.output_data_types) != len(self.output_filenames):
             raise ValueError(
-                f"len(output_filenames) = {len(self.output_filenames)} is not equal to len(output_data_types) = {len(self.output_keys)}"
+                f"len(output_filenames) = {len(self.output_filenames)} is not equal to len(output_data_types) = {len(self.output_data_types)}"
             )
 
     @property
@@ -220,7 +220,7 @@ class BaseCalculator(AbstractBaseClass):
 
     def set_input(self, value: Union[DataCollection, list, BaseData]):
         """Set the calculator input data. It can be a DataCollection, list or BaseData object."""
-        if isinstance(value, DataCollection):
+        if isinstance(value, (DataCollection, type(None))):
             self.__input = value
         elif isinstance(value, list):
             self.__input = DataCollection(*value)
@@ -285,7 +285,7 @@ class BaseCalculator(AbstractBaseClass):
             for item in value:
                 assert issubclass(item, BaseData)
             self.__output_data_types = value
-        elif isinstance(value, BaseData):
+        elif issubclass(value, BaseData):
             self.__output_data_types = [value]
         else:
             raise TypeError(
