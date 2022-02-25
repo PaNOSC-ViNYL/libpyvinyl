@@ -424,12 +424,12 @@ class Parameter(AbstractBaseClass):
             unit_string = "[" + str(self.__unit) + "] "
 
         if self.value_no_conversion is None:
-            string = self.name.ljust(20)
+            string = self.name.ljust(40) + " "
         else:
-            string = self.name.ljust(15)
-            string += str(self.value).ljust(5)
+            string = self.name.ljust(35) + " "
+            string += str(self.value).ljust(10) + " "
 
-        string += unit_string.ljust(10)
+        string += unit_string.ljust(20) + " "
         if self.comment is not None:
             string += self.comment
         string += 3 * " "
