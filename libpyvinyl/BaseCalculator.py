@@ -218,7 +218,7 @@ class BaseCalculator(AbstractBaseClass):
     def input(self, value):
         self.set_input(value)
 
-    def set_input(self, value: Union[DataCollection, list, BaseData]):
+    def set_input(self, value: Union[DataCollection, list, BaseData, None]):
         """Set the calculator input data. It can be a DataCollection, list or BaseData object."""
         if isinstance(value, (DataCollection, type(None))):
             self.__input = value
