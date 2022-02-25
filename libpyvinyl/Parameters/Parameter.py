@@ -3,6 +3,7 @@
 from typing import Union, Any
 
 import math
+import numpy
 from libpyvinyl.AbstractBaseClass import AbstractBaseClass
 
 # importing units using the pint package from the __init__.py of this module
@@ -143,9 +144,9 @@ class Parameter(AbstractBaseClass):
             return True
 
         # promote any int or float to pint.Quantity
-        if t1 == float or t1 == int:
+        if t1 == float or t1 == int or t1 == numpy.float64:
             t1 = Quantity
-        if t2 == float or t2 == int:
+        if t2 == float or t2 == int or t2 == numpy.float64:
             t2 = Quantity
 
         if "quantity" in str(t1):
