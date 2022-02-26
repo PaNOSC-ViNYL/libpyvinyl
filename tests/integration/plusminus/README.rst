@@ -2,34 +2,15 @@
 PlusMinus
 =========
 
-
-.. image:: https://img.shields.io/pypi/v/PlusMinus.svg
-        :target: https://pypi.python.org/pypi/PlusMinus
-
-.. image:: https://img.shields.io/travis/JunCEEE/PlusMinus.svg
-        :target: https://travis-ci.com/JunCEEE/PlusMinus
-
-.. image:: https://readthedocs.org/projects/PlusMinus/badge/?version=latest
-        :target: https://PlusMinus.readthedocs.io/en/latest/?version=latest
-        :alt: Documentation Status
-
-
-
-
 An example of a small platform implementing libpyvinyl.
 
+Data structure
+##############
+.. image:: ./docs/01-data_structure.png
 
-* Free software: MIT license
-* Documentation: https://PlusMinus.readthedocs.io.
-
-
-Features
---------
-
-* TODO
-
-Credits
--------
+Instrument example
+##################
+.. image:: ./docs/02-instrument_example.png
 
 This package was created with Cookiecutter_ and the `audreyr/cookiecutter-pypackage`_ project template.
 
