@@ -1,17 +1,16 @@
+#! /usr/bin/env python3
 """
-:module SignalGenerator: Module hosting the SignalGenerator and SignalGeneratorParameters
-abstract classes.
+:module Test: Top level test module hosting all unittest suites.
 """
-
 
 ####################################################################################
 #                                                                                  #
-# This file is part of libpyvinyl - The APIs for Virtual Neutron and x-raY            #
+# This file is part of libpyvinyl - The APIs for Virtual Neutron and x-raY         #
 # Laboratory.                                                                      #
 #                                                                                  #
 # Copyright (C) 2020  Carsten Fortmann-Grote                                       #
 #                                                                                  #
-# This program is free software: you can redistribute it and/or modify it under    #
+# This program is free software: you can redistribute it and/or modify it under   #
 # the terms of the GNU Lesser General Public License as published by the Free      #
 # Software Foundation, either version 3 of the License, or (at your option) any    #
 # later version.                                                                   #
@@ -25,23 +24,34 @@ abstract classes.
 #                                                                                  #
 ####################################################################################
 
-from libpyvinyl.BaseCalculator import BaseCalculator, CalculatorParameters
+import unittest
+import sys
 
-class SignalGeneratorParameters(CalculatorParameters):
-    def __init__(self, **kwargs):
-        
-        super().__init__(**kwargs)
+from test_BaseCalculator import BaseCalculatorTest
+from test_Parameters import Test_Parameter, Test_Parameters, Test_Instruments
+from test_Instrument import InstrumentTest
 
 
-class SignalGenerator(BaseCalculator):
-    def __init__(self, name, parameters=None, dumpfile=None, **kwargs):
-        
-        super().__init__(name, parameters, dumpfile, **kwargs)
+def suite():
+    suites = [
+        unittest.makeSuite(BaseCalculatorTest, "test"),
+        unittest.makeSuite(Test_Parameter, "test"),
+        unittest.makeSuite(Test_Parameters, "test"),
+        unittest.makeSuite(Test_Instruments, "test"),
+        unittest.makeSuite(InstrumentTest, "test"),
+    ]
 
-    def backengine(self):
-        pass
+    return unittest.TestSuite(suites)
 
-    def saveH5(self, fname, openpmd=True):
-        pass
 
-# This project has received funding from the European Union's Horizon 2020 research and innovation programme under grant agreement No. 823852.
+# Run the suite and return a success status code. This enables running an automated git-bisect.
+if __name__ == "__main__":
+
+    result = unittest.TextTestRunner(verbosity=2).run(suite())
+
+    if result.wasSuccessful():
+        print("---> OK <---")
+        sys.exit(0)
+
+    sys.exit(1)
+

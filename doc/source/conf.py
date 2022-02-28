@@ -23,8 +23,8 @@ import sphinx_rtd_theme
 # -- Project information -----------------------------------------------------
 
 project = 'libpyvinyl'
-copyright = '2020, Carsten Fortmann-Grote, Mads Bertelsen, Juncheng E'
-author = 'Carsten Fortmann-Grote, Mads Bertelsen, Juncheng E'
+copyright = '2020-2021, Carsten Fortmann-Grote, Mads Bertelsen, Juncheng E, Shervin Nourbakhsh'
+author = 'Carsten Fortmann-Grote, Mads Bertelsen, Juncheng E, Shervin Nourbakhsh'
 
 # The short X.Y version
 version = '0.0.2'

@@ -1,0 +1,7 @@
+pint
+dill
+scipy
+jsons
+h5py
+json_tricks
+numpy

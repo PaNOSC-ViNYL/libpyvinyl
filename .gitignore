@@ -6,5 +6,16 @@
 *.code-workspace
 .ropeproject
 tags
-pyvinyl.egg-info/
 doc/build
+libpyvinyl.egg-info
+.#*.*
+.readthedocs.yaml
+**/notebooks/*.json
+**/notebooks/*.h5
+**/notebooks/tmp*
+**/notebooks/.ipynb_checkpoints/
+tests/*.json
+tests/*.h5
+tests/tmp*
+dist/
+build/
