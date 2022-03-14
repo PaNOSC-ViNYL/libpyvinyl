@@ -276,6 +276,18 @@ class BaseCalculatorTest(unittest.TestCase):
         calculator.parameters["plus_times"] = 5
         self.assertEqual(calculator.parameters["plus_times"].value, 5)
 
+    def test_set_param_values_with_set_parameters(self):
+        calculator = self.__default_calculator
+
+        calculator.set_parameters(plus_times=7)
+        self.assertEqual(calculator.parameters["plus_times"].value, 7)
+
+    def test_set_param_values_with_set_parameters_with_dict(self):
+        calculator = self.__default_calculator
+
+        calculator.set_parameters({"plus_times": 9})
+        self.assertEqual(calculator.parameters["plus_times"].value, 9)
+
     def test_collection_get_data(self):
         calculator = self.__default_calculator
         print(calculator.input)

@@ -163,10 +163,10 @@ class BaseCalculator(AbstractBaseClass):
 
     @parameters.setter
     def parameters(self, value: CalculatorParameters):
-        self.set_parameters(value)
+        self.reset_parameters(value)
 
-    def set_parameters(self, value: CalculatorParameters):
-        """Set the calculator parameters"""
+    def reset_parameters(self, value: CalculatorParameters):
+        """Resets the calculator parameters"""
         if isinstance(value, CalculatorParameters):
             self.__parameters = value
         elif value is None:
@@ -175,6 +175,18 @@ class BaseCalculator(AbstractBaseClass):
             raise TypeError(
                 f"Calculator: `parameters` is expected to be CalculatorParameters, not {type(value)}"
             )
+
+    def set_parameters(self, args_as_dict=None, **kwargs):
+        """
+        Sets parameters contained in this calculator using dict or kwargs
+        """
+        if args_as_dict is not None:
+            parameter_dict = args_as_dict
+        else:
+            parameter_dict = kwargs
+
+        for key, parameter_value in parameter_dict.items():
+            self.parameters[key].value = parameter_value
 
     @property
     def instrument_base_dir(self) -> str:
