@@ -361,6 +361,20 @@ class Test_Parameter(unittest.TestCase):
         self.assertTrue(par.is_legal([3.1, 4.2, 4.4]))
         self.assertTrue(par.is_legal([3.1, 4.2, 4.4, 7]))
 
+    def test_get_intervals(self):
+        par = Parameter("test")
+        par.add_interval(3, 4.5, True)
+        par.add_interval(8, 10, True)
+
+        retrived_intervals = par.get_intervals()
+        self.assertEqual(len(retrived_intervals), 2)
+        self.assertEqual(retrived_intervals[0][0], 3)
+        self.assertEqual(retrived_intervals[0][1], 4.5)
+        self.assertEqual(retrived_intervals[1][0], 8)
+        self.assertEqual(retrived_intervals[1][1], 10)
+
+        self.assertTrue(par.get_intervals_are_legal())
+
     def test_parameters_with_quantity(self):
         """Test if we can construct and use a Parameter instance passing  pint.Quantity and pint.Unit objects to the constructor and interval setter."""
 

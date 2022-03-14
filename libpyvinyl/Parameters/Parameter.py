@@ -345,6 +345,12 @@ class Parameter(AbstractBaseClass):
     def get_options_are_legal(self):
         return self.__options_are_legal
 
+    def get_intervals(self):
+        return self.__intervals
+
+    def get_intervals_are_legal(self):
+        return self.__intervals_are_legal
+
     def is_legal(self, values=None):
         """
         Checks whether or not given or contained value is legal given constraints.
