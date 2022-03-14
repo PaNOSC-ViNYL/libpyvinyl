@@ -259,6 +259,23 @@ class Test_Parameter(unittest.TestCase):
         self.assertTrue(par.is_legal(10.0))
         self.assertTrue(par.is_legal(11.0))
 
+    # case 2: illegal interval + illegal option
+    def test_parameter_get_options(self):
+        """
+        Ensure get_options returns the options as required
+        """
+        par = Parameter("test")
+        par.add_interval(None, 8.5, False)  # minus infinite to 8.5
+        par.add_option(5, True)  # this is stupid, already accounted in the interval
+        par.add_option(11, True)
+
+        retrieved_options = par.get_options()
+
+        self.assertEqual(len(retrieved_options), 2)
+        self.assertEqual(retrieved_options[0], 5.0)
+        self.assertEqual(retrieved_options[1], 11.0)
+        self.assertTrue(par.get_options_are_legal())
+
     def test_parameter_value_type(self):
         par = Parameter("test")
         par.value = 4.0
