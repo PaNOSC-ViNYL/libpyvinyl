@@ -339,6 +339,12 @@ class Parameter(AbstractBaseClass):
                     + " is now illegal based on the newly added option"
                 )
 
+    def get_options(self):
+        return self.__options
+
+    def get_options_are_legal(self):
+        return self.__options_are_legal
+
     def is_legal(self, values=None):
         """
         Checks whether or not given or contained value is legal given constraints.
