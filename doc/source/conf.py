@@ -29,10 +29,9 @@ copyright = (
 author = "Carsten Fortmann-Grote, Mads Bertelsen, Juncheng E, Shervin Nourbakhsh"
 
 # The short X.Y version
-version = "0.0.2"
+version = libpyvinyl.__version__
 # The full version, including alpha/beta/rc tags
-release = "0.0.2-alpha1"
-
+release = libpyvinyl.__release__
 
 # -- General configuration ---------------------------------------------------
 
@@ -118,7 +117,7 @@ html_static_path = ["_static"]
 # -- Options for HTMLHelp output ---------------------------------------------
 
 # Output file base name for HTML help builder.
-htmlhelp_basename = "libpyvinyldoc"
+htmlhelp_basename = project + "doc"
 
 
 # -- Options for LaTeX output ------------------------------------------------
@@ -144,9 +143,9 @@ latex_elements = {
 latex_documents = [
     (
         master_doc,
-        "libpyvinyl.tex",
-        "libpyvinyl Documentation",
-        "Carsten Fortmann-Grote, Mads Bertelsen, Juncheng E",
+        project + ".tex",
+        project + " Documentation",
+        author,
         "manual",
     ),
 ]
@@ -156,7 +155,7 @@ latex_documents = [
 
 # One entry per manual page. List of tuples
 # (source start file, name, description, authors, manual section).
-man_pages = [(master_doc, "libpyvinyl", "libpyvinyl Documentation", [author], 1)]
+man_pages = [(master_doc, project, project + " Documentation", [author], 1)]
 
 
 # -- Options for Texinfo output ----------------------------------------------
@@ -167,10 +166,10 @@ man_pages = [(master_doc, "libpyvinyl", "libpyvinyl Documentation", [author], 1)
 texinfo_documents = [
     (
         master_doc,
-        "libpyvinyl",
-        "libpyvinyl Documentation",
+        project,
+        project + " Documentation",
         author,
-        "libpyvinyl",
+        project,
         "One line description of project.",
         "Miscellaneous",
     ),
