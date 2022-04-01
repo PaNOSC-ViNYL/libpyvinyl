@@ -5,10 +5,29 @@ with open("requirements/prod.txt") as requirements_file:
     require = requirements_file.read()
     requirements = require.split()
 
+import codecs
+import os.path
+
+
+def read(rel_path):
+    here = os.path.abspath(os.path.dirname(__file__))
+    with codecs.open(os.path.join(here, rel_path), "r") as fp:
+        return fp.read()
+
+
+def get_version(rel_path):
+    for line in read(rel_path).splitlines():
+        if line.startswith("__version__"):
+            delim = '"' if '"' in line else "'"
+            return line.split(delim)[1]
+    else:
+        raise RuntimeError("Unable to find version string.")
+
+
 setup(
     name="libpyvinyl",
     packages=find_packages(include=["libpyvinyl", "libpyvinyl.*"]),
-    version="1.1.0",
+    version=get_version("libpyvinyl/__init__.py"),
     license="LGPLv3",
     description="The python API for photon and neutron simulation codes in the Photon and Neutron Open Science Cloud (PaNOSC).",
     author="Carsten Fortmann-Grote, Juncheng E, Mads Bertelsen, Shervin Nourbakhsh",
