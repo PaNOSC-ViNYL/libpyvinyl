@@ -1,4 +1,4 @@
 -r prod.txt
-numpy
 black
 pytest
+flake8
