@@ -1,6 +1,5 @@
 # Created by Mads Bertelsen and modified by Juncheng E
 # Further modified by Shervin Nourbakhsh
-from typing import Union, Any
 
 import math
 import numpy
@@ -12,6 +11,12 @@ from libpyvinyl.AbstractBaseClass import AbstractBaseClass
 from pint.unit import Unit
 from pint.quantity import Quantity
 import pint.errors
+
+# typing
+from typing import Union, Any, Tuple, List, Dict, Optional
+
+# ValueTypes: TypeAlias = [str, bool, int, float, object, pint.Quantity]
+ValueTypes = Union[str, bool, int, float, pint.Quantity]
 
 
 class Parameter(AbstractBaseClass):
@@ -35,33 +40,29 @@ class Parameter(AbstractBaseClass):
         Creates parameter with given name, optionally unit and comment
 
         :param name: name of the parameter
-        :type name: str
-
         :param unit: physical units returning the parameter value
-        :type unit: str
-
         :param comment: brief description of the parameter
-        :type comment: str
 
         """
-        self.name = name
-        self.__unit = Unit(unit) if unit != None else ""
-        self.comment = comment
-        self.__value = None
-        self.__intervals = []
-        self.__intervals_are_legal = None
-        self.__options = []
-        self.__options_are_legal = None
-        self.__value_type = None
+        self.name: str = name
+        self.__unit: Union[str, Unit] = Unit(unit) if unit != None else ""
+        self.comment: Union[str, None] = comment
+        self.__value: Union[ValueTypes, None] = None
+        self.__intervals: List[Tuple[Quantity, Quantity]] = []
+        self.__intervals_are_legal: Union[bool, None] = None
+        self.__options: List = []
+        self.__options_are_legal: Union[bool, None] = None
+        self.__value_type: Union[ValueTypes, None] = None
 
     @classmethod
-    def from_dict(cls, param_dict):
+    def from_dict(cls, param_dict: Dict):
         """
         Helper class method creating a new object from a dictionary providing
          - name: str MANDATORY
          - unit: str
          - comment: str
          - ...
+
         This class method is mainly used to allow dumping and loading the class from json
         """
         if "name" not in param_dict:
@@ -89,9 +90,11 @@ class Parameter(AbstractBaseClass):
         return str(self.__unit)
 
     @unit.setter
-    def unit(self, uni):
+    def unit(self, uni: str) -> None:
         """
         Assignment of the units
+
+        :param uni: unit
 
         A pint.Unit is used if the string is recognized as a valid unit in the registry.
         It is stored as a string otherwise.
@@ -102,21 +105,24 @@ class Parameter(AbstractBaseClass):
             self.__unit = uni
 
     @property
-    def value_no_conversion(self):
+    def value_no_conversion(self) -> ValueTypes:
         """
         Returning the object stored in value with no conversions
         """
         return self.__value
 
     @property
-    def pint_value(self):
+    def pint_value(self) -> Quantity:
         """Returning the value as a pint object if available, an error otherwise"""
         if not isinstance(self.__value, Quantity):
             raise TypeError("The parameter value is not of pint.Quantity type")
         return self.__value
 
     @property
-    def value(self):
+    def value(self) -> ValueTypes:
+        """
+        Returns the magnitude of a Quantity or the stored value otherwise
+        """
         if isinstance(self.__value, Quantity):
             return self.__value.m_as(self.__unit)
         else:
@@ -231,7 +237,7 @@ class Parameter(AbstractBaseClass):
             )
 
     @value.setter
-    def value(self, value):
+    def value(self, value: ValueTypes) -> None:
         """
         Sets value of this parameter if value is legal,
         an exception is raised otherwise.
@@ -249,19 +255,21 @@ class Parameter(AbstractBaseClass):
         else:
             raise ValueError("Value of parameter '" + self.name + "' illegal.")
 
-    def add_interval(self, min_value, max_value, intervals_are_legal):
+    def add_interval(
+        self,
+        min_value: Union[ValueTypes, None],
+        max_value: Union[ValueTypes, None],
+        intervals_are_legal: bool,
+    ) -> None:
         """
         Sets an interval for this parameter: [min_value, max_value]
         The interval is closed on both sides: min_value and and max_value are included.
 
-        :param min_value: minimum value of the interval
-        :type min_value: float or None for infinite
 
-        :param max_value: maximum value of the interval
-        :type max_value: float or None for infinite
+        :param min_value: minimum value of the interval, None for infinity
+        :param max_value: maximum value of the interval, None for infinity
 
         :param intervals_are_legal: if not done previously, it defines if all the intervals of this parameter should be considered as allowed or forbidden intervals.
-        :type intervals_are_legal: boolean
 
         """
 
@@ -291,7 +299,7 @@ class Parameter(AbstractBaseClass):
                 raise ValueError("Parameter", "interval", "multiple validities")
 
         self.__intervals.append(
-            [self.__to_quantity(min_value), self.__to_quantity(max_value)]
+            (self.__to_quantity(min_value), self.__to_quantity(max_value))
         )
 
         # if the interval has been added after assignement of the value of the parameter,
@@ -304,9 +312,12 @@ class Parameter(AbstractBaseClass):
                     + " is now illegal based on the newly added interval"
                 )
 
-    def add_option(self, option, options_are_legal):
+    def add_option(self, option: Any, options_are_legal: bool) -> None:
         """
         Sets allowed values for this parameter
+
+        :param option: a discrete allowed or forbidden value
+        :param options_are_legal: defines if the given option is for a legal or illegal discrete value
         """
 
         if self.__options_are_legal is None:
@@ -351,7 +362,7 @@ class Parameter(AbstractBaseClass):
     def get_intervals_are_legal(self):
         return self.__intervals_are_legal
 
-    def is_legal(self, values=None):
+    def is_legal(self, values: Union[ValueTypes, None] = None) -> bool:
         """
         Checks whether or not given or contained value is legal given constraints.
 
@@ -404,7 +415,7 @@ class Parameter(AbstractBaseClass):
 
         return True
 
-    def print_paramter_constraints(self):
+    def print_parameter_constraints(self) -> None:
         """
         Print the legal and illegal intervals of this parameter. FIXME
         """
@@ -414,19 +425,19 @@ class Parameter(AbstractBaseClass):
         print("options", self.__options)
         print("options are legal:", self.__options_are_legal)
 
-    def clear_intervals(self):
+    def clear_intervals(self) -> None:
         """
         Clear the intervals of this parameter.
         """
         self.__intervals = []
 
-    def clear_options(self):
+    def clear_options(self) -> None:
         """
         Clear the option values of this parameter.
         """
         self.__options = []
 
-    def print_line(self):
+    def print_line(self) -> str:
         """
         returns string with one line description of parameter
         """
@@ -448,8 +459,8 @@ class Parameter(AbstractBaseClass):
 
         for interval in self.__intervals:
             legal = "L" if self.__intervals_are_legal else "I"
-            interval = legal + "[" + str(interval[0]) + ", " + str(interval[1]) + "]"
-            string += interval.ljust(10)
+            intervalstr = legal + "[" + str(interval[0]) + ", " + str(interval[1]) + "]"
+            string += intervalstr.ljust(10)
 
         if len(self.__options) > 0:
             values = "("
@@ -461,7 +472,7 @@ class Parameter(AbstractBaseClass):
 
         return string
 
-    def __repr__(self):
+    def __repr__(self) -> str:
         """
         Returns string with thorough description of parameter
         """

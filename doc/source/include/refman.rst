@@ -6,7 +6,7 @@ API Reference Manual
    :undoc-members:
    :show-inheritance:
 
-.. automodule:: libpyvinyl.Parameters.Collection
+.. automodule:: libpyvinyl.Parameters.Collections
    :members:
    :undoc-members:
    :show-inheritance:

@@ -53,6 +53,7 @@ extensions = [
     "sphinx_rtd_theme",
     "nbsphinx",
     "recommonmark",
+    "sphinx_autodoc_typehints",
 ]
 
 # Add any paths that contain templates here, relative to this directory.
