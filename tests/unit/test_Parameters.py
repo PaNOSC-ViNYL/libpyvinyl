@@ -327,7 +327,7 @@ class Test_Parameter(unittest.TestCase):
         par = Parameter("test")
         par.add_interval(3, 4.5, True)
         par.add_option(9.8, True)
-        par.print_paramter_constraints()
+        par.print_parameter_constraints()
 
     def test_clear_intervals(self):  # FIXME
         par = Parameter("test")
