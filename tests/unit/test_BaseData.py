@@ -267,12 +267,14 @@ def test_create_data_from_wrong_format(txt_file):
     with pytest.raises(OSError):
         test_data.get_data()
 
+
 def test_duplicate_data_TXTFormat(txt_file, tmpdir, capsys):
     """Test creating a data instance from a file in TXTFormat"""
     test_data = NumberData.from_file(txt_file, TXTFormat, "test_data")
-    test_data.write(str(tmpdir/"new_data.txt"),TXTFormat)
+    test_data.write(str(tmpdir / "new_data.txt"), TXTFormat)
     captured = capsys.readouterr()
     assert "data already existed" in captured.out
+
 
 def test_save_dict_data_in_TXTFormat(tmpdir):
     """Test saving a dict data in TXTFormat"""
