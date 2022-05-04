@@ -107,7 +107,7 @@ class BaseCalculator(AbstractBaseClass):
 
         """
         # Initialize the variables
-        self.__name = None
+        self.__name = ""
         self.__instrument_base_dir = None
         self.__calculator_base_dir = None
         self.__input = None
@@ -115,6 +115,7 @@ class BaseCalculator(AbstractBaseClass):
         self.__output_data_types = None
         self.__output_filenames = None
         self.__parameters = None
+        self.__output: DataCollection = DataCollection()
 
         self.name = name
         self.input = input

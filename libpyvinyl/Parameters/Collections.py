@@ -9,10 +9,16 @@ from .Parameter import Parameter
 from pint.quantity import Quantity
 from pint.unit import Unit, UnitsContainer
 
+from typing import Union
 
-def quantity_encode(obj, primitives=False):
+
+def quantity_encode(
+    obj: Union[Quantity, Unit, UnitsContainer, any], primitives: bool = False
+):
     """
-    Function to encode pint.Quantity object in json
+    Function to encode pint.Quantity and pint.Unit objects in json
+
+    It returns obj if the encoding was not possible.
     """
     if isinstance(obj, Quantity):
         return {"__quantity__": str(obj)}
