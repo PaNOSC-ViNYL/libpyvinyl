@@ -175,7 +175,7 @@ class BaseCalculator(AbstractBaseClass):
                 f"Calculator: `parameters` is expected to be CalculatorParameters, not {type(value)}"
             )
 
-    def set_parameters(self, args_as_dict=None, **kwargs):
+    def set_parameters(self, args_as_dict: bool = None, **kwargs):
         """
         Sets parameters contained in this calculator using dict or kwargs
         """
