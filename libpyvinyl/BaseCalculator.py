@@ -37,6 +37,10 @@ from libpyvinyl.AbstractBaseClass import AbstractBaseClass
 from libpyvinyl.BaseData import BaseData, DataCollection
 from libpyvinyl.Parameters import CalculatorParameters
 
+from typing import List
+
+# if typing>= 3.11
+# from typing import Self
 
 logging.basicConfig(
     format="%(asctime)s %(levelname)s:%(message)s", level=logging.WARNING
@@ -45,7 +49,7 @@ logging.basicConfig(
 
 class BaseCalculator(AbstractBaseClass):
     """
-    Base class of all calculators.
+    :class:  Base class of all calculators.
 
     This class is provides the libpyvinyl API. It defines all methods
     through which a user interacts with the simulation backengines.
@@ -56,16 +60,16 @@ class BaseCalculator(AbstractBaseClass):
     backengine as all other ViNYL Calculators.
 
     A complete example including a instrument and calculators can be found in
-    `test/integration/plusminus`
+    ``test/integration/plusminus``
 
     """
 
     def __init__(
         self,
         name: str,
-        input: Union[DataCollection, list, BaseData],
+        input: Union[DataCollection, List[DataCollection], BaseData],
         output_keys: Union[list, str],
-        output_data_types: list,
+        output_data_types: Union[list, BaseData],
         output_filenames: Union[list, str, None] = None,
         instrument_base_dir: str = "./",
         calculator_base_dir: str = "BaseCalculator",
@@ -74,36 +78,28 @@ class BaseCalculator(AbstractBaseClass):
         """
 
         :param name: The name of this calculator.
-        :type name: str
+        :param input: The input of this calculator. It can be a `DataCollection`,
+                     a list of `DataCollection`s or a single Data Object.
 
-        :param name: The input of this calculator. It can be a `DataCollection`,
-        a list of `DataCollection`s or a single Data Object.
-        :type name: DataCollection, list or BaseData
+        :param output_keys: The key(s) of this calculator's output data.
 
-        :param output_keys: The key(s) of this calculator's output data. It's a list of `str`s or
-        a single str.
-        :type output_keys: list or str
+        :param output_data_types: The data type(s), i.e., classes, of each output.
+                                  It's a list of the data classes or a single data class.
+                                  The available data classes are based on `BaseData`.
+        :param output_filenames: The name(s) of the output file(s).
+                                 It can be a str of a filename or a list of filenames.
+                                 If the mapping is dict mapping, the name is `None`.
+                                 Defaults to None.
 
-        :param output_data_types: The data type(s), i.e., classes, of each output. It's a list of the
-        data classes or a single data class. The available data classes are based on `BaseData`.
-        :type output_data_types: list or DataClass
+        :param instrument_base_dir: The base directory for the instrument to which
+                                    this calculator belongs.
+                                    The final exact output file path depends on `instrument_base_dir` and `calculator_base_dir`: `instrument_base_dir`/`calculator_base_dir`/filename
 
-        :param output_filenames: The name(s) of the output file(s). It can be a str of a filename or
-        a list of filenames. If the mapping is dict mapping, the name is `None`. Defaults to None.
-        :type output_filenames: list or str
-
-        :param instrument_base_dir: The base directory for the instrument to which this calculator
-        belongs. Defaults to "./". The final exact output file path depends on `instrument_base_dir`
-        and `calculator_base_dir`: `instrument_base_dir`/`calculator_base_dir`/filename
-        :type instrument_base_dir: str
-
-        :param calculator_base_dir: The base directory for this calculator. Defaults to "./". The final
-        exact output file path depends on `instrument_base_dir` and
-        `calculator_base_dir`: `instrument_base_dir`/`calculator_base_dir`/filename
-        :type instrument_base_dir: str
+        :param calculator_base_dir: The base directory for this calculator. The final
+                                    exact output file path depends on `instrument_base_dir` and
+                                    `calculator_base_dir`: `instrument_base_dir`/`calculator_base_dir`/filename
 
         :param parameters: The parameters for this calculator.
-        :type  parameters: Parameters
 
         """
         # Initialize the variables
@@ -377,9 +373,8 @@ class BaseCalculator(AbstractBaseClass):
         """Load a dill dump from a dumpfile.
 
         :param dumpfile: The file name of the dumpfile.
-        :type dumpfile: str
         :return: The calculator object restored from the dumpfile.
-        :rtype: CalcualtorClass
+
         """
 
         with open(dumpfile, "rb") as fhandle:
@@ -398,10 +393,7 @@ class BaseCalculator(AbstractBaseClass):
         Dump class instance to file.
 
         :param fname: Filename (path) of the file to write.
-        :type fname: str
-
         :return: The filename of the dumpfile
-        :rtype: str
         """
 
         if fname is None:
