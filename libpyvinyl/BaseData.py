@@ -5,23 +5,10 @@ from libpyvinyl.AbstractBaseClass import AbstractBaseClass
 
 
 class BaseData(AbstractBaseClass):
-    """The abstract data class. Inheriting classes represent simulation input and/or output
+    """:class: The abstract data class.
+    Inheriting classes represent simulation input and/or output
     data and provide a harmonized user interface to simulation data of various kinds rather than a data format.
     Their purpose is to provide a harmonized user interface to common data operations such as reading/writing from/to disk.
-
-    :param key: The key to identify the Data Object.
-    :type key: str
-    :param expected_data: A placeholder dict for expected data. The keys of this dict are expected to be found during the execution of `get_data()`.
-    The value for each key can be `None`.
-    :type expected_data: dict
-    :param data_dict: The dict to map by this DataClass. It has to be `None` if a file mapping was already set, defaults to None.
-    :type data_dict: dict, optional
-    :param filename: The filename of the file to map by this DataClass. It has to be `None` if a dict mapping was already set, defaults to None.
-    :type filename: str, optional
-    :param file_format_class: The FormatClass to map the file by this DataClass, It has to be `None` if a dict mapping was already set, defaults to None
-    :type file_format_class: class, optional
-    :param file_format_kwargs: The kwargs needed to map the file, defaults to None.
-    :type file_format_kwargs: dict, optional
     """
 
     def __init__(
@@ -33,10 +20,22 @@ class BaseData(AbstractBaseClass):
         file_format_class=None,
         file_format_kwargs: Optional[dict] = None,
     ):
+        """
+        :param key: The key to identify the Data Object.
+        :param expected_data: A placeholder dict for expected data. The keys of this dict are expected to be found during the execution of `get_data()`.
+                              The value for each key can be `None`.
+        :param data_dict: The dict to map by this DataClass. It has to be `None` if a file mapping was already set, defaults to None.
+
+        :param filename: The filename of the file to map by this DataClass. It has to be `None` if a dict mapping was already set, defaults to None.
+
+        :param file_format_class: The FormatClass to map the file by this DataClass, It has to be `None` if a dict mapping was already set, defaults to None
+        :type file_format_class: class, optional
+        :param file_format_kwargs: The kwargs needed to map the file, defaults to None.
+        """
         self.__key = None
         self.__expected_data = None
         self.__data_dict = None
-        self.__filename = None
+        self.__filename: Optional[str] = None
         self.__file_format_class = None
         self.__file_format_kwargs = None
 
@@ -107,7 +106,6 @@ class BaseData(AbstractBaseClass):
         """Set a mapping file for this DataClass.
 
         :param filename: The filename of the file to map.
-        :type filename: str
         :param format_class: The FormatClass to map the file
         :type format_class: class
         """
@@ -117,12 +115,12 @@ class BaseData(AbstractBaseClass):
         self.__check_consistency()
 
     @property
-    def filename(self):
+    def filename(self) -> Optional[str]:
         """The filename of the file to map by this DataClass."""
         return self.__filename
 
     @filename.setter
-    def filename(self, value):
+    def filename(self, value: Optional[str]):
         if isinstance(value, str):
             self.__filename = value
         elif value is None:
