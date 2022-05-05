@@ -13,7 +13,7 @@ Welcome to libpyvinyl's documentation!
    Introduction <include/README.md>
    Example <include/notebooks/example-01>
    include/refman
-
+   Shervin <Shervin.md>
 
 Indices and tables
 ==================
