@@ -209,7 +209,7 @@ class Parameter(AbstractBaseClass):
         """
 
         vtype = type(value)
-        assert vtype != None
+        assert vtype is not None
         v = value
         # First case: value is a list, it might be good to double check
         # that all the members are of the same type
@@ -243,10 +243,16 @@ class Parameter(AbstractBaseClass):
         :type value: str | boolean | int | float | object | pint.Quantity
         If value is a float, it is internally converted to a pint.Quantity
         """
+        if (
+            self.__unit is not None
+            and isinstance(value, pint.Quantity)
+            and value.check(self.__unit) is False
+        ):
+            raise pint.errors.DimensionalityError(value.units, self.__unit)
+
         self.__check_compatibility(value)
         self.__set_value_type(value)
         value = self.__to_quantity(value)
-
         if self.is_legal(value):
             self.__value = value
         else:
