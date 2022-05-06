@@ -1,11 +1,7 @@
-pint
-dill
-numpy
-scipy
-jsons
-h5py
+-r ../requirements/prod.txt
 sphinx
 nbsphinx
 recommonmark
 sphinx_rtd_theme
+sphinx_autodoc_typehints
 pandoc
