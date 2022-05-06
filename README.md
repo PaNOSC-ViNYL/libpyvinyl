@@ -133,6 +133,8 @@ pytest tests/integration
 
 
 ## Overview of base classes
+![libpyvinyl](libpyvinyl.drawio.svg)
+(Edit)[shorturl.at/nowBK]
 ### BaseCalculator
 The `BaseCalculator` is an abstract base class providing the interface to the computing code: `input` and `output` for the data flow, `CalculatorParameters` to 
 , `backengine` to execute the code. The connection between different `Calculator`s is handled by `BaseData` class.
