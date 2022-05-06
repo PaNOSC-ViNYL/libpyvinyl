@@ -79,7 +79,13 @@ energy_parameter.add_option([5, 10], options_are_legal=False)
 Now values of 0 meV, 5 meV and 10 meV would cause an error, even when they are all contained in a legal interval, as both the intervals and options are checked whenever a value is set.
 
 ### Obtaining limits
-When printing a parameter the limits will be available in human readable format, but it is also possible to obtain them with these methods for use in for example a GUI application that want to provide a slider or dropdown menu describing object can be made without any Parameters, but let us create a CalculatorParameters object using our existing Parameter.
+When printing a parameter the limits will be available in human readable format, but it is also possible to obtain them with these methods for use in for example a GUI application that want to provide a slider or dropdown menu describing the parameter.
+```
+energy_parameter.get_intervals() # Returns list of tuples with min / max
+energy_parameter.get_intervals_are_legal() # Returns True or False
+energy_parameter.get_options() # Returns list of values
+energy_parameter.get_options_are_legal() # Returns True or False
+```
 
 ### Clearing limits
 It is possible to clear limits, with the *clear_intervals* and *clear_options* methods, yet doing so is not recommended, especially if the purpose is to run a simulation with a parameter value outside of what is assumed by the calculated.
