@@ -127,6 +127,15 @@ class Test_Parameter(unittest.TestCase):
         with pytest.raises(TypeError):
             par.add_option(True, True)
 
+    def test_values_different_units(self):
+        par = Parameter("energy", unit="meV", comment="Energy of emitted particles")
+        import pint
+
+        ureg = pint.UnitRegistry()
+        with pytest.raises(pint.errors.DimensionalityError):
+            thisunit = Unit("meter")
+            par.value = 5 * thisunit
+
     # case 1: only legal option
     def test_parameter_legal_option_float(self):
         par = Parameter("test")
