@@ -11,6 +11,7 @@ Welcome to libpyvinyl's documentation!
    :caption: Contents:
 
    Introduction <include/README.md>
+   Quickstart <Quickstart.ipynb>
    Example <include/notebooks/example-01>
    include/refman
    Shervin <Shervin.md>
