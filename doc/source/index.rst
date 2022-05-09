@@ -14,6 +14,8 @@ Welcome to libpyvinyl's documentation!
    Quickstart <include/Quickstart.ipynb>
    Example <include/notebooks/example-01>
    include/refman
+   Mads <Mads.md>
+   Jun <Jun.md>
    Shervin <Shervin.md>
 
 Indices and tables
