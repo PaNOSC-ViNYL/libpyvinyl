@@ -17,7 +17,7 @@ exposes the interface to
 - Launch the simulation run.
 - Collect the simulation output data.
 - Construct a `Data` instance that represents the simulation output data.
-- Snapshoot a simulation by dumping the object to disk.
+- Snapshot a simulation by dumping the object to disk.
 - Reload a simulation run from disk and continue the run with optionally modified parameters.
 
 The `BaseCalculator` is an abstract base class, it shall not be instantiated as such.
