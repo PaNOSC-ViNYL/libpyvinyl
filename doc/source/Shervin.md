@@ -7,7 +7,7 @@ The `Instrument` class is a convenience class, collecting in a sequence one or m
 A distinction between two type of parameters have been introduced in this library.
 
  1. **Parameter** (`Parameter` class):
-	more details about it can be found in [Parameter](Mads.md).
+	more details about it can be found in [Parameter](parameter.md).
 	It essentially represent any kind of parameter that is needed by a calculator.
 	Parameters belonging to a single calculator are collected in the CalculatorParameters as a member of the calculator.
  2. **MasterParameter** (`MasterParameter` class):

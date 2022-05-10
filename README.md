@@ -39,13 +39,13 @@ This API offers a homogeneous interface to:
 
 ## Who should use this library
 Three kind of users are the target of this package:
+ 1. developers of packages based on libpyvinyl offering new calculators
+   for simulations
  1. users wishing to run a simulation giving some inputs and retrieving
    the results
  1. research facility experts that what to implement detailed
    simulation of existing instruments at their facility or  willing to
    design new ones
- 1. developers of packages based on libpyvinyl offering new calculators
-   for simulations
  
 The fundamental class is the `BaseCalculator` and its sister class `Parameters`.
 While `Parameters` is a pure state engine, i.e. it's sole purpose is to encapsulate
@@ -70,50 +70,12 @@ shows how to run the simulation, store the results in a `hdf5` file, snapshot th
 and reload the simulation into memory.
 
 
-## Testing
-
-A simple `pytest` command will run the unittests and integration tests.
-```
-pytest ./
-```
-
-You should see a test report similar to this:
-
-```
-=============================================================== test session starts ================================================================
-platform linux -- Python 3.8.10, pytest-6.2.4, py-1.10.0, pluggy-0.13.1
-rootdir: /home/juncheng/Projects/libpyvinyl
-collected 100 items
-
-integration/plusminus/tests/test_ArrayCalculators.py .                                                                                       [  1%]
-integration/plusminus/tests/test_Instrument.py .                                                                                             [  2%]
-integration/plusminus/tests/test_NumberCalculators.py ...                                                                                    [  5%]
-integration/plusminus/tests/test_NumberData.py ...........                                                                                   [ 16%]
-unit/test_BaseCalculator.py ..........                                                                                                       [ 26%]
-unit/test_BaseData.py ...........................                                                                                            [ 53%]
-unit/test_Instrument.py .......                                                                                                              [ 60%]
-unit/test_Parameters.py ........................................                                                                             [100%]
-
-=============================================================== 100 passed in 0.56s ================================================================
-```
-
-You can also run unittests only:
-
-```
-pytest tests/unit
-```
-
-Or to run integration tests only:
-
-```
-pytest tests/integration
-```
-
 ## libpyvinyl projects
-- McStatsScript
-- SimEx-Lite
+There are currently two projects based on libpyvinyl:
+- McStatsScript: [https://github.com/PaNOSC-ViNYL/McStasScript](https://github.com/PaNOSC-ViNYL/McStasScript)
+- SimEx-Lite:[https://github.com/PaNOSC-ViNYL/SimEx-Lite](https://github.com/PaNOSC-ViNYL/SimEx-Lite)
 
-
+		
 ## Overview of base classes
 ![libpyvinyl](libpyvinyl.drawio.svg)
 (Edit)[shorturl.at/nowBK]
