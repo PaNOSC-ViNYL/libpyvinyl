@@ -1,6 +1,6 @@
-# User guide
+## User Guide
 
-## BaseCalculator
+### BaseCalculator
 `BaseCalculator` is an abstract class to help the developers build their own specialized Calculator
 within the `libpyvinyl` framework. It takes a collection of Data derived from `BaseData` as input
 and output and executes the operations defined in the `backegine()` method. The behavior of the
@@ -13,7 +13,7 @@ values and their limits?
 - How should the backengine behave?
 - How to install the dependencies of the backengine?
 
-### In the __init__ method
+#### In the __init__ method
 In the
 ```
 __init__(self,
@@ -77,7 +77,7 @@ instrument_base_dir/calculator_base_dir
 If the calculator
 is added to an `Instrument` class object, the `instrument_base_dir` will be modified by the object.
 
-### Define the CalculatorParameters
+#### Define the CalculatorParameters
 The definition of the parameters and their default values are set in the `init_parameters()`
 method. An empty `CalculatorParameters` object is firstly created and then filled with parameters
 needed. In the end, the object should be assigned to `self.parameters`. Example:
@@ -95,7 +95,7 @@ class PlusCalculator(BaseCalculator):
 ```
 The detailed `parameters` guide: link
 
-### Define the backengine
+#### Define the backengine
 
 There are several variables should be used in the `backeigine()`:
 - `self.input`: A `DataCollection` containing `input` data. `self.input.to_list()[0].get_data()` can get the first input data.
@@ -107,14 +107,14 @@ There are several variables should be used in the `backeigine()`:
     output_data.set_dict(data_dict)
 ```
 
-### Dump the object
+#### Dump the object
 The finial users can use`dump()` and `from_dump()` to snapshot/restore a Calculator object.
 No modification needed when you create a derived class.
 
-## Data API
+### Data API
 `libpyvinyl` provides several abstract classes to create data interfaces.
 
-### DataCollection
+#### DataCollection
 `DataCollection` is a thin layer interface between the Calculator and DataClass. It aggregates
 the input and output into a single variable, respectively.
 
@@ -147,7 +147,7 @@ To get an overview of the `DataCollection`, just print it out:
 ```
 print(collection)
 ```
-### BaseData
+#### BaseData
 A specialized Data class can be created for a kind of data with similar attributes
 based on the abstract `BaseData` class. The abstract class provides useful helper
 functions and a template for the Data interface.
@@ -174,7 +174,7 @@ To list the formats supported by the Data Class:
 - `list_formats()`: This method prints the return of `supported_formats()`, which needs
 to be defined for the derived class.
 
-#### Develop a derived DataClass
+##### Develop a derived DataClass
 A DataClass derived from the `BaseData` class only needs two pieces of information:
 - `expected_data`: a dictionary whose key defines the data needed.
 - `supported_formats()`, it returns a dictionary describing the supported formats.
@@ -217,7 +217,7 @@ class NumberData(BaseData):
         return format_dict
 ```
 
-### BaseFormat
+#### BaseFormat
 The Format class is the interface between the exact file and
 the python object.
 
@@ -233,7 +233,7 @@ data into the memory. See:
 - BaseFormat.direct_convert_formats()
 - BaseFormat.convert()
 
-#### read() and write()
+##### read() and write()
 The `read()` method needs to return a python dictionary required by its corresponding
 Data Class. Example:
 ```py
@@ -278,7 +278,7 @@ class TXTFormat(BaseFormat):
 ```
 
 
-#### Example of a FormatClass:
+##### Example of a FormatClass:
 ```py
 class TXTFormat(BaseFormat):
     def __init__(self) -> None:
