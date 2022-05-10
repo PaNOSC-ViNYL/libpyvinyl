@@ -12,14 +12,15 @@ Welcome to libpyvinyl's documentation!
 
    Introduction <include/README.md>
    Installation <include/INSTALL.md>
-   Quickstart <include/Quickstart.ipynb>
+   Developing on top of libpyvinyl <libpyvinyl_guide.md>
+   User Guide <parameter.md>
+   User Guide <Jun.md>
+   Instrument <Shervin.md>
+   Contributing <include/DEVEL.md>
+   Quickstart example <include/Quickstart.ipynb>
    Example <include/notebooks/example-01>
-   include/guide.instrument
    include/refman
-   Mads <Mads.md>
-   Jun <Jun.md>
-   Shervin <Shervin.md>
-
+   
 Indices and tables
 ==================
 

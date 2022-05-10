@@ -1,41 +1,9 @@
-# Quick start for libpyvinyl
-## Introduction
-This section is intended to help a developer understand how a new simulation package can use libpyvinyl as a foundation. It is important to undertand that libpyvinyl provides base classes from which a developer inherits more specialised classes from, and the final class then both contains the new functionality and the basic capabilities. To make a new package, a developer would have to inherit from these baseclasses:
-- BaseCalculator
-- BaseData
-- BaseDataFormat
+## User guide
 
-### Calculator
-The specialised calculator that inherits from BaseCalculator is capable of performing a calculation of some sort. The calculation can depend on some data and input values for parameters specified when the calculator is built. The calculator can also return output data. The scope of a calculator is somewhat arbitrary, but the power of libpyvinyl comes from the ability to break a big calculation down into smaller parts of individual calculators. When using a calculator, it is easy for the user to understand a small number of parameters as there are less risks of ambiguity. A rich Parameter class is provided by libpyvinyl to create the necessary parameters in each calculator. When creating a parameter it is possible to set allowed intervals to avoid undefined behaviour. 
-
-### Data
-To create a description of some data that can be either given to or returned from a calculator one starts with the BaseData class. This data could be for example a number of particle states.
-
-### DataFormat
-Each Data class will have a number of supported DataFormat which are necessary in order to save the data to disk. Our particle data from before could be saved as a json, yaml or some compressed format, and each would need a DataFormat class that contains methods to read and write such data, and make it available to a corresponding Data class.
-
-## First steps as a developer
-To build a simulation package in this framework, think about what calculation need to be performed and what parameters are needed to describe it. Then divide this big calculation into calculators with a limited number of parameters and clear input and output data. For example a particle source, it would need parameters describing the properties of emitted particles and then return a Data object with a large number of particle states. Then a calculator describing a piece of optics might have parameters describing its geometry, and it could have particle states as both input and output. With these kinds of considerations it becomes clear what Calculators and Data classes should be written.
-
-## Benefit of libpyvinyl
-When a package uses libpyvinyl as a foundation, libpyvinyl can be used to write a simulation from a series of these calculators using the Instrument class. Here is an example of a series of calculators that form a simple instrument.
-
-| Calculator      | Description | Parameters | Input Data | Output Data | 
-| :-------------- | :------------- | :------------: | :------------: | :--------------: |
-| Source          | Emits particles | size, divergence, energy | None | particle states |
-| Monochromator   | Crystal | position, d_spacing, mosaicity | particle states | particle states |
-| Monochromator   | Crystal | position, d_spacing, mosaicity | particle states | particle states |
-| Sample   | Crystal sample | position, d_spacing, mosaicity | particle states | particle states |
-| Detector   | Particle detector | position, size, sensitivity | particle states | counts in bins |
-
-This setup uses two monochromators, each with their own parameters. The user can set up a master parameter that control both, for example to ensure they have the same d_spacing. Running the instrument then corresponds to running each calculator in turn and providing the output of one to the next.
-
-
-
-# Parameter
+### Parameter
 The Parameter class describes a single parameter intended to be an input for a calculator. A parameter is initialised by the calculator and subsequently made available to the user. A parameter can have a physical unit and limits on the allowed value in order to avoid unmeaningful input. It is considered good practice to add a comment to each parameter to briefly explain its purpose.
 
-## Basic use
+#### Basic use
 Here basic use of the Parameter class is shown with a brief example.
 ```
 energy_parameter = Parameter(name="energy", unit="meV", comment="Energy of emitted particles")
@@ -52,10 +20,10 @@ energy_parameter.value = 5.0*ureg.eV
 ```
 Now the *energy_parameter* has a value of 5000.0 meV.
 
-## Limits
+#### Limits
 Many parameters have natural limits that would appear natural to the person writing a calculator, but perhaps not to a user. To transfer this knowledge, the developer can include limits in the parameter to cause an error if the value is set outside. Limits come in to forms, either as intervals or as options.
 
-### Intervals
+##### Intervals
 The first type of limit to discuss is the interval, which can be between two finite numbers or extend to infinity in either end. Multiple intervals can be specified. It is possible to declare the intervals as legal or illegal, but all added intervals have to be of the same type, so it is not possible to mix legal and illegal intervals. Below a legal interval is added to the energy parameter.
 ```
 energy_parameter.add_interval(min_value=0.0, max_value=7000.0, intervals_are_legal=True)
@@ -66,7 +34,7 @@ energy_parameter.add_interval(min_value=8000.0, max_value=None, intervals_are_le
 ```
 Now the energy_parameter is legal from 0 to 7000 meV and from 8000 meV to infinity.
 
-### Options
+##### Options
 It is also possible to define whether single values are legal or not, this is called an option, and has the same rules regarding legal / illegal as an interval, meaning all options have to be either legal or illegal. Lets make it illegal to have an energy of 0 meV.
 
 ```
@@ -78,7 +46,7 @@ energy_parameter.add_option([5, 10], options_are_legal=False)
 ```
 Now values of 0 meV, 5 meV and 10 meV would cause an error, even when they are all contained in a legal interval, as both the intervals and options are checked whenever a value is set.
 
-### Obtaining limits
+##### Obtaining limits
 When printing a parameter the limits will be available in human readable format, but it is also possible to obtain them with these methods for use in for example a GUI application that want to provide a slider or dropdown menu describing the parameter.
 ```
 energy_parameter.get_intervals() # Returns list of tuples with min / max
@@ -87,10 +55,10 @@ energy_parameter.get_options() # Returns list of values
 energy_parameter.get_options_are_legal() # Returns True or False
 ```
 
-### Clearing limits
+##### Clearing limits
 It is possible to clear limits, with the *clear_intervals* and *clear_options* methods, yet doing so is not recommended, especially if the purpose is to run a simulation with a parameter value outside of what is assumed by the calculated.
 
-# CalculatorParameters
+### CalculatorParameters
 The CalculatorParameters class is a container for holding all the Parameter objects that pertain to a single Calculator. Each Calculator can have just a single container to organise all the parameters, and it provides the expected container features for convenience. A CalculatorParameters object can be made without any Parameters, but let us create a CalculatorParameters object using our existing Parameter.
 
 ```
