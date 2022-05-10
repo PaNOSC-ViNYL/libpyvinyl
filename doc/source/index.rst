@@ -11,8 +11,10 @@ Welcome to libpyvinyl's documentation!
    :caption: Contents:
 
    Introduction <include/README.md>
+   Installation <include/INSTALL.md>
    Quickstart <include/Quickstart.ipynb>
    Example <include/notebooks/example-01>
+   include/guide.instrument
    include/refman
    Mads <Mads.md>
    Jun <Jun.md>
