@@ -7,7 +7,7 @@
 
 Simulations provide invaluable insights to plan (before) and
  understand (after) experiments at neutron and X-ray facilities. 
-A wide set of libraries and programs are already available to simulate
+A wide set of libraries and programs is already available to simulate
  neutron and X-ray beams, propagate them through the beamlines,
  interact with matter of a sample and get data acquired by detectors. 
 
