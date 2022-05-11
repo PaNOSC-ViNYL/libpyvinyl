@@ -17,7 +17,7 @@ The aim of this library is to provide a high level API to allow users
  simulation softwares in a natural way. 
 The vast differences with respect to parameter
  names, unit conventions, configuration syntax, i.e. the user
- interface, is, hence, overcome creating a `libpyvinyl` complaiant API
+ interface, is, hence, overcome creating a `libpyvinyl` compliant API
  for each simulation software. 
 
 ## Software specific APIs based on libpyvinyl
