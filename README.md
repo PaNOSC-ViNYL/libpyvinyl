@@ -9,12 +9,12 @@ Simulations provide invaluable insights to plan (before) and
  understand (after) experiments at neutron and X-ray facilities. 
 A wide set of libraries and programs is already available to simulate
  neutron and X-ray beams, propagate them through the beamlines,
- interact with matter of a sample and get data acquired by detectors. 
+ interact with the sample and get data acquired by detectors. 
 
-The aim of this library is to provide a high level API to allow users
- to access simulations with a unified interface, reaching almost
- seamless interoperability, allowing to chain multiple
- simulation softwares in a natural way. 
+The aim of _libpyvinyl_ is to provide a high level neutron and X-ray simulation API. 
+With this harmonized user interface we achieve seamless
+interoperability of individual simulations thereby facilitating the
+concatenation of simulation steps into a simulation pipeline. 
 The vast differences with respect to parameter
  names, unit conventions, configuration syntax, i.e. the user
  interface, is, hence, overcome creating a `libpyvinyl` compliant API
@@ -23,9 +23,18 @@ The vast differences with respect to parameter
 ## Software specific APIs based on libpyvinyl
 The python package `libpyvinyl` provides a way to harmonize the user interfaces of such simulation codes. It is an object oriented library; its classes define the user interface to simulation codes, simulation parameters and simulation data.
 
-For a given simulation code, e.g. propagation of neutron or photon beams through a beamline, a new class would have to be defined that derives from the
-`libpyvinyl` classes. Implementing the methods meant to configure a simulation, launch the simulation code, and retrieve the output data. Since the
-interplay between parametrization, execution, and IO is already taken care of at the level of `libpyvinyl`'s base classes, the effort to define a specialized interface (parameters, backengine and DataClass) for a new simulation code is rather minimal. This structure allows integrating simulation codes into simulation pipelines in the above sense.
+For a given simulation code, e.g. propagation of neutron or photon
+beams through a beamline, a new class would have to be defined that
+derives from the `libpyvinyl` classes. 
+This derived class requires the implementation of certain methods
+meant to configure a simulation, launch the simulation code, and
+retrieve the output data.
+Since the interplay between parametrization, execution, and IO is
+already taken care of at the level of `libpyvinyl`'s base classes, the
+effort to define a specialized interface (parameters, backengine and
+data object) for a new simulation code is rather minimal. This structure
+allows integrating simulation codes into simulation pipelines in the
+above sense. 
 
 ## What the libpyvinyl API offers
 This API offers a homogeneous interface to:
