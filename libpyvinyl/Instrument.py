@@ -4,6 +4,7 @@
 
 from libpyvinyl.Parameters.Collections import InstrumentParameters
 from libpyvinyl import BaseCalculator
+from libpyvinyl.BaseData import DataCollection
 
 # typing
 from libpyvinyl.Parameters.Collections import MasterParameters
@@ -98,7 +99,7 @@ class Instrument:
                 f"Instrument: instrument_base_dir is expecting a str rather than {type(base)}"
             )
 
-    def list_calculators(self) -> None:
+    def __repr_calculators(self) -> str:
         """
         Print the list of all defined calculators for this instrument
         """
@@ -106,6 +107,13 @@ class Instrument:
         string += "Calculators:\n"
         for key in self.calculators:
             string += f"{key}\n"
+        return string
+
+    def list_calculators(self) -> None:
+        """
+        Print the list of all defined calculators for this instrument
+        """
+        string = self.__repr_calculators(self)
         print(string)
 
     def list_parameters(self) -> None:
@@ -142,3 +150,13 @@ class Instrument:
         """
         for calculator in self.calculators.values():
             calculator.backengine()
+
+    def output(self) -> DataCollection:
+        return list(self.__calculators.values())[-1].output
+
+    def __repr__(self) -> str:
+        mystring = f"######## Instrument {self.name}\n"
+        mystring += self.__repr_calculators()
+        mystring += repr(self.parameters)
+        mystring += f"############"
+        return mystring
