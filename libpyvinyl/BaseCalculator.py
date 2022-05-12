@@ -72,7 +72,7 @@ class BaseCalculator(AbstractBaseClass):
         output_data_types: Union[list, BaseData],
         output_filenames: Union[list, str, None] = None,
         instrument_base_dir: str = "./",
-        calculator_base_dir: str = "BaseCalculator",
+        calculator_base_dir: Optional[str] = None,
         parameters: CalculatorParameters = None,
     ):
         """
@@ -119,7 +119,10 @@ class BaseCalculator(AbstractBaseClass):
         self.output_data_types = output_data_types
         self.output_filenames = output_filenames
         self.instrument_base_dir = instrument_base_dir
-        self.calculator_base_dir = calculator_base_dir
+        if calculator_base_dir is None:
+            self.calculator_base_dir = name
+        else:
+            self.calculator_base_dir = calculator_base_dir
         self.parameters = parameters
 
         self.__check_consistency()
