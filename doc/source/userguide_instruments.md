@@ -16,15 +16,28 @@ A distinction between two type of parameters have been introduced in this librar
 	   E.g. the angles of a three axis spectrometer or collimation
 	 - parameters from multiple calculators that are supposed to have the same value and meaning: the wavelenght might be used by the calculator of the source and also by the calculator of the beamline to change some optics
 	 
+One significant advantage in defining and using **master parameters** is that the units used by the calculator and those for the final user might be decoupled.
+Each calculator will have its own parameter with some units. The `pint` quantities used for physical values allow unit conversions in a transparent way for the end user if the values are assigned as a pint quantity. The master parameter can then be defined in the unit that is most convenient for the user for setting and getting values.
 
 
 ### How to write an instrument
 
 Firstly an instrument object has to be constructed with a name and the base path where the output of the calculators forming the instrument should go.
 
+Example:
+```
+myinstr = Instrument("D22_quick", instrument_base_dir=".")
+```
+
 Optionally the list of calculators can be added afterwards or given at construction as a list of calculators.
 
 Calculators should be added one by one with the `add_calculator` method providing an already instantiated calculator with its parameters set.
+Example:
+```
+calculator_1 = SpecializedCalculator(name="calc1")
+calculator_1.add_parameter("par1",unit="meV")
+myinstr.add_calculator(calculator_1)
+```
 
 Adding the calculator, all the parameters are automatically handled by the Instrument and accessed via the `myinstrument.parameters` method. 
 
@@ -33,7 +46,16 @@ One master parameter is defined by conveniet name
 and a dictionary associating the name of the calculator and the name of the parameter for the specific calculator. It is worth noting that the parameters with the same meaning my be defined with different names by different calculators.
 Once a master parameter is added, the user running the simulation for the instrument will not have to care about the details of the calculators forming the instrument.
 
+Example:
+```
+myinstr.add_master_parameter("wavelength", {"calc_1": "par_1"}, unit="GeV")
+myinstr.add_master_parameter("collimation", {"calc_1": "par_2"}, unit="meter")
+myinstr.master["wavelength"] = 4.5 * ureg.keV
+myinstr.master["collimation"] = 2 * ureg.meter
+```
+
 **The user running the simulation will access only to master parameters.**
+
 
 ### How to use an instrument
 
