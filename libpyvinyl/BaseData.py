@@ -485,6 +485,3 @@ class DataCollection:
         for data_object in self.data_object_dict.values():
             string += f"{data_object.key} - {data_object.mapping_type}: {data_object.mapping_content}\n"
         return string
-
-    def __repr__(self):
-        return self.__str__()

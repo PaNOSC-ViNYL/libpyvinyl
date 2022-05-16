@@ -101,7 +101,7 @@ class Instrument:
 
     def __repr_calculators(self) -> str:
         """
-        Print the list of all defined calculators for this instrument
+        Return the list of all defined calculators for this instrument
         """
         string = f"- Instrument: {self.name} -\n"
         string += "Calculators:\n"
@@ -113,7 +113,7 @@ class Instrument:
         """
         Print the list of all defined calculators for this instrument
         """
-        string = self.__repr_calculators(self)
+        string = self.__repr_calculators()
         print(string)
 
     def list_parameters(self) -> None:
@@ -151,10 +151,12 @@ class Instrument:
         for calculator in self.calculators.values():
             calculator.backengine()
 
+    @property
     def output(self) -> DataCollection:
+        """Return the output of the last calculator"""
         return list(self.__calculators.values())[-1].output
 
-    def __repr__(self) -> str:
+    def __str__(self) -> str:
         mystring = f"######## Instrument {self.name}\n"
         mystring += self.__repr_calculators()
         mystring += repr(self.parameters)
