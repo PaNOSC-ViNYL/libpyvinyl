@@ -24,6 +24,7 @@ To build a simulation package in this framework, think about what calculation ne
 ### Benefit of libpyvinyl
 When a package uses libpyvinyl as a foundation, libpyvinyl can be used to write a simulation from a series of these calculators using the Instrument class. Here is an example of a series of calculators that form a simple instrument.
 
+
 | Calculator    | Description       | Parameters                     | Input Data      | Output Data     |
 |:--------------|:------------------|:------------------------------:|:---------------:|:---------------:|
 | Source        | Emits particles   | size, divergence, energy       | None            | particle states |
