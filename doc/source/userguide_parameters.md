@@ -1,4 +1,3 @@
-## User guide
 
 ### Parameter
 The Parameter class describes a single parameter intended to be an input for a calculator. A parameter is initialised by the calculator and subsequently made available to the user. A parameter can have a physical unit and limits on the allowed value in order to avoid unmeaningful input. It is considered good practice to add a comment to each parameter to briefly explain its purpose.
@@ -58,7 +57,7 @@ energy_parameter.get_options_are_legal() # Returns True or False
 ##### Clearing limits
 It is possible to clear limits, with the *clear_intervals* and *clear_options* methods, yet doing so is not recommended, especially if the purpose is to run a simulation with a parameter value outside of what is assumed by the calculated.
 
-### CalculatorParameters
+#### CalculatorParameters
 The CalculatorParameters class is a container for holding all the Parameter objects that pertain to a single Calculator. Each Calculator can have just a single container to organise all the parameters, and it provides the expected container features for convenience. A CalculatorParameters object can be made without any Parameters, but let us create a CalculatorParameters object using our existing Parameter.
 
 ```

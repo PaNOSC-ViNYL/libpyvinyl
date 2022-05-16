@@ -1,4 +1,4 @@
-How to test
+## How to test
 ------------------------------
 
 Minimally needed:
@@ -8,22 +8,7 @@ cd tests/unit
 python Test.py
 ```
 
-Recommended:
-```
-pip install --user pytest
-pip install -e ./
-cd tests
-# Test all
-pytest ./
-# Unit test only
-pytest ./unit
-# Integration test only
-pytest ./integration
-```
-
-
-
-## Testing
+### Recommended:
 
 A simple `pytest` command will run the unittests and integration tests.
 ```

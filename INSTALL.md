@@ -19,17 +19,13 @@ $> pip install libpyvinyl
 We provide a requirements file for developers in _requirements/dev.txt_.
 
 ```
-$> cd requirements
-```
-
-```
-$> conda install --file dev.txt
+$> conda install --file requirements/dev.txt --file requirements/prod.txt
 ```
 
 **or**
 
 ```
-$> pip install -r dev.txt
+$> pip install -r requirements/prod.txt -r requirements/dev.txt 
 ```
 
 
@@ -37,6 +33,5 @@ Then, install `libpyvinyl` into the same environment. The `-e` flag links the in
 the source code in the local path, such that changes in the latter are immediately effective in the installed version.
 
 ```
-$> cd ..
 $> pip install -e .
 ```

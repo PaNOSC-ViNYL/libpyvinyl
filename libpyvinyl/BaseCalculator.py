@@ -67,7 +67,7 @@ class BaseCalculator(AbstractBaseClass):
     def __init__(
         self,
         name: str,
-        input: Union[DataCollection, List[DataCollection], BaseData],
+        input: Union[DataCollection, List[BaseData], BaseData],
         output_keys: Union[list, str],
         output_data_types: Union[list, BaseData],
         output_filenames: Union[list, str, None] = None,
@@ -79,7 +79,7 @@ class BaseCalculator(AbstractBaseClass):
 
         :param name: The name of this calculator.
         :param input: The input of this calculator. It can be a `DataCollection`,
-                     a list of `DataCollection`s or a single Data Object.
+                     a list of `BaseData`s or a single Data Object.
 
         :param output_keys: The key(s) of this calculator's output data.
 
@@ -103,7 +103,7 @@ class BaseCalculator(AbstractBaseClass):
 
         """
         # Initialize the variables
-        self.__name = ""
+        self.__name = None
         self.__instrument_base_dir = None
         self.__calculator_base_dir = None
         self.__input = None

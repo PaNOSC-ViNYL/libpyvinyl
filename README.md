@@ -3,7 +3,9 @@
 [![CI](https://github.com/PaNOSC-ViNYL/libpyvinyl/actions/workflows/ci.yml/badge.svg)](https://github.com/PaNOSC-ViNYL/libpyvinyl/actions/workflows/ci.yml)
 [![Documentation Status](https://readthedocs.org/projects/libpyvinyl/badge/?version=latest)](https://libpyvinyl.readthedocs.io/en/latest/?badge=latest)
 
+
 ## Overview
+**Installation instructions** [here](INSTALL.md)
 
 Simulations provide invaluable insights to plan (before) and
  understand (after) experiments at neutron and X-ray facilities. 
@@ -84,24 +86,14 @@ There are currently two projects based on libpyvinyl:
 - McStatsScript: [https://github.com/PaNOSC-ViNYL/McStasScript](https://github.com/PaNOSC-ViNYL/McStasScript)
 - SimEx-Lite:[https://github.com/PaNOSC-ViNYL/SimEx-Lite](https://github.com/PaNOSC-ViNYL/SimEx-Lite)
 
-		
-## Overview of base classes
-![libpyvinyl](libpyvinyl.drawio.svg)
-(Edit)[shorturl.at/nowBK]
-### BaseCalculator
-The `BaseCalculator` is an abstract base class providing the interface to the computing code: `input` and `output` for the data flow, `CalculatorParameters` to 
-, `backengine` to execute the code. The connection between different `Calculator`s is handled by `BaseData` class.
-### CalculatorParameters
 
-### Parameter
-### BaseData
-### BaseFormat
-### Instrument
-
-## Example
-The subdirectory *test/integration/plusminus* contains a python package that illustrates how a specialized calculator (simulation interface class) can be defined by deriving from the appropriate `libpyvinyl` base classes.
-
-
+## Documentation
+Documentation can be generated as follows using sphinx:
+```
+cd doc/
+pip install requirements.txt
+make html
+```
 
 ## Acknowledgement
 
