@@ -33,7 +33,7 @@ setup(
     author="Carsten Fortmann-Grote, Juncheng E, Mads Bertelsen, Shervin Nourbakhsh",
     author_email="carsten.grote@xfel.eu, juncheng.e@xfel.eu, Mads.Bertelsen@ess.eu, nourbakhsh@ill.fr",
     url="https://github.com/PaNOSC-ViNYL/libpyvinyl",
-    download_url="https://github.com/PaNOSC-ViNYL/libpyvinyl/archive/v1.1.0.tar.gz",
+    download_url="https://github.com/PaNOSC-ViNYL/libpyvinyl/archive/v1.1.1.tar.gz",
     keywords=["photons", "neutrons", "simulations"],
     install_requires=requirements,
     classifiers=[
