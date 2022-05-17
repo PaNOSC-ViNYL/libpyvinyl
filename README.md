@@ -58,29 +58,6 @@ Three kind of users are the target of this package:
    simulation of existing instruments at their facility or  willing to
    design new ones
  
-The fundamental class is the `BaseCalculator` and its sister class `Parameters`.
-While `Parameters` is a pure state engine, i.e. it's sole purpose is to encapsulate
-the physical, numerical, and computational parameters of a simulation, the `BaseCalculator`
-exposes the interface to
-
-- Configure a simulation.
-- Launch the simulation run.
-- Collect the simulation output data.
-- Construct a `Data` instance that represents the simulation output data.
-- Snapshot a simulation by dumping the object to disk.
-- Reload a simulation run from disk and continue the run with optionally modified parameters.
-
-The `BaseCalculator` is an abstract base class, it shall not be instantiated as such.
-The anticipated use is to inherit specialized `Calculators` from `BaseCalculator` and to
-implement the core functionality in the derived class. In particular, this is required
-for the methods responsible to launch a simulation through the `backengine()` method.
-
-As an example, we demonstrate in an [accompanying notebook](https://github.com/PaNOSC-ViNYL/libpyvinyl/blob/master/doc/source/include/notebooks/example-01.ipynb)
-how to declare a derived `Calculator` and implement a `backengine` method. The example then
-shows how to run the simulation, store the results in a `hdf5` file, snapshot the simulation
-and reload the simulation into memory.
-
-
 ## libpyvinyl projects
 There are currently two projects based on libpyvinyl:
 - McStatsScript: [https://github.com/PaNOSC-ViNYL/McStasScript](https://github.com/PaNOSC-ViNYL/McStasScript)
