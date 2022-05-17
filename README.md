@@ -2,6 +2,8 @@
 
 [![CI](https://github.com/PaNOSC-ViNYL/libpyvinyl/actions/workflows/ci.yml/badge.svg)](https://github.com/PaNOSC-ViNYL/libpyvinyl/actions/workflows/ci.yml)
 [![Documentation Status](https://readthedocs.org/projects/libpyvinyl/badge/?version=latest)](https://libpyvinyl.readthedocs.io/en/latest/?badge=latest)
+[![DOI](https://zenodo.org/badge/257468208.svg)](https://zenodo.org/badge/latestdoi/257468208)
+
 
 
 ## Overview
