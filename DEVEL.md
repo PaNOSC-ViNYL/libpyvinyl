@@ -1,5 +1,6 @@
+# Contributing
+
 ## How to test
-------------------------------
 
 Minimally needed:
 ```
@@ -8,7 +9,7 @@ cd tests/unit
 python Test.py
 ```
 
-### Recommended:
+Recommended:
 
 A simple `pytest` command will run the unittests and integration tests.
 ```
@@ -46,3 +47,14 @@ Or to run integration tests only:
 ```
 pytest tests/integration
 ```
+
+## Git workflow
+1. Branch from the current `master` branch
+2. Develop into the newly created branch
+3. Create appropriate unit tests in [tests/unit/](https://github.com/PaNOSC-ViNYL/libpyvinyl/tree/master/tests/unit)
+4. Test current development as indicated in [Testing](https://github.com/PaNOSC-ViNYL/libpyvinyl#testing).
+5. `git rebase -i master` w.r.t. current master to include the latest updates and squashing commits to a minimum. See also [here](https://opensource.com/article/20/4/git-rebase-i).
+6. Push your `BRANCH` to the upstream repo: `git push -f upstream BRANCH`.
+7. Create a pull request (PR) to the `master` branch on the GitHub page.
+8. PR should be reviewed and approved and be passing all CI tests.
+9. If passing all tests, Choose `Rebase and merge` to merge the PR with no further squashing.
