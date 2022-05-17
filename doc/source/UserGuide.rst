@@ -1,5 +1,5 @@
 ===========================================
-Developing on top of libpyvinyl: User Guide
+User Guide
 ===========================================
 
 

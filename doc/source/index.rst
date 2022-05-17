@@ -12,9 +12,9 @@ Welcome to libpyvinyl's documentation!
 
    Introduction <include/README.md>
    Installation <include/INSTALL.md>
+   Quickstart <include/Quickstart.ipynb>
    UserGuide 
    Contributing <include/DEVEL.md>
-   Quickstart example for developers <include/Quickstart.ipynb>
    include/refman
    
 Indices and tables
