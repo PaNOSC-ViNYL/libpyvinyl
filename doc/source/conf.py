@@ -16,6 +16,7 @@ import os
 import sys
 
 sys.path.insert(0, "../../libpyvinyl")
+sys.path.insert(0, "../../")
 import libpyvinyl
 import sphinx_rtd_theme
 
@@ -52,10 +53,9 @@ extensions = [
     "sphinx.ext.viewcode",
     "sphinx_rtd_theme",
     "nbsphinx",
-    "recommonmark",
     "sphinx.ext.autosummary",
     "sphinx_autodoc_typehints",
-    "sphinx_markdown_tables",
+    "myst_parser"
 ]
 
 # Add any paths that contain templates here, relative to this directory.

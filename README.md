@@ -6,6 +6,8 @@
 
 
 ## Overview
+[GitHub repository](https://github.com/PaNOSC-ViNYL/libpyvinyl)
+
 **Installation instructions** [here](INSTALL.md)
 
 Simulations provide invaluable insights to plan (before) and
