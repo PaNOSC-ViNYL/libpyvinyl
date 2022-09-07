@@ -15,23 +15,25 @@ def read(rel_path):
         return fp.read()
 
 
-def get_version(rel_path):
+def get_from_init(rel_path, field):
     for line in read(rel_path).splitlines():
-        if line.startswith("__version__"):
+        if line.startswith(field):
             delim = '"' if '"' in line else "'"
             return line.split(delim)[1]
     else:
-        raise RuntimeError("Unable to find version string.")
+        raise RuntimeError("Unable to find " + field + " string.")
 
+
+initfile = "libpyvinyl/__init__.py"
 
 setup(
     name="libpyvinyl",
     packages=find_packages(include=["libpyvinyl", "libpyvinyl.*"]),
-    version=get_version("libpyvinyl/__init__.py"),
+    version=get_from_init(initfile, "__version__"),
     license="LGPLv3",
     description="The python API for photon and neutron simulation codes in the Photon and Neutron Open Science Cloud (PaNOSC).",
-    author="Carsten Fortmann-Grote, Juncheng E, Mads Bertelsen, Shervin Nourbakhsh",
-    author_email="carsten.grote@xfel.eu, juncheng.e@xfel.eu, Mads.Bertelsen@ess.eu, nourbakhsh@ill.fr",
+    author=get_from_init(initfile, "__author__"),
+    author_email=get_from_init(initfile, "__email__"),
     url="https://github.com/PaNOSC-ViNYL/libpyvinyl",
     download_url="https://github.com/PaNOSC-ViNYL/libpyvinyl/archive/v1.1.1.tar.gz",
     keywords=["photons", "neutrons", "simulations"],
