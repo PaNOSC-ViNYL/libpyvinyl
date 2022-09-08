@@ -5,6 +5,8 @@ import shutil
 from test_BaseCalculator import PlusCalculator, NumberData
 from libpyvinyl.Instrument import Instrument
 
+import pytest
+
 
 class InstrumentTest(unittest.TestCase):
     """
@@ -113,6 +115,28 @@ class InstrumentTest(unittest.TestCase):
         self.assertEqual(
             my_instrument.calculators["test2"].base_dir, "test/PlusCalculator"
         )
+
+    def testSample(self):
+        """Testing the listing of implemented samples,
+        retrieving the name of the current sample
+        and setting a new sample"""
+        my_instrument = Instrument("myInstrument")
+
+        assert my_instrument.samples == []
+        assert my_instrument.sample is None
+        with pytest.raises(NotImplementedError):
+            my_instrument.sample = "ciao"
+
+    def testSampleEnvironment(self):
+        """Testing the listing of implemented sample environments,
+        retrieving the name of the current sample environment
+        and setting a new sample environment"""
+        my_instrument = Instrument("myInstrument")
+
+        assert my_instrument.sample_environments == []
+        assert my_instrument.sample_environment is None
+        with pytest.raises(NotImplementedError):
+            my_instrument.sample_environment = "ciao"
 
 
 if __name__ == "__main__":

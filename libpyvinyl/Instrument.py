@@ -28,6 +28,10 @@ class Instrument:
         self.__name: str = ""
         self.__instrument_base_dir: str = ""
         self.__parameters = InstrumentParameters()
+        self.__sample_environment_name: Optional[str] = None
+        self.__sample_name: Optional[str] = None
+        self.__implemented_samples: List[str] = []
+        self.__implemented_sample_environments: List[str] = []
 
         self.name = name
 
@@ -162,3 +166,41 @@ class Instrument:
         mystring += repr(self.parameters)
         mystring += f"############"
         return mystring
+
+    @property
+    def samples(self) -> List[str]:
+        """Return the list of implemented samples"""
+        return self.__implemented_samples
+
+    @property
+    def sample(self):
+        """Return the name of the currently implemented sample"""
+        return self.__sample_name
+
+    @sample.setter
+    def sample(self, name: str) -> None:
+        """Set the sample component"""
+        # This setter should be implemented in the specialized class
+        raise NotImplementedError(
+            self.__class__.__name__
+            + " sample setter not implemented in the specialized Instrument class"
+        )
+
+    @property
+    def sample_environments(self) -> List[str]:
+        """Return the list of implemented sample environments"""
+        return self.__implemented_sample_environments
+
+    @property
+    def sample_environment(self):
+        """Return the name of the currently used sample environment"""
+        return self.__sample_environment_name
+
+    @sample_environment.setter
+    def sample_environment(self, name: str) -> None:
+        """Setting the sample environment name"""
+        # This setter should be implemented in the specialized class
+        raise NotImplementedError(
+            self.__class__.__name__
+            + " sample setter not implemented in the specialized Instrument class"
+        )
