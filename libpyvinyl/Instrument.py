@@ -32,7 +32,10 @@ class Instrument:
         self.__sample_name: Optional[str] = None
         self.__implemented_samples: List[str] = []
         self.__implemented_sample_environments: List[str] = []
-
+        self.__sample = None  # this is the object implementing the sample
+        self.__sample_environment = (
+            None  # this is the object implementing the sample environment
+        )
         self.name = name
 
         self.__calculators: Dict[str, BaseCalculator] = {}
@@ -172,6 +175,11 @@ class Instrument:
         """Return the list of implemented samples"""
         return self.__implemented_samples
 
+    @samples.setter
+    def samples(self, l: List[str]) -> None:
+        """Set the list of implemented samples (to be used in the init of the derived class"""
+        self.__implemented_samples = l
+
     @property
     def sample(self):
         """Return the name of the currently implemented sample"""
@@ -190,6 +198,11 @@ class Instrument:
     def sample_environments(self) -> List[str]:
         """Return the list of implemented sample environments"""
         return self.__implemented_sample_environments
+
+    @sample_environments.setter
+    def sample_environments(self, l: List[str]) -> None:
+        """ """
+        self.__implemented_sample_environments = l
 
     @property
     def sample_environment(self):
