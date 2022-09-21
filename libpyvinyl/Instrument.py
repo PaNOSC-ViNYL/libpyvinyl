@@ -181,13 +181,27 @@ class Instrument:
         self.__implemented_samples = l
 
     @property
-    def sample(self):
+    def sample(self) -> Any:
+        """Return the object representing the sample"""
+        return self.__sample
+
+    @sample.setter
+    def sample(self, obj: Any) -> None:
+        """Set the object implementing the sample"""
+        self.__sample = obj
+
+    @property
+    def sample_name(self) -> str:
         """Return the name of the currently implemented sample"""
         return self.__sample_name
 
-    @sample.setter
-    def sample(self, name: str) -> None:
-        """Set the sample component"""
+    @sample_name.setter
+    def sample_name(self, name: str) -> None:
+        """Set the name of currently implemented sample. To be performed by the *set_sample_by_name(name)* method"""
+        self.__sample_name = name
+
+    def set_sample_by_name(self, name: str) -> None:
+        """Set the sample component by name: to be implemented in the derived class"""
         # This setter should be implemented in the specialized class
         raise NotImplementedError(
             self.__class__.__name__
@@ -205,12 +219,21 @@ class Instrument:
         self.__implemented_sample_environments = l
 
     @property
-    def sample_environment(self):
-        """Return the name of the currently used sample environment"""
-        return self.__sample_environment_name
+    def sample_environment(self) -> Any:
+        """Return the object representing the currently used sample environment"""
+        return self.__sample_environment
 
     @sample_environment.setter
-    def sample_environment(self, name: str) -> None:
+    def sample_environment(self, obj: Any) -> None:
+        """Set the object implementing the sample environment"""
+        self.__sample_environment = obj
+
+    @property
+    def sample_environment_name(self):
+        """Return the name of the currently implemented sample environment"""
+        return self.__sample_environment_name
+
+    def set_sample_environment_by_name(self, name: str) -> None:
         """Setting the sample environment name"""
         # This setter should be implemented in the specialized class
         raise NotImplementedError(

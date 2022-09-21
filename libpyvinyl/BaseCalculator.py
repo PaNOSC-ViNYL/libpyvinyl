@@ -112,6 +112,7 @@ class BaseCalculator(AbstractBaseClass):
         self.__output_filenames = None
         self.__parameters = None
         self.__output: DataCollection = DataCollection()
+        self.__sample = None
 
         self.name = name
         self.input = input
@@ -128,6 +129,9 @@ class BaseCalculator(AbstractBaseClass):
         self.__check_consistency()
         # Create output data objects according to the output_data_classes
         self.__init_output()
+
+    def has_sample() -> bool:
+        return self.__sample is not None
 
     def __check_consistency(self):
         """Check the consistency of the input parameters"""
