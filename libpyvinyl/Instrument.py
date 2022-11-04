@@ -91,7 +91,6 @@ class Instrument:
     def instrument_base_dir(self, value):
         self.set_instrument_base_dir(value)
 
-
     def set_instrument_base_dir(self, base: str) -> None:
         """Set each calculator's `instrument_base_dir` to '`base`. Each calculator's data file ouput directory
         will be "`instrument_base_dir`/`calculator_base_dir`".
