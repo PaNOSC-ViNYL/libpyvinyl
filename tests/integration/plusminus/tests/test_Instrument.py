@@ -7,6 +7,14 @@ import plusminus.ArrayData as AD
 from plusminus import DataCollection
 
 
+def test_Instrument_base_dir(tmpdir):
+    my_instr = Instrument("my_instr")
+    my_instr.set_instrument_base_dir(str(tmpdir))
+    print(my_instr.instrument_base_dir)
+    my_instr.instrument_base_dir = "./test"
+    print(my_instr.instrument_base_dir)
+
+
 def test_CalculationInstrument(tmpdir):
     """PlusCalculator test function, the native output of MinusCalculator is a python dictionary"""
 
