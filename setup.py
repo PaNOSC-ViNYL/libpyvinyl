@@ -25,11 +25,11 @@ def get_from_init(rel_path, field):
 
 
 initfile = "libpyvinyl/__init__.py"
-
+version = get_from_init(initfile, "__version__")
 setup(
     name="libpyvinyl",
     packages=find_packages(include=["libpyvinyl", "libpyvinyl.*"]),
-    version=get_from_init(initfile, "__version__"),
+    version=version,
     license="LGPLv3",
     description="The python API for photon and neutron simulation codes in the Photon and Neutron Open Science Cloud (PaNOSC).",
     author=get_from_init(initfile, "__author__"),
