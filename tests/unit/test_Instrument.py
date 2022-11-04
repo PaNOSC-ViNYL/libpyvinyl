@@ -125,7 +125,7 @@ class InstrumentTest(unittest.TestCase):
         assert my_instrument.samples == []
         assert my_instrument.sample is None
         with pytest.raises(NotImplementedError):
-            my_instrument.sample = "ciao"
+            my_instrument.set_sample_by_name("ciao")
 
     def testSampleEnvironment(self):
         """Testing the listing of implemented sample environments,
@@ -136,7 +136,8 @@ class InstrumentTest(unittest.TestCase):
         assert my_instrument.sample_environments == []
         assert my_instrument.sample_environment is None
         with pytest.raises(NotImplementedError):
-            my_instrument.sample_environment = "ciao"
+            my_instrument.set_sample_environment_by_name("ciao")
+        my_instrument.set_sample_environment_by_name("ciao")
 
 
 if __name__ == "__main__":
