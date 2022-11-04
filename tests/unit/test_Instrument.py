@@ -137,7 +137,6 @@ class InstrumentTest(unittest.TestCase):
         assert my_instrument.sample_environment is None
         with pytest.raises(NotImplementedError):
             my_instrument.set_sample_environment_by_name("ciao")
-        my_instrument.set_sample_environment_by_name("ciao")
 
 
 if __name__ == "__main__":
