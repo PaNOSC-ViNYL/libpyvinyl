@@ -35,7 +35,7 @@ setup(
     author=get_from_init(initfile, "__author__"),
     author_email=get_from_init(initfile, "__email__"),
     url="https://github.com/PaNOSC-ViNYL/libpyvinyl",
-    download_url="https://github.com/PaNOSC-ViNYL/libpyvinyl/archive/v1.1.1.tar.gz",
+    download_url=f"https://github.com/PaNOSC-ViNYL/libpyvinyl/archive/v{version}.tar.gz",
     keywords=["photons", "neutrons", "simulations"],
     install_requires=requirements,
     classifiers=[
