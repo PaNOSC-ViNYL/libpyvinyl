@@ -350,11 +350,11 @@ class BaseData(AbstractBaseClass):
                 "__get_dict_data() should not be called when self.__data_dict is None"
             )
 
-    def __get_file_data(self):
+    def __get_file_data(self, **kwargs):
         """Get the data dict from a file mapping"""
         if self.__filename is not None:
             data_to_read = self.__file_format_class.read(
-                self.__filename, **self.__file_format_kwargs
+                self.__filename, **self.__file_format_kwargs, **kwargs
             )
             # It will automatically check the data needed to be extracted.
             self.__check_for_expected_data(data_to_read)
@@ -367,13 +367,15 @@ class BaseData(AbstractBaseClass):
                 "__get_file_data() should not be called when self.__filename is None"
             )
 
-    def get_data(self):
+    def get_data(self, **kwargs):
         """Return the data in a dictionary"""
         # From either a file or a python object to a python object
         if self.__data_dict is not None:
             return self.__get_dict_data()
         elif self.__filename is not None:
-            return self.__get_file_data()
+            return self.__get_file_data(**kwargs)
+        else:
+            raise RuntimeError("Cannot read the data from either a dict or a file.")
 
     def __str__(self):
         """Returns strings of Data objects info"""
