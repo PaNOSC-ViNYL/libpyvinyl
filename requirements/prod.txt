@@ -5,4 +5,3 @@ jsons
 h5py
 json_tricks
 numpy
-typing==3.7.4
