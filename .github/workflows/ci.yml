@@ -21,7 +21,6 @@ jobs:
           pip install .
       - name: Unit testing
         run: |
-          cd tests
           pytest .
       - name: Test McStasScript
         run: |
@@ -29,7 +28,7 @@ jobs:
 
       - name: Install development dependencies
         run: |
-          pip install -r requirements/dev.txt -r
+          pip install -r requirements/dev.txt
       - name: Code formatting
         run: |
           black --check libpyvinyl/
