@@ -109,6 +109,12 @@ class CalculatorParameters(AbstractBaseClass):
         self.add(new_parameter)
         return new_parameter
 
+    def __contains__(self, key):
+        """
+        Returns True if the parameter exists
+        """
+        return key in self.parameters
+
     def __getitem__(self, key):
         """
         Gets parameter with given name from internal dict
