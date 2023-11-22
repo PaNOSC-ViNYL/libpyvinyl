@@ -10,6 +10,11 @@
 
 **Installation instructions** [here](INSTALL.md)
 
+Requires:
+```
+python >= 3.6
+```
+
 Simulations provide invaluable insights to plan (before) and
  understand (after) experiments at neutron and X-ray facilities. 
 A wide set of libraries and programs is already available to simulate
