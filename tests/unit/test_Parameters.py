@@ -523,6 +523,17 @@ class Test_Parameters(unittest.TestCase):
         parameters = CalculatorParameters()
         self.assertRaises(KeyError, parameters.__getitem__, "test3")
 
+    def test_containment(self):
+        par1 = Parameter("test")
+        par1.value = 8
+        par2 = Parameter("test2", unit="meV")
+        par2.value = 10
+        parameters = CalculatorParameters()
+        parameters.add(par1)
+        parameters.add(par2)
+        assert parameters.__contains__("test") == True
+        assert parameters.__contains__("test3") == False
+
 
 def source_calculator():
     """
