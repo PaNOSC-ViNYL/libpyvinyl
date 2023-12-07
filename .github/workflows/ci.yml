@@ -36,7 +36,8 @@ jobs:
           git clone -b simex https://github.com/JunCEEE/pysingfel.git
           cd pysingfel
           pip install ./
-
+          cd ..
+          
           pytest tests
 
       - name: Install development dependencies
