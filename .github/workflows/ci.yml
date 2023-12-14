@@ -26,7 +26,7 @@ jobs:
       - name: Test McStasScript
         run: |
           git clone https://github.com/PaNOSC-ViNYL/McStasScript.git
-          cd mcstasscript
+          cd McStasScript
           pip install -e .
           cd mcstasscript/tests
           
