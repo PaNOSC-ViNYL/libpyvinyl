@@ -25,7 +25,13 @@ jobs:
           pytest .
       - name: Test McStasScript
         run: |
-          python3 -m pip install McStasScript
+          git clone https://github.com/PaNOSC-ViNYL/McStasScript.git
+          cd mcstasscript
+          pip install -e .
+          cd mcstasscript/tests
+          
+          pytest .
+          cd
       - name: Test SimEx-Lite
         run: |
           git clone --recursive https://github.com/PaNOSC-ViNYL/SimEx-Lite.git
