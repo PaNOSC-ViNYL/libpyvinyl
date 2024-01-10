@@ -423,9 +423,7 @@ class BaseCalculator(AbstractBaseClass):
 
     @abstractmethod
     def backengine(self):
-        """Execute the intended operation of this class.
-        
-        """
+        """Execute the intended operation of this class."""
         raise NotImplementedError
 
 
