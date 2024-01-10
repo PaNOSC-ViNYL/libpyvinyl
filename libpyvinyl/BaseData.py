@@ -5,7 +5,7 @@ from libpyvinyl.AbstractBaseClass import AbstractBaseClass
 
 
 class BaseData(AbstractBaseClass):
-    """:class: The abstract data class.
+    """The abstract data class.
     Inheriting classes represent simulation input and/or output
     data and provide a harmonized user interface to simulation data of various kinds rather than a data format.
     Their purpose is to provide a harmonized user interface to common data operations such as reading/writing from/to disk.
