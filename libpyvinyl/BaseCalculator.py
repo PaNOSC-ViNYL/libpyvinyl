@@ -51,7 +51,7 @@ class BaseCalculator(AbstractBaseClass):
     """
     Base class of all calculators.
 
-    This class is provides the libpyvinyl API. It defines all methods
+    This class provides the libpyvinyl API. It defines all methods
     through which a user interacts with the simulation backengines.
 
     This class is to be used as a base class for all calculators that implement

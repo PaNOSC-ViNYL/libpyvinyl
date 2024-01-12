@@ -34,16 +34,14 @@ jobs:
           cd
       - name: Test SimEx-Lite
         run: |
+#         Install pysingfel backend from the simex branch
+          pip install git+https://github.com/JunCEEE/pysingfel.git@simex
+
+#         Install and test SimEx-Lite
           git clone --recursive https://github.com/PaNOSC-ViNYL/SimEx-Lite.git
           cd SimEx-Lite
           pip install -e .
           git clone https://github.com/PaNOSC-ViNYL/SimEx-Lite-testFiles testFiles
-
-          git clone -b simex https://github.com/JunCEEE/pysingfel.git
-          cd pysingfel
-          pip install ./
-          cd ..
-          
           pytest tests
 
       - name: Install development dependencies

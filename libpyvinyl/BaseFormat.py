@@ -5,8 +5,7 @@ from libpyvinyl.BaseData import BaseData
 
 class BaseFormat(AbstractBaseClass):
     """
-    The abstract format class.
-    It's the interface of a certain data format.
+    The abstract format class which serves as the common interface for derived format classes.
     """
 
     def __init__(self):
