@@ -12,7 +12,7 @@ from typing import Union, Any, Tuple, List, Dict, Optional
 
 
 class Instrument:
-    """:class: Class collecting the parameters and calculators representing an entire instrument at a facility"""
+    """Class collecting the parameters and calculators representing an entire instrument at a facility"""
 
     def __init__(
         self,

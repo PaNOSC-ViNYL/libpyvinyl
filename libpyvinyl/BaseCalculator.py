@@ -49,9 +49,9 @@ logging.basicConfig(
 
 class BaseCalculator(AbstractBaseClass):
     """
-    :class:  Base class of all calculators.
+    Base class of all calculators.
 
-    This class is provides the libpyvinyl API. It defines all methods
+    This class provides the libpyvinyl API. It defines all methods
     through which a user interacts with the simulation backengines.
 
     This class is to be used as a base class for all calculators that implement
@@ -76,6 +76,7 @@ class BaseCalculator(AbstractBaseClass):
         parameters: CalculatorParameters = None,
     ):
         """
+        Constructs this class.
 
         :param name: The name of this calculator.
         :param input: The input of this calculator. It can be a `DataCollection`,
@@ -145,6 +146,7 @@ class BaseCalculator(AbstractBaseClass):
 
     @property
     def name(self) -> str:
+        """The name of this calculator."""
         return self.__name
 
     @name.setter
@@ -158,6 +160,7 @@ class BaseCalculator(AbstractBaseClass):
 
     @property
     def parameters(self) -> CalculatorParameters:
+        """The parameters of this calculator."""
         return self.__parameters
 
     @parameters.setter
@@ -189,6 +192,7 @@ class BaseCalculator(AbstractBaseClass):
 
     @property
     def instrument_base_dir(self) -> str:
+        """The base directory for the instrument to which this calculator belongs."""
         return self.__instrument_base_dir
 
     @instrument_base_dir.setter
@@ -206,6 +210,9 @@ class BaseCalculator(AbstractBaseClass):
 
     @property
     def calculator_base_dir(self) -> str:
+        """The base directory for this calculator. The final exact output file path depends on `instrument_base_dir` and
+        `calculator_base_dir`: `instrument_base_dir`/`calculator_base_dir`/filename
+        """
         return self.__calculator_base_dir
 
     @calculator_base_dir.setter
@@ -223,6 +230,7 @@ class BaseCalculator(AbstractBaseClass):
 
     @property
     def input(self) -> DataCollection:
+        """The input of this calculator. A collection or a single Data Object(s)."""
         return self.__input
 
     @input.setter
@@ -244,6 +252,7 @@ class BaseCalculator(AbstractBaseClass):
 
     @property
     def output_keys(self) -> list:
+        """The key(s) of this calculator's output data."""
         return self.__output_keys
 
     @output_keys.setter
@@ -284,6 +293,7 @@ class BaseCalculator(AbstractBaseClass):
 
     @property
     def output_data_types(self) -> list:
+        """The data type(s), i.e., classes, of each output."""
         return self.__output_data_types
 
     @output_data_types.setter
@@ -305,6 +315,7 @@ class BaseCalculator(AbstractBaseClass):
 
     @property
     def output_filenames(self) -> list:
+        """The name(s) of the output file(s). It can be a str of a filename or a list of filenames. If the mapping is dict mapping, the name is `None`."""
         return self.__output_filenames
 
     @output_filenames.setter
@@ -412,6 +423,7 @@ class BaseCalculator(AbstractBaseClass):
 
     @abstractmethod
     def backengine(self):
+        """Execute the intended operation of this class."""
         raise NotImplementedError
 
 

@@ -1,4 +1,6 @@
 pip
+pytest
+pytest-runner
 bump2version==0.5.11
 wheel==0.33.6
 watchdog==0.9.0
@@ -8,6 +10,3 @@ coverage==4.5.4
 Sphinx==3.5.2
 twine==1.14.0
 sphinx_rtd_theme==0.5.1
-
-pytest==4.6.5
-pytest-runner==5.1
