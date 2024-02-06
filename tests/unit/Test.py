@@ -46,7 +46,6 @@ def suite():
 
 # Run the suite and return a success status code. This enables running an automated git-bisect.
 if __name__ == "__main__":
-
     result = unittest.TextTestRunner(verbosity=2).run(suite())
 
     if result.wasSuccessful():

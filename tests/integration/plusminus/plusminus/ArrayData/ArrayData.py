@@ -11,7 +11,6 @@ class ArrayData(BaseData):
         file_format_class=None,
         file_format_kwargs=None,
     ):
-
         ### DataClass developer's job start
         expected_data = {}
         expected_data["array"] = None

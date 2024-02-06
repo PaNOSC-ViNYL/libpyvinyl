@@ -25,7 +25,7 @@ import sphinx_rtd_theme
 
 project = "libpyvinyl"
 copyright = (
-    "2020-2022, Carsten Fortmann-Grote, Mads Bertelsen, Juncheng E, Shervin Nourbakhsh"
+    "2020-2024, Carsten Fortmann-Grote, Mads Bertelsen, Juncheng E, Shervin Nourbakhsh"
 )
 author = "Carsten Fortmann-Grote, Mads Bertelsen, Juncheng E, Shervin Nourbakhsh"
 

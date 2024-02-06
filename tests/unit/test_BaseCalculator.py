@@ -22,7 +22,6 @@ class NumberData(BaseData):
         file_format_class=None,
         file_format_kwargs=None,
     ):
-
         expected_data = {}
 
         # DataClass developer's job start
