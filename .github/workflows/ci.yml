@@ -68,6 +68,23 @@ jobs:
         with:
           name: sdist-wheel
           path: dist
+
+  deploy:
+    name: Deploy sdist and wheel on PYPI
+    runs-on: ubuntu-20.04
+    needs: build_sdist_and_wheel
+    if: github.ref == 'refs/heads/CICD'
+    steps:
+      - name: Get artifact
+        uses: actions/download-artifact@v4
+        with:
+          name: sdist-wheel
+      - name: Upload to pypi
+        run:
+          echo "Hello World"
+      
+          
+      
           
         
     
