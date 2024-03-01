@@ -1,5 +1,6 @@
 name: CI
 on: [push, pull_request]
+error me
 
 jobs:
   test:
@@ -67,7 +68,7 @@ jobs:
         uses: actions/upload-artifact@v4
         with:
           name: sdist-wheel
-          path: dist
+          path: dist/
 
   deploy:
     name: Deploy sdist and wheel on PYPI
