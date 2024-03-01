@@ -33,7 +33,7 @@ setup(
     license="LGPLv3",
     description="The python API for photon and neutron simulation codes in the Photon and Neutron Open Science Cloud (PaNOSC).",
     long_description_content_type="text/markdown",
-    long_description=README,
+    long_description=read("README.md"),
     author=get_from_init(initfile, "__author__"),
     author_email=get_from_init(initfile, "__email__"),
     url="https://github.com/PaNOSC-ViNYL/libpyvinyl",
