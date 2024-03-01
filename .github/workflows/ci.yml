@@ -50,4 +50,26 @@ jobs:
       - name: Code formatting
         run: |
           black --check libpyvinyl/
+
+  build_sdist_and_wheel:
+    name: Build source distribution and pure python wheel
+    runs-on: ubuntu-20.04
+    needs: test
+    if: github.ref == 'refs/heads/CICD'
+    steps:
+      - name: build sdist and wheel
+      - uses: actions/checkout@v2
+      - id: build
+        uses: OpenAstronomy/build-python-dist@v1
+        with:
+          pure_python_wheel: true
+          
+      - name: upload artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: sdist-wheel
+          path: dist
+          
+        
+    
           
