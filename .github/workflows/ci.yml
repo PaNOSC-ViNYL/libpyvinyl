@@ -75,8 +75,8 @@ jobs:
           GITHUB_TOKEN: ${{ github.token }}
       - name: build
         run : |
-          python -m build sdist
-          python -m build wheel
+          python -m build --sdist
+          python -m build --wheel
       - name: Upload to test.pypi
         uses: pypa/gh-action-pypi-publish@release/v1      
         with:
