@@ -58,6 +58,9 @@ jobs:
     needs: test
     if: github.ref == 'refs/heads/CICD'
     steps:
+      - name: Install development dependencies
+        run: |
+          pip install -r requirements/dev.txt
       - name: bumpversion
         run: |
           bumpversion build
