@@ -57,65 +57,36 @@ jobs:
     runs-on: ubuntu-20.04
     needs: test
     if: github.ref == 'refs/heads/CICD'
-    steps:
-      - id: checkout
-        uses: actions/checkout@v3
-      - id: bumpversion
-        uses: jasonamyers/github-bumpversion-action@v1.0.5
-        env:
-          GITHUB_TOKEN: ${{ github.token }}
-      - id: build
-        uses: OpenAstronomy/build-python-dist@v1
-        with:
-          pure_python_wheel: true
-      - name: upload artifact
-        uses: actions/upload-artifact@v4
-        with:
-          name: sdist-wheel
-          path: dist/
-
-  deploy:
-    name: Deploy sdist and wheel on PYPI
-    runs-on: ubuntu-20.04
-    needs: build_sdist_and_wheel
-    if: github.ref == 'refs/heads/master' # and startsWith(github.ref, 'refs/tags/')
-    environment:
-      name: pypi
-      url: https://pypi.org/p/libpyvinyl
-    permissions:
-      id-token: write
-    steps:
-      - name: Get artifact
-        uses: actions/download-artifact@v4
-        with:
-          name: sdist-wheel
-          path: dist/
-      - name: Upload to pypi
-        uses: pypa/gh-action-pypi-publish@release/v1
-        
-  test_deploy:
-    name: Deploy sdist and wheel on TEST.PYPI
-    runs-on: ubuntu-20.04
-    needs: build_sdist_and_wheel
-    if: github.ref == 'refs/heads/CICD'
-    environment:
+        environment:
       name: testpypi
       url: https://test.pypi.org/p/libpyvinyl
     permissions:
       id-token: write
     steps:
-      - name: Get artifact
-        uses: actions/download-artifact@v4
-        with:
-          name: sdist-wheel
-          path: dist/
+      - id: checkout
+        uses: actions/checkout@v3
+      - name: requirements
+        run :
+          pip install -r requirements/dev.txt
+          pip install build
+      - id: bumpversion
+        uses: jasonamyers/github-bumpversion-action@v1.0.5
+        env:
+          GITHUB_TOKEN: ${{ github.token }}
+      - name: build
+        run : |
+          python -m build sdist
+          python -m build wheel
       - name: Upload to test.pypi
         uses: pypa/gh-action-pypi-publish@release/v1      
         with:
           repository-url: https://test.pypi.org/legacy/
-          
-      
-          
+      - name: upload artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: sdist-wheel
+          path: dist/
+         
         
     
           
