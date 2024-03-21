@@ -61,7 +61,7 @@ jobs:
       - id: checkout
         uses: actions/checkout@v3
       - id: bumpversion
-        uses: asonamyers/github-bumpversion-action@v1.0.5
+        uses: jasonamyers/github-bumpversion-action@v1.0.5
         env:
           GITHUB_TOKEN: ${{ github.token }}
       - id: build
