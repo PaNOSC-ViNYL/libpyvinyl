@@ -58,18 +58,16 @@ jobs:
     needs: test
     if: github.ref == 'refs/heads/CICD'
     steps:
-      - name: Install development dependencies
-        run: |
-          pip install -r requirements/dev.txt
-      - name: bumpversion
-        run: |
-          bumpversion build
-      - uses: actions/checkout@v2
+      - id: checkout
+        uses: actions/checkout@v3
+      - id: bumpversion
+        uses: asonamyers/github-bumpversion-action@v1.0.5
+        env:
+          GITHUB_TOKEN: ${{ github.token }}
       - id: build
         uses: OpenAstronomy/build-python-dist@v1
         with:
           pure_python_wheel: true
-          
       - name: upload artifact
         uses: actions/upload-artifact@v4
         with:
