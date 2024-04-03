@@ -3,6 +3,7 @@
 
 import math
 import numpy
+import hashlib
 from libpyvinyl.AbstractBaseClass import AbstractBaseClass
 
 from pint.unit import Unit
@@ -506,3 +507,6 @@ class Parameter(AbstractBaseClass):
             string += "    " + str(option) + "\n"
 
         return string
+
+    def __hash__(self):
+        return int.from_bytes(hashlib.sha256(self.value).digest(), "big")

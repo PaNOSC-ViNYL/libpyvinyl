@@ -32,6 +32,7 @@ import dill
 from pathlib import Path
 import logging
 import os
+import hashlib
 
 from libpyvinyl.AbstractBaseClass import AbstractBaseClass
 from libpyvinyl.BaseData import BaseData, DataCollection
@@ -381,6 +382,11 @@ class BaseCalculator(AbstractBaseClass):
         else:
             new.parameters = parameters
         return new
+
+    def __hash__(self):
+        a = dill.copy(self)
+        a.init_parameters()
+        return int.from_bytes(hashlib.sha256(dill.dumps(a)).digest(), "big")
 
     @classmethod
     def from_dump(cls, dumpfile: str):
