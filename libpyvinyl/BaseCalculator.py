@@ -384,6 +384,11 @@ class BaseCalculator(AbstractBaseClass):
         return new
 
     def __hash__(self):
+        """Hashing capability for a Calculator
+        Parameters are removed when calculating the hash.
+        The hash of the parameters can be accessed by hash(calc.parameters).
+        This logic allows to decouple the changes in the calculator from changes in the values of the parameters
+        """
         a = dill.copy(self)
         a.init_parameters()
         return int.from_bytes(hashlib.sha256(dill.dumps(a)).digest(), "big")
