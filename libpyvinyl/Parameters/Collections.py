@@ -109,6 +109,15 @@ class CalculatorParameters(AbstractBaseClass):
         self.add(new_parameter)
         return new_parameter
 
+    def __hash__(self):
+        """
+        Returns a hash for the parameter list
+        """
+        h = 0
+        for parameter in self.parameters:
+            h = h + hash(self.parameters[parameter])
+        return hash(h)
+
     def __contains__(self, key):
         """
         Returns True if the parameter exists
@@ -383,7 +392,9 @@ class InstrumentParameters(AbstractBaseClass):
 
         for link_key in links:
             if link_key not in self.parameters_dict:
-                raise RuntimeError("A link had a key which was not recognized.")
+                raise RuntimeError(
+                    f"A link had a key which was not recognized: {link_key}"
+                )
 
         master_parameter.add_links(links)
         self.master.add(master_parameter)
