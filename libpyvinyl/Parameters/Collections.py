@@ -116,7 +116,7 @@ class CalculatorParameters(AbstractBaseClass):
         h = 0
         for parameter in self.parameters:
             h = h + hash(self.parameters[parameter])
-        return hash(h)
+        return h
 
     def __contains__(self, key):
         """

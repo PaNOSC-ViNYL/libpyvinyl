@@ -438,6 +438,32 @@ class Test_Parameter(unittest.TestCase):
         self.assertFalse(undulator_length.is_legal(9.0 * centimeter))
         self.assertTrue(undulator_length.is_legal(5.5e4 * Unit("centimeter")))
 
+    def test_parameter_hash(self):
+        """Test hashing of the parameter value"""
+        par = Parameter("test", unit="eV")
+        par1 = Parameter("test", unit="eV")
+        par2 = Parameter("test", unit="meter")
+        par1.value = 5.0 * Unit("eV")
+        par2.value = 5.0 * Unit("meter")
+
+        # hash for None is 0
+        assert par.value == None
+        assert hash(par) == 0
+
+        # values do not change when calling hash multiple times
+        assert hash(par1) == hash(par1)
+        assert hash(par2) == hash(par2)
+
+        # hash depends only on values and not units
+        assert hash(par1) == hash(par2)
+
+        assert hash(par1) == 1128548800544176899  # no change at re-execution
+
+        print(par2)
+        par2.value = 5000 * Unit("mm")
+        print(par2)
+        assert hash(par2) == 1128548800544176899  # no change at re-execution
+
 
 class Test_Parameters(unittest.TestCase):
     def test_initialize_parameters_from_list(self):
@@ -533,6 +559,17 @@ class Test_Parameters(unittest.TestCase):
         parameters.add(par2)
         assert parameters.__contains__("test") == True
         assert parameters.__contains__("test3") == False
+
+    def test_parameters_hash(self):
+        par1 = Parameter("test")
+        par1.value = 8
+        par2 = Parameter("test2", unit="meV")
+        par2.value = 10
+        parameters = CalculatorParameters()
+        parameters.add(par1)
+        parameters.add(par2)
+
+        assert hash(parameters) == 1295723495505273714
 
 
 def source_calculator():
