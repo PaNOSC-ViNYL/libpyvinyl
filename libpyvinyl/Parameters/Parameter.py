@@ -4,6 +4,7 @@
 import math
 import numpy
 import hashlib
+import dill
 from libpyvinyl.AbstractBaseClass import AbstractBaseClass
 
 from pint.unit import Unit
@@ -509,4 +510,6 @@ class Parameter(AbstractBaseClass):
         return string
 
     def __hash__(self):
-        return int.from_bytes(hashlib.sha256(self.value).digest(), "big")
+        if self.value is None:
+            return 0
+        return int.from_bytes(hashlib.sha256(dill.dumps(self.value)).digest(), "big")

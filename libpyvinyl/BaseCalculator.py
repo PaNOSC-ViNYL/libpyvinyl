@@ -114,6 +114,8 @@ class BaseCalculator(AbstractBaseClass):
         self.__output_filenames = None
         self.__parameters = None
         self.__output: DataCollection = DataCollection()
+        self.__calc_hash = None
+        self.__params_hash = None
 
         self.name = name
         self.input = input
@@ -383,15 +385,51 @@ class BaseCalculator(AbstractBaseClass):
             new.parameters = parameters
         return new
 
-    def __hash__(self):
+    def __hash__(self) -> int:
         """Hashing capability for a Calculator
         Parameters are removed when calculating the hash.
         The hash of the parameters can be accessed by hash(calc.parameters).
         This logic allows to decouple the changes in the calculator from changes in the values of the parameters
+
+        The calculator_base_dir is removed from the hash calculation. It can then safely contain the ash in the path
+        :return: hash of the calculator
         """
         a = dill.copy(self)
-        a.init_parameters()
+        a.parameters = None
+        a.__calc_hash = None
+        a.__params_hash = None
+        a.__calculator_base_dir = None
         return int.from_bytes(hashlib.sha256(dill.dumps(a)).digest(), "big")
+
+    @property
+    def calc_hash(self) -> int:
+        return self.__calc_hash
+
+    @property
+    def params_hash(self) -> int:
+        return self.__params_hash
+
+    def _update_hash(self) -> None:
+        """
+        The hash for the calculator and its parameters are stored in the calculator itself.
+        Verifiying the hash allows to know if the calculator or its parameters have been modified since last run.
+        Before the first run, the values are None."""
+        self.__calc_hash = hash(self)
+        self.__params_hash = hash(self.parameters)
+
+    def is_calc_changed(self) -> bool:
+        """Utility method that verifies if the calculator has been modified since last run
+
+        :return: True if the calculator has changed or never run
+        """
+        return self.__calc_hash != hash(self)
+
+    def is_paramset_changed(self) -> bool:
+        """Utility method that verifies if the value of the parameters have been modified since last run
+
+        :return: True if values have changed or calculator never run
+        """
+        return self.__params_hash != hash(self.parameters)
 
     @classmethod
     def from_dump(cls, dumpfile: str):
