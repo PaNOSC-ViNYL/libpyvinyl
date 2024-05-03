@@ -1,6 +1,5 @@
-name: CI
+name: Test
 on: [push, pull_request]
-
 
 jobs:
   test:
@@ -51,42 +50,7 @@ jobs:
       - name: Code formatting
         run: |
           black --check libpyvinyl/
-
-  build_sdist_and_wheel:
-    name: Build source distribution and pure python wheel
-    runs-on: ubuntu-20.04
-    needs: test
-    if: github.ref == 'refs/heads/CICD'
-    environment:
-      name: testpypi
-      url: https://test.pypi.org/p/libpyvinyl
-    permissions:
-      id-token: write
-    steps:
-      - id: checkout
-        uses: actions/checkout@v3
-      - name: requirements
-        run :
-          pip install -r requirements/dev.txt
-          pip install build
-      - id: bumpversion
-        uses: jasonamyers/github-bumpversion-action@v1.0.5
-        env:
-          GITHUB_TOKEN: ${{ github.token }}
-      - name: build
-        run : |
-          python -m build --sdist
-          python -m build --wheel
-      - name: Upload to test.pypi
-        uses: pypa/gh-action-pypi-publish@release/v1      
-        with:
-          repository-url: https://test.pypi.org/legacy/
-      - name: upload artifact
-        uses: actions/upload-artifact@v4
-        with:
-          name: sdist-wheel
-          path: dist/
-         
+        
         
     
           
