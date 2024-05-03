@@ -1,4 +1,5 @@
-black==22.8.0
+black==24.3.0
+pytest
 bump2version
 flake8
 myst-parser
