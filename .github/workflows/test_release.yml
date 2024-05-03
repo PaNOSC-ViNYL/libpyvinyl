@@ -1,4 +1,4 @@
-name: CI
+name: Release
 on: [push, pull_request]
 
 jobs:
@@ -6,7 +6,7 @@ jobs:
     runs-on: ubuntu-20.04
     strategy:
       matrix:
-        python-version: ["3.6", "3.7", "3.8", "3.9", "3.10"]
+        python-version: ["3.8", "3.9", "3.10", "3.11", "3.12"]
     steps:
       - uses: actions/checkout@v3
       - uses: mpi4py/setup-mpi@v1
@@ -50,4 +50,36 @@ jobs:
       - name: Code formatting
         run: |
           black --check libpyvinyl/
+
+  build_sdist_and_wheel:
+    name: Build source distribution and pure python wheel
+    runs-on: ubuntu-20.04
+    needs: test
+    if: startsWith(github.ref, 'refs/tags/v')
+    environment:
+      name: pypi
+      url: https://pypi.org/p/libpyvinyl
+    permissions:
+      id-token: write
+    steps:
+      - id: checkout
+        uses: actions/checkout@v3
+      - name: requirements
+        run :
+          pip install -r requirements/dev.txt
+          pip install build
+      - name: build
+        run : |
+          python -m build --sdist
+          python -m build --wheel
+      - name: Upload to pypi
+        uses: pypa/gh-action-pypi-publish@release/v1      
+      - name: upload artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: sdist-wheel
+          path: dist/
+         
+        
+    
           

@@ -1,8 +1,10 @@
 black==24.3.0
 pytest
+bump2version
 flake8
-sphinx
-sphinx-rtd-theme
-sphinx-autodoc-typehints
-nbsphinx
 myst-parser
+nbsphinx
+pytest
+sphinx
+sphinx-autodoc-typehints
+sphinx-rtd-theme
