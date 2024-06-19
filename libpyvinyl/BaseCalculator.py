@@ -391,7 +391,13 @@ class BaseCalculator(AbstractBaseClass):
         The hash of the parameters can be accessed by hash(calc.parameters).
         This logic allows to decouple the changes in the calculator from changes in the values of the parameters
 
-        The calculator_base_dir is removed from the hash calculation. It can then safely contain the ash in the path
+        The hash calculation ignores:
+          - calculator_base_dir
+          - input
+          - output
+
+        It can then safely contain the hash in the path input/output/base_dir paths
+
         :return: hash of the calculator
         """
         a = dill.copy(self)
@@ -399,6 +405,11 @@ class BaseCalculator(AbstractBaseClass):
         a.__calc_hash = None
         a.__params_hash = None
         a.__calculator_base_dir = None
+        a.input = None
+        a.__output_keys = None
+        a.__output_data_types = None
+        a.__output_filenames = None
+
         return int.from_bytes(hashlib.sha256(dill.dumps(a)).digest(), "big")
 
     @property

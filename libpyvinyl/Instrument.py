@@ -28,7 +28,8 @@ class Instrument:
         self.__name: str = ""
         self.__instrument_base_dir: str = ""
         self.__parameters = InstrumentParameters()
-
+        self.__calculator_hashes = None
+        self.__parameter_hashes = None
         self.name = name
 
         self.__calculators: Dict[str, BaseCalculator] = {}
@@ -156,8 +157,28 @@ class Instrument:
         Run the entire simulation,
         i.e. all the calculators in the order they have been provided
         """
-        for calculator in self.calculators.values():
-            calculator.backengine()
+        for calc in self.calculators.values():
+            if calc.is_calc_changed:
+                # need to recompile and rerun
+                print(f"Calculator {calc.name} changed")
+                calc._update_hash()
+                calc.calculator_base_dir = "-".join(
+                    [calc.name, "_".join([str(calc.calc_hash), str(calc.params_hash)])]
+                )
+
+                calc.backengine()
+            elif calc.is_paramset_changed:
+                print(f"Parameters of calculator {calc.name} changed")
+                # need to re-run without recompiling
+                calc._update_hash()
+                calc.calculator_base_dir = "-".join(
+                    [
+                        calc.name,
+                        "_".join([str(calc.__calc_hash), str(calc.__params_hash)]),
+                    ]
+                )
+
+                calc.backengine()
 
     @property
     def output(self) -> DataCollection:

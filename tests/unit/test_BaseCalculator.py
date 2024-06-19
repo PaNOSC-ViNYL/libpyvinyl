@@ -4,6 +4,8 @@ import os
 import shutil
 from typing import Union
 from pathlib import Path
+import hashlib
+import dill
 
 from libpyvinyl.BaseCalculator import BaseCalculator
 from libpyvinyl.BaseData import BaseData, DataCollection
@@ -309,6 +311,35 @@ class BaseCalculatorTest(unittest.TestCase):
             calculator = PlusCalculator(
                 "test", input1, output_keys=["result"], output_data_types=[]
             )
+
+    def test_calculator_hash(self):
+        calculator = self.__default_calculator()
+        assert calculator.calc_hash == None
+        assert calculator.params_hash == None
+
+        assert calculator.is_calc_changed() == True
+        assert calculator.is_paramset_changed() == True
+        assert hash(calculator) == 1511185683683508563
+
+        calculator._update_hash()
+        assert calculator.is_calc_changed() == False
+        assert calculator.is_paramset_changed() == False
+        assert hash(calculator) == 1511185683683508563
+
+        calculator.calculator_base_dir = "/tmp/"
+        assert calculator.is_calc_changed() == False
+        assert calculator.is_paramset_changed() == False
+
+        calculator.input = None
+        assert calculator.input == None
+        assert calculator.is_calc_changed() == False
+        assert calculator.is_paramset_changed() == False
+
+        calculator.output_keys = ""
+        calculator.output_data_types = []
+        assert hashlib.sha256(dill.dumps(calculator.output).digest()) == hashlib.sha256(
+            dill.dumps(DataCollection()).digest()
+        )
 
 
 if __name__ == "__main__":
