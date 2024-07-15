@@ -6,8 +6,8 @@ import copy
 
 from libpyvinyl.AbstractBaseClass import AbstractBaseClass
 from .Parameter import Parameter
-from pint.quantity import Quantity
-from pint.unit import Unit, UnitsContainer
+from pint import Unit, Quantity
+from pint.util import UnitsContainer
 
 from typing import Union
 
