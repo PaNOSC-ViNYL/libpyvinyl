@@ -1,4 +1,4 @@
-pint<=0.19.2
+pint
 dill<=0.3.5.1
 scipy
 jsons
