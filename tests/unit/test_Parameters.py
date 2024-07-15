@@ -3,8 +3,8 @@ import numpy
 import pytest
 import os
 import tempfile
-from pint.quantity import Quantity
-from pint.unit import Unit
+from pint import Quantity
+from pint import Unit
 from libpyvinyl.Parameters import Parameter
 from libpyvinyl.Parameters import CalculatorParameters
 from libpyvinyl.Parameters import InstrumentParameters

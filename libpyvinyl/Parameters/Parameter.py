@@ -5,8 +5,8 @@ import math
 import numpy
 from libpyvinyl.AbstractBaseClass import AbstractBaseClass
 
-from pint.unit import Unit
-from pint.quantity import Quantity
+from pint import Unit
+from pint import Quantity
 import pint.errors
 
 # typing
