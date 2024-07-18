@@ -1,4 +1,5 @@
 """ :module BaseCalculator: Module hosts the BaseData class."""
+
 from abc import abstractmethod, ABCMeta
 from typing import Union
 from pathlib import Path
