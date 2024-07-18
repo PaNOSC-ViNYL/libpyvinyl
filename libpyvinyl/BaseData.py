@@ -1,4 +1,5 @@
 """ :module BaseData: Module hosts the BaseData class."""
+
 from typing import Union, Optional
 from abc import abstractmethod, ABCMeta
 from libpyvinyl.AbstractBaseClass import AbstractBaseClass
