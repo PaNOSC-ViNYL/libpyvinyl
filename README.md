@@ -12,7 +12,7 @@
 
 Requires:
 ```
-python >= 3.6
+python >= 3.8
 ```
 
 Simulations provide invaluable insights to plan (before) and

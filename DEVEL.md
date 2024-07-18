@@ -1,5 +1,9 @@
 # Contributing
 
+## Development requirement
+Check [requirements/dev.txt](requirements/dev.txt).
+Make sure the formatter package [black](https://black.readthedocs.io/en/stable/)>=24.3.
+
 ## How to test
 
 Minimally needed:
@@ -53,8 +57,9 @@ pytest tests/integration
 2. Develop into the newly created branch
 3. Create appropriate unit tests in [tests/unit/](https://github.com/PaNOSC-ViNYL/libpyvinyl/tree/master/tests/unit)
 4. Test current development as indicated in [Testing](https://github.com/PaNOSC-ViNYL/libpyvinyl#testing).
-5. `git rebase -i master` w.r.t. current master to include the latest updates and squashing commits to a minimum. See also [here](https://opensource.com/article/20/4/git-rebase-i).
-6. Push your `BRANCH` to the upstream repo: `git push -f upstream BRANCH`.
-7. Create a pull request (PR) to the `master` branch on the GitHub page.
-8. PR should be reviewed and approved and be passing all CI tests.
-9. If passing all tests, Choose `Rebase and merge` to merge the PR with no further squashing.
+5. Format the code with [black](https://black.readthedocs.io/en/stable/)>=24.3
+6. `git rebase -i master` w.r.t. current master to include the latest updates and squashing commits to a minimum. See also [here](https://opensource.com/article/20/4/git-rebase-i).
+7. Push your `BRANCH` to the upstream repo: `git push -f upstream BRANCH`.
+8. Create a pull request (PR) to the `master` branch on the GitHub page.
+9. PR should be reviewed and approved and be passing all CI tests.
+10. If passing all tests, Choose `Rebase and merge` to merge the PR with no further squashing.
