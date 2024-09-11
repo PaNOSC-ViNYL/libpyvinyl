@@ -1,12 +1,7 @@
 from setuptools import setup, find_packages
-import sys
-
-with open("requirements/prod.txt") as requirements_file:
-    require = requirements_file.read()
-    requirements = require.split()
-
-import codecs
 import os.path
+import codecs
+import sys
 
 
 def read(rel_path):
@@ -23,6 +18,9 @@ def get_from_init(rel_path, field):
     else:
         raise RuntimeError("Unable to find " + field + " string.")
 
+
+require = read(os.path.join("requirements", "prod.txt"))
+requirements = require.split()
 
 initfile = "libpyvinyl/__init__.py"
 version = get_from_init(initfile, "__version__")
