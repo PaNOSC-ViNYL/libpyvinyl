@@ -1,5 +1,5 @@
 pint
-dill<=0.3.5.1
+dill
 scipy
 jsons
 h5py
