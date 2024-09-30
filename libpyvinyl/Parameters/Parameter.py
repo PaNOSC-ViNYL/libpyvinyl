@@ -8,9 +8,11 @@ import dill
 from libpyvinyl.AbstractBaseClass import AbstractBaseClass
 
 from pint import Unit
-from pint import Quantity
 import pint.errors
+import pint
 
+ureg = pint.get_application_registry()
+Quantity = ureg.Quantity
 # typing
 from typing import Union, Any, Tuple, List, Dict, Optional
 
