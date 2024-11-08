@@ -23,8 +23,8 @@ jobs:
       - name: Unit testing
         run: |
           pytest .
-     - name: Test McStasScript
-       run: |
+      - name: Test McStasScript
+        run: |
           git clone https://github.com/PaNOSC-ViNYL/McStasScript.git
           cd McStasScript
           pip install -e .
