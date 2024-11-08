@@ -23,15 +23,14 @@ jobs:
       - name: Unit testing
         run: |
           pytest .
-#      - name: Test McStasScript
-#        run: |
-        #   git clone https://github.com/PaNOSC-ViNYL/McStasScript.git
-        #   cd McStasScript
-        #   pip install -e .
-        #   cd mcstasscript/tests
-          
-        #   pytest .
-        #   cd
+     - name: Test McStasScript
+       run: |
+          git clone https://github.com/PaNOSC-ViNYL/McStasScript.git
+          cd McStasScript
+          pip install -e .
+          cd mcstasscript/tests
+          pytest .
+          cd
       - name: Test SimEx-Lite
         run: |
           # Install pysingfel backend from the simex branch
