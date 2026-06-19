@@ -402,7 +402,7 @@ class BaseCalculator(AbstractBaseClass):
 
         return tmp
 
-    def dump(self, fname: Optional[str] = None) -> str:
+    def dump(self, fname: Optional[str] = None, **kwargs) -> str:
         """
         Dump class instance to file.
 
@@ -417,7 +417,7 @@ class BaseCalculator(AbstractBaseClass):
                 dir=os.getcwd(),
             )
         with open(fname, "wb") as file_handle:
-            dill.dump(self, file_handle)
+            dill.dump(self, file_handle, **kwargs)
 
         return fname
 
